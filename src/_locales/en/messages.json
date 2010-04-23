@@ -1,0 +1,11 @@
+{
+  "extension_name": {
+    "message": "Eye Traffic"
+  },
+  "extension_description": {
+    "message": "Traffic monitor, follow news on Luxemburg highway"
+  },
+  "browser_action_tooltip_default": {
+    "message": "Luxemburg traffic"
+  } 
+}
