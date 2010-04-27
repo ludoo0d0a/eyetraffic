@@ -270,12 +270,16 @@ function init(){
     jQuery('#refresh').button().click(update);
     jQuery('#convert').button().click(convert);
     //jQuery('#flashinfo').hide();
-    jQuery('#times').tabs();
-    jQuery('#cams').tabs({
+    jQuery('#cams').tabs();
+	jQuery('#times').tabs();
+    jQuery('#cams').tabs();
+	createCams();
+	/*
+	jQuery('#cams').tabs({
         load: function(event, ui){
             createCams();
         }
-    });
+    });*/
     jQuery('#maps').tabs({
         select: function(event, ui){
             loadHtml($(ui.panel), ui.tab.hash);
