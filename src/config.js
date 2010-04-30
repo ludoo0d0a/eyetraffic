@@ -58,218 +58,202 @@ var LANGS = {
 var LANG = LANGS.en;
 //Temps de parcours
 var urlTime = 'http://www2.pch.etat.lu/info_trafic/temps_parcours/temps_parcours_convert.jsp';
-
 var timesCoords = {
-	treves: {
-		i: 1,
-		name: "Wasserbillig(Trèves)",
-		lat: 49.723510000000005,
-		lng: 6.48922
-	},
-	luxest: {
-		i: 2,
-		name: "Senningerberg(Lux Est)",
-		lat: 49.64278,
-		lng: 6.21759
-	},
-	hollerich: {
-		i: 3,
-		name: "Hollerich",
-		lat: 49.585710000000006,
-		lng: 6.132890000000001
-	},
-	gasperich: {
-		i: 3.1,
-		name: "Gasperich",
-		lat: 49.59,
-		lng: 6.133
-	},
-	bridel: {
-		i: 4,
-		name: "Bridel",
-		lat: 49.627500000000005,
-		lng: 6.075740000000001
-	},
-	belgique: {
-		i: 5,
-		name: "Belgique",
-		lat: 49.638090000000005,
-		lng: 5.909000000000001
-	},
-	esch: {
-		i: 6,
-		name: "Esch",
-		lat: 49.519380000000005,
-		lng: 6.000190000000001
-	},
-	france: {
-		i: 7,
-		name: "France",
-		lat: 49.47281,
-		lng: 6.12119
-	},
-	schengen: {
-		i: 8,
-		name: "Schengen(Allemagne)",
-		lat: 49.4791,
-		lng: 6.3656500000000005
-	}
+    treves: {
+        i: 1,
+        name: "Wasserbillig(Trèves)",
+        lat: 49.723510000000005,
+        lng: 6.48922
+    },
+    luxest: {
+        i: 2,
+        name: "Senningerberg(Lux Est)",
+        lat: 49.64278,
+        lng: 6.21759
+    },
+    hollerich: {
+        i: 3,
+        name: "Hollerich",
+        lat: 49.585710000000006,
+        lng: 6.132890000000001
+    },
+    gasperich: {
+        i: 3.1,
+        name: "Gasperich",
+        lat: 49.59,
+        lng: 6.133
+    },
+    bridel: {
+        i: 4,
+        name: "Bridel",
+        lat: 49.627500000000005,
+        lng: 6.075740000000001
+    },
+    belgique: {
+        i: 5,
+        name: "Belgique",
+        lat: 49.638090000000005,
+        lng: 5.909000000000001
+    },
+    esch: {
+        i: 6,
+        name: "Esch",
+        lat: 49.519380000000005,
+        lng: 6.000190000000001
+    },
+    france: {
+        i: 7,
+        name: "France",
+        lat: 49.47281,
+        lng: 6.12119
+    },
+    schengen: {
+        i: 8,
+        name: "Schengen(Allemagne)",
+        lat: 49.4791,
+        lng: 6.3656500000000005
+    }
 };
-/*
-var routes = [{belgique, france},{france, treves}];
-	
-};
-*/
 var timeMappings = {
-    'FRANCE': {
-        2: {
-            code: 'A6_france',
-			cat:'FRANCE',
-			from:timesCoords.belgique,
-			to:timesCoords.france,
-            text: 'Belgique ' + LANG.to + ' France'
-        },
-        17: {
-            code: 'A1_france',
-			cat:'FRANCE',
-			from:timesCoords.treves,
-			to:timesCoords.france,
-            text: 'Wasserbillig ' + LANG.to + ' France'
-        },
-        19: {
-            code: 'A1_france',
-			cat:'FRANCE',
-			from:timesCoords.luxest,
-			to:timesCoords.france,
-            text: 'Senningerberg ' + LANG.to + ' France'
-        },
-        6: {
-            code: 'A3_france',
-			cat:'FRANCE',
-			from:timesCoords.hollerich,
-			to:timesCoords.france,
-            text: 'Gasperich ' + LANG.to + ' France'
-        }
+    2: {
+        code: 'A6_france',
+        cat: 'FRANCE',
+        from: 'belgique',
+        to: 'france',
+        text: 'Belgique ' + LANG.to + ' France'
     },
-    'BELGIQUE': {
-        4: {
-            code: 'A3_belgique',
-			cat:'BELGIQUE',
-			from:timesCoords.france,
-			to:timesCoords.belgique,
-            text: 'France ' + LANG.to + ' Belgique'
-        },
-        14: {
-            code: 'A13_belgique',
-			cat:'BELGIQUE',
-			from:timesCoords.schengen,
-			to:timesCoords.belgique,
-            text: 'Schengen ' + LANG.to + ' Belgique'
-        },
-        20: {
-            code: 'A1_belgique',
-			cat:'BELGIQUE',
-			from:timesCoords.luxest,
-			to:timesCoords.belgique,
-            text: 'Senningerberg ' + LANG.to + ' Belgique'
-        },
-        5: {
-            code: 'A6_belgique',
-			cat:'BELGIQUE',
-			from:timesCoords.bridel,
-			to:timesCoords.belgique,
-            text: 'Bridel ' + LANG.to + ' Belgique'
-        }
+    17: {
+        code: 'A1_france',
+        cat: 'FRANCE',
+        from: 'treves',
+        to: 'france',
+        text: 'Wasserbillig ' + LANG.to + ' France'
     },
-    'LUX-SUD': {
-        1: {
-            code: 'A6_lux_sud',
-			cat:'LUX-SUD',
-			from:timesCoords.belgique,
-			to:timesCoords.gasperich,
-            text: 'Belgique ' + LANG.to + ' Gasperich'
-        },
-        9: {
-            code: 'A4_lux_sud',
-			cat:'LUX-SUD',
-			from:timesCoords.esch,
-			to:timesCoords.gasperich,
-            text: 'Esch ' + LANG.to + ' Gasperich'
-        },
-        3: {
-            code: 'A3_lux_sud',
-			cat:'LUX-SUD',
-			from:timesCoords.esch,
-			to:timesCoords.hollerich,
-            text: 'Esch ' + LANG.to + ' Lux Hollerich'
-        },
-        12: {
-            code: 'A13_lux_sud',
-			cat:'LUX-SUD',
-			from:timesCoords.schengen,
-			to:timesCoords.gasperich,
-            text: 'Schengen ' + LANG.to + ' Gasperich'
-        },
-        16: {
-            code: 'A1_lux_sud',
-			cat:'LUX-SUD',
-			from:timesCoords.treves,
-			to:timesCoords.gasperich,
-            text: 'Wasserbillig ' + LANG.to + ' Gasperich'
-        },
-        18: {
-            code: 'A1_lux_sud',
-			cat:'LUX-SUD',
-			from:timesCoords.luxest,
-			to:timesCoords.gasperich,
-            text: 'Senningerberg ' + LANG.to + ' Gasperich'
-        }
+    19: {
+        code: 'A1_france',
+        cat: 'FRANCE',
+        from: 'luxest',
+        to: 'france',
+        text: 'Senningerberg ' + LANG.to + ' France'
     },
-    'LUX-EST': {
-        7: {
-            code: 'A6_lux_est',
-			cat:'LUX-EST',
-			from:timesCoords.belgique,
-			to:timesCoords.luxest,
-            text: 'Belgique ' + LANG.to + ' Lux Est'
-        },
-        10: {
-            code: 'A4_lux_est',
-			cat:'LUX-EST',
-			from:timesCoords.esch,
-			to:timesCoords.luxest,
-            text: 'Esch ' + LANG.to + ' Lux Est'
-        },
-        11: {
-            code: 'A3_lux_est',
-			cat:'LUX-EST',
-			from:timesCoords.france,
-			to:timesCoords.luxest,
-            text: 'France ' + LANG.to + ' Lux Est'
-        },
-        13: {
-            code: 'A13_lux_est',
-			cat:'LUX-EST',
-			from:timesCoords.schengen,
-			to:timesCoords.luxest,
-            text: 'Schengen ' + LANG.to + ' Lux Est'
-        },
-        15: {
-            code: 'A1_lux_est',
-			cat:'LUX-EST',
-			from:timesCoords.treves,
-			to:timesCoords.luxest,
-            text: 'Wasserbillig ' + LANG.to + ' Lux Est'
-        }
+    6: {
+        code: 'A3_france',
+        cat: 'FRANCE',
+        from: 'hollerich',
+        to: 'france',
+        text: 'Gasperich ' + LANG.to + ' France'
     },
-    'LUX-HOL': {
-        8: {
-            code: 'A4_lux_hol',
-			cat:'LUX-HOL',
-			from:timesCoords.france,
-			to:timesCoords.gasperich,
-            text: 'France ' + LANG.to + ' Gasperich'
-        }
+    4: {
+        code: 'A3_belgique',
+        cat: 'BELGIQUE',
+        from: 'france',
+        to: 'belgique',
+        text: 'France ' + LANG.to + ' Belgique'
+    },
+    14: {
+        code: 'A13_belgique',
+        cat: 'BELGIQUE',
+        from: 'schengen',
+        to: 'belgique',
+        text: 'Schengen ' + LANG.to + ' Belgique'
+    },
+    20: {
+        code: 'A1_belgique',
+        cat: 'BELGIQUE',
+        from: 'luxest',
+        to: 'belgique',
+        text: 'Senningerberg ' + LANG.to + ' Belgique'
+    },
+    5: {
+        code: 'A6_belgique',
+        cat: 'BELGIQUE',
+        from: 'bridel',
+        to: 'belgique',
+        text: 'Bridel ' + LANG.to + ' Belgique'
+    },
+    1: {
+        code: 'A6_lux_sud',
+        cat: 'LUX-SUD',
+        from: 'belgique',
+        to: 'gasperich',
+        text: 'Belgique ' + LANG.to + ' Gasperich'
+    },
+    9: {
+        code: 'A4_lux_sud',
+        cat: 'LUX-SUD',
+        from: 'esch',
+        to: 'gasperich',
+        text: 'Esch ' + LANG.to + ' Gasperich'
+    },
+    3: {
+        code: 'A3_lux_sud',
+        cat: 'LUX-SUD',
+        from: 'esch',
+        to: 'hollerich',
+        text: 'Esch ' + LANG.to + ' Lux Hollerich'
+    },
+    12: {
+        code: 'A13_lux_sud',
+        cat: 'LUX-SUD',
+        from: 'schengen',
+        to: 'gasperich',
+        text: 'Schengen ' + LANG.to + ' Gasperich'
+    },
+    16: {
+        code: 'A1_lux_sud',
+        cat: 'LUX-SUD',
+        from: 'treves',
+        to: 'gasperich',
+        text: 'Wasserbillig ' + LANG.to + ' Gasperich'
+    },
+    18: {
+        code: 'A1_lux_sud',
+        cat: 'LUX-SUD',
+        from: 'luxest',
+        to: 'gasperich',
+        text: 'Senningerberg ' + LANG.to + ' Gasperich'
+    },
+    7: {
+        code: 'A6_lux_est',
+        cat: 'LUX-EST',
+        from: 'belgique',
+        to: 'luxest',
+        text: 'Belgique ' + LANG.to + ' Lux Est'
+    },
+    10: {
+        code: 'A4_lux_est',
+        cat: 'LUX-EST',
+        from: 'esch',
+        to: 'luxest',
+        text: 'Esch ' + LANG.to + ' Lux Est'
+    },
+    11: {
+        code: 'A3_lux_est',
+        cat: 'LUX-EST',
+        from: 'france',
+        to: 'luxest',
+        text: 'France ' + LANG.to + ' Lux Est'
+    },
+    13: {
+        code: 'A13_lux_est',
+        cat: 'LUX-EST',
+        from: 'schengen',
+        to: 'luxest',
+        text: 'Schengen ' + LANG.to + ' Lux Est'
+    },
+    15: {
+        code: 'A1_lux_est',
+        cat: 'LUX-EST',
+        from: 'treves',
+        to: 'luxest',
+        text: 'Wasserbillig ' + LANG.to + ' Lux Est'
+    },
+    8: {
+        code: 'A4_lux_hol',
+        cat: 'LUX-HOL',
+        from: 'france',
+        to: 'gasperich',
+        text: 'France ' + LANG.to + ' Gasperich'
     }
 };
 var reTime = /&(\d+)([^=]+)=([\w-]+)\s+(.*)/g;
@@ -278,16 +262,6 @@ var reTime = /&(\d+)([^=]+)=([\w-]+)\s+(.*)/g;
 //Alertes
 var urlAlert = 'http://www.cita.lu/rss_feeds/rtl/index.xml';
 var tplAlert = '<div class="news"><div class="desc">${description}</div><div class="date">${date}</div></div>';
-var timeTexts = {};
-function indexData(){
-    jQuery.each(timeMappings, function(country, mapping){
-        jQuery.each(mapping, function(id, o){
-            timeTexts[id] = o.text;
-        });
-    });
-}
-
-indexData();
 //Cams
 //CITA
 //var urlCam = 'http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{0}.jpg?cachekill=5058852'
@@ -307,95 +281,77 @@ var dcams = {
         camsin: {
             46: {
                 text: 'Croix de Gasperich - Tunnel Howald',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             70: {
                 text: 'Croix de Gasperich - Tunnel Howald',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             81: {
                 text: 'Tunnel Howald - Sandweiler',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             84: {
                 text: 'Tunnel Howald - Sandweiler',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             86: {
                 text: 'Sandweiler - Tunnel Cents',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             100: {
                 text: 'Jonction Grünewald - Senningerberg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             101: {
                 text: 'Senningerberg - Cargo Center',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             103: {
                 text: 'Cargo Center - Münsbach',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             110: {
                 text: 'Münsbach - Flaxweiler',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             112: {
                 text: 'Potaschbierg - Mertert',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             119: {
                 text: 'Mertert - Aire de Wasserbillig',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         },
         camsout: {
             77: {
                 text: 'Sandweiler - Tunnel Howald',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             91: {
                 text: 'Kirchberg - Tunnel Cents',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             95: {
                 text: 'Jonction Grünewald - Kirchberg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             98: {
                 text: 'Senningerberg - Jonction Grünewald',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             109: {
                 text: 'Münsbach - Cargo Center',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             111: {
                 text: 'Flaxweiler - Münsbach',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             114: {
                 text: 'Mertert - Potaschbierg',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         }
     },
@@ -405,13 +361,11 @@ var dcams = {
         camsin: {
             41: {
                 text: 'Croix de Gasperich - Aire de Berchem',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             55: {
                 text: 'Croix de Gasperich - Aire de Berchem',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             53: {
                 text: 'Aire de Berchem - Bettembourg',
@@ -420,30 +374,25 @@ var dcams = {
             },
             59: {
                 text: 'Bettembourg - Croix de Bettembourg',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         },
         camsout: {
             47: {
                 text: 'Croix de Gasperich - Luxembourg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             51: {
                 text: 'Aire de Berchem - Croix de Gasperich',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             63: {
                 text: 'Croix de Bettembourg - France',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             66: {
                 text: 'France - Croix de Bettembourg',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         }
     },
@@ -453,50 +402,41 @@ var dcams = {
         camsin: {
             31: {
                 text: 'Luxembourg - Croix de Cessange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             122: {
                 text: 'Croix de Cessange - Leudelange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             137: {
                 text: 'Jonction de Foetz - Esch',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             139: {
                 text: 'Esch - Jonction Lankelz',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         },
         camsout: {
             36: {
                 text: 'Croix de Cessange - Luxembourg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             120: {
                 text: 'Leudelange - Croix de Cessange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             125: {
                 text: 'Pontpierre - Leudelange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             133: {
                 text: 'Jonction de Foetz - Pontpierre',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             140: {
                 text: 'Jonction Lankelz - Esch',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         }
     },
@@ -506,55 +446,45 @@ var dcams = {
         camsin: {
             3: {
                 text: 'Steinfort - Belgique',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             27: {
                 text: 'Croix de Cessange - Bertrange',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         },
         camsout: {
             6: {
                 text: 'Steinfort - Mamer',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             11: {
                 text: 'Steinfort - Mamer',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             15: {
                 text: 'Mamer - Bridel',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             17: {
                 text: 'Mamer - Bridel',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             21: {
                 text: 'Bridel - Strassen',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             30: {
                 text: 'Bertrange - Croix de Cessange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             37: {
                 text: 'Croix de Cessange - Croix de Gasperich',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             42: {
                 text: 'Croix de Cessange - Croix de Gasperich',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         }
     },
@@ -564,115 +494,93 @@ var dcams = {
         camsin: {
             145: {
                 text: 'Differdange - Tunnel Aessen',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             147: {
                 text: 'Differdange - Tunnel Aessen',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             151: {
                 text: 'Tunnel Aessen - Tunnel Ehlerange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             162: {
                 text: 'Kayl - Dudelange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             164: {
                 text: 'Dudelange - Croix de Bettembourg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             204: {
                 text: 'Hellange - Frisange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             217: {
                 text: 'Altwies - Mondorf',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             230: {
                 text: 'Altwies - Mondorf',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             236: {
                 text: 'Mondorf - Tunnel Markusbierg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             268: {
                 text: 'Schengen - Allemagne',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         },
         camsout: {
             142: {
                 text: 'Jonction Lankelz - Tunnel Ehlerange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             143: {
                 text: 'Sanem - Pétange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             154: {
                 text: 'Jonction Lankelz - Tunnel Ehlerange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             161: {
                 text: 'Kayl - Schifflange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             167: {
                 text: 'Croix de Bettembourg - Dudelange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             200: {
                 text: 'Hellange - Croix de Bettembourg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             215: {
                 text: 'Altwies - Frisange',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             218: {
                 text: 'Mondorf - Altwies',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             231: {
                 text: 'Mondorf - Altwies',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             235: {
                 text: 'Tunnel Markusbierg - Mondorf',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             237: {
                 text: 'Tunnel Markusbierg - Mondorf',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             269: {
                 text: 'Schengen - Tunnel Markusbierg',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         }
     },
@@ -682,52 +590,42 @@ var dcams = {
         camsin: {
             403: {
                 text: 'Tunnel Gousselerbierg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             445: {
                 text: 'Tunnel Mersch',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             458: {
                 text: 'Mierscherbierg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             471: {
                 text: 'Colmar Berg',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         },
         camsout: {
             466: {
                 text: 'Colmar Berg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             455: {
                 text: 'Tunnel Mersch',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             444: {
                 text: 'Tunnel Gousselerbierg',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             402: {
                 text: 'Lorentzweiler',
-                x: 9,
-                y: 9
+                dummy: 1
             },
             400: {
                 text: 'Tunnel Grouft - Lorentzweiler',
-                x: 9,
-                y: 9
+                dummy: 1
             }
         }
     }
 };
-

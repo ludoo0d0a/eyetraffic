@@ -21,7 +21,7 @@ function onUpdateTimes(fragments){
         if (el) {
             el.html('');
             jQuery.each(times, function(i, t){
-                var label = timeTexts[t.id] || t.code;
+                var label = (timeMappings[t.id])?(timeMappings[t.id].text):t.code;
                 el.append(label + '(' + t.id + ') : ' + t.time + '<br/>');
             });
         }
@@ -77,7 +77,7 @@ function updatepopup(){
         //&1A6_lux_sud=LUX-SUD  24 min.
         while ((m = reTime.exec(data)) !== null) {
             var id = m[1], code = m[2], zone = m[3], time = m[4];
-            var label = timeTexts[id] || code;
+			var label = (timeMappings[id])?(timeMappings[id].text):code;
             if (!html[zone]) {
                 html[zone] = '';
             }

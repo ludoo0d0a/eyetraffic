@@ -1,12 +1,12 @@
+var cookiename = "mapinfo"; // name for this cookie
+var expiredays = 7; // number of days before cookie expiry
+
 function getCookie(){
     // === Default values to use if there is no cookie ===
     var lat = 0;
     var lng = 0;
     var zoom = 1;
-    var maptype = 0;
-    // === Some cookie parameters ===
-    var cookiename = "mapinfo"; // name for this cookie
-    var expiredays = 7; // number of days before cookie expiry
+    var maptype = 0;    
     // === Look for the cookie ===
     if (document.cookie.length > 0) {
         cookieStart = document.cookie.indexOf(cookiename + "=");
@@ -39,6 +39,7 @@ function setCookie(){
         }
     }
     var cookietext = cookiename + "=" + map.getCenter().lat() + "|" + map.getCenter().lng() + "|" + map.getZoom() + "|" + maptype;
+	console.log(cookietext);
     if (expiredays) {
         var exdate = new Date();
         exdate.setDate(exdate.getDate() + expiredays);

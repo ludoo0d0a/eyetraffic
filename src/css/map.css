@@ -15,18 +15,29 @@
 .routeErrorMessage {
     color: red;
 }
-/*
-#right{
-	float:right;
-	width:300px;
+#main{
+	width:100%;
+	height:520px;
 }
-#left{
+.left{
 	float:left;
-	width:300px;
-	display:none;
+	width:200px;
+	height:100%;
 }
-*/
+#center{
+	width:700px;
+}
 
 #catselector li{
-	float:left;
+	list-style-image:none;
+}
+
+.selected{
+	font-weight.bold;
+	color:#505050;
+}
+
+.tipcam{
+	text-align:center;
+	width:140px;
 }

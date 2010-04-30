@@ -36,8 +36,8 @@ var data_cams = {
         "localite": "Schifflange",
         "label": "Camera 161-Kayl,Schifflange"
     }
-    ],
-	"lines": [
+    ]
+	/*,"lines": [
      {"colour":"#0000FF", "width":8, 
 	 "points":[ 
                 {"lat": 49.505067119254, "lng": 6.04055464267731 },
@@ -45,5 +45,5 @@ var data_cams = {
 				{"lat": 49.4904165983924, "lng": 6.11674547195435 }
              ]
      }
-   ]
+   ]*/
 };

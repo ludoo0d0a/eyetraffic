@@ -1,3 +1,20 @@
+var ETF={
+	CAT_ROUTE:'route',
+	CAT_CAMS:'cams',
+	CAT_TIMES:'times',
+	CAT_POSITION:'position'
+};
+
+ETF.tpl = {
+	cams:'<div class="tipcam"><a href="javascript:centeretzoom({lat},{lng})">'+
+'<img src="http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{cam}.jpg" height="80" width="120"/></a><br/>'+
+'<div class="titrepopup2">{titre}</div><div class="localitepopup2">{localite}</div></div>',
+	timesAll:'<table border="0" cellpadding="0" cellspacing="0"><tr><td width="100%" class="EWTitle" nowrap>{title}<\/td><\/tr><tr><td nowrap>{content}<\/td><\/tr><\/table>',
+	times:'<span>{to}</span><span>{duration}</span><br/>',
+	route:'',
+	position:'This is my position : {lat},{lng}'
+};
+
 var geocoder;
 function searchMap(){
     var addressSource = document.getElementById("addressSource").value;
@@ -51,11 +68,12 @@ function setSize(size){
     var m = sizes[size];
     if (m) {
         jQuery("#map_canvas").width(m.w).height(m.h);
-        jQuery("#wrapper").width(m.w).height(m.h);
+        //jQuery("#wrapper").width(m.w).height(m.h);
     }
 }
 
 var dirnRoute;
+//route with geocoding
 function getRoute(){
     if (!dirnRoute) {
         dirnRoute = new GDirections();
@@ -67,6 +85,8 @@ function getRoute(){
         console.log('error');
     });
     GEvent.addListener(dirnRoute, "load", function(){
+        var d = dirnRoute.getDuration();
+        console.log(d.html);
     });
     var source = jQuery("#routeA").val();
     var destination = jQuery("#routeB").val();
@@ -89,32 +109,119 @@ function selcat(box, category){
     makeSidebar();
 }
 
+
+function getHtmlTimes(o, category, location){
+	var content='';
+	jQuery.each(timeMappings, function(id, o){
+		if (o.from === location){
+			content += fillTpl(ETF.tpl.times, o);
+		} 
+	});
+	var html = fillTpl(ETF.tpl.timesAll, {title:location, content:content});
+	return html;
+}
+function getHtml(o, category){
+	var html = '';
+	if (category === ETF.CAT_TIMES) {
+		html = getHtmlTimes(o, category, o.location||o.data.location);
+	} else {
+		html = fillTpl(ETF.tpl[category || o.category] || '', o);
+	}
+	return html;
+}
+function updateHtml(marker){
+    marker.bindInfoWindowHtml(getHtml(marker));
+}
+function updateTime(marker){
+    if (marker.data) {
+		marker.duration = gtimes[marker.data.location] || '';
+	}
+}
+
+var ewindows=[];
+function addOverlayWindows(){
+	var ewindow = new EWindow(map, E_STYLE_7, 'lib/map/ewindow/');
+	map.addOverlay(ewindow);
+	ewindows.push(ewindow);
+	return ewindow;
+}
+
 function showcat(category){
-    jQuery(gmarkers).each(function(i,marker){
+	jQuery(gmarkers).each(function(i, marker){
         if (marker.category === category) {
             marker.show();
-			ewindow.openOnMarker(marker,'Category:'+category);
+			updateTime(marker);
+			marker.ewindow=addOverlayWindows();
+			var html = getHtml(marker, category);
+            marker.ewindow.openOnMarker(marker, html);
         }
     });
-    document.getElementById('cat_'+category).checked = true;
+    document.getElementById('cat_' + category).checked = true;
 }
 
 function hidecat(category){
-    jQuery(gmarkers).each(function(i,marker){
+    jQuery(gmarkers).each(function(i, marker){
         if (marker.category === category) {
             marker.hide();
+			if (marker.ewindow) {
+				marker.ewindow.hide();
+			}
         }
     });
-    document.getElementById('cat_'+category).checked = false;
+    document.getElementById('cat_' + category).checked = false;
     // == close the info window, in case its open on a marker that we just hid
     map.closeInfoWindow();
 }
 
 function makeSidebar(){
-	
+    var el = jQuery('#sidebar_cats');
+    el.html('');
+    jQuery.each(timeMappings, function(id, o){
+        jQuery('<a id="' + id + '" href="#">' + o.text + '</a>').click(function(){
+            renderRoute(id, o);
+            el.find('.selected').each(function(){
+                if (routes[this.id]) {
+                    routes[this.id].clear();
+                    delete routes[this.id];
+                }
+                jQuery(this).removeClass('selected');
+            });
+            jQuery(this).addClass('selected');
+        }).appendTo(el).after('<br>');
+    });
 }
 
-function openall(){
-	ewindow.openOnMarker(marker,html);
-	//ewindow.openOnMap(point, html, offset)
+var routes = {};
+function renderRoute(id, o){
+    var route = routes[id];
+    if (!route) {
+        route = new GDirections(map);
+        routes[id] = route;
+    }
+    route.clear();
+    GEvent.addListener(route, "error", function(){
+        console.log('error');
+    });
+    var source = timesCoords[o.from];
+    //var ms = createMarker(source, source.name, 'times2', {icon:getIconStart()});
+    var psource = new GLatLng(source.lat, source.lng);
+    var destination = timesCoords[o.to];
+    var pdest = new GLatLng(destination.lat, destination.lng);
+    //var me = createMarker(destination, getHtml(destination), 'times2', {icon:getIconEnd()});
+    function getDurationHtml(point, duration){
+        return point.name + ' : ' + (duration || '');
+    }
+    GEvent.addListener(route, "load", function(){
+        var d = route.getDuration();
+        var ms = route.getMarker(0);
+		console.log(ms);
+		console.log(d.html);
+        ms.bindInfoWindowHtml(getDurationHtml(ms.getPoint(), d.html));
+    });
+    route.loadFromWaypoints([psource.toUrlValue(6), pdest.toUrlValue(6)], {
+        getPolyline: true
+        ,preserveViewport: true //false to zoom centered
+    });
+    //Geocoding					
+    //route.load("from: " + source + " to: " + destination);
 }
