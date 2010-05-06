@@ -6,6 +6,7 @@
  * @web xeoos.fr
  */
 //UTF8: é
+var isDebug=false;
 //var backgroundPage = chrome.extension.getBackgroundPage();
 function update(){
     //updatepopup();
@@ -267,29 +268,27 @@ function convert(){
 }
 
 function init(){
-    jQuery('#refresh').button().click(update);
+	jQuery('#refresh').button().click(update);
     jQuery('#convert').button().click(convert);
+	if (!isDebug) {
+		jQuery('.debug').hide();
+	}
     //jQuery('#flashinfo').hide();
     jQuery('#cams').tabs();
 	jQuery('#times').tabs();
     jQuery('#cams').tabs();
 	createCams();
-	/*
-	jQuery('#cams').tabs({
-        load: function(event, ui){
-            createCams();
-        }
-    });*/
-    jQuery('#maps').tabs({
+	
+   /* jQuery('#maps').tabs({
         select: function(event, ui){
             loadHtml($(ui.panel), ui.tab.hash);
         }
-    });
+    });*/
     window.setTimeout(function(){
         update();
-    }, 200);
-    window.setInterval(update, 30000);
-    window.setTimeout(function(){
+		window.setInterval(update, 30000);
+    }, 1000);
+    /*window.setTimeout(function(){
         loadHtml($('#map-cita'), '#map-cita');
-    }, 3000);
+    }, 3000);*/
 }

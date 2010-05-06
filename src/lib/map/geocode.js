@@ -20,8 +20,7 @@ function geocode(query, pin_){
             };
             //createMarker(point, mylocation, ETF.CAT_POSITION , markerOptions);
             marker.setLatLng(point);
-            
-			if (marker.poly) {
+            if (marker.poly) {
                 map.removeOverlay(marker.poly);
             }
             marker.poly = new GPolyline([query, point], "#ff0000", 2, 1);
@@ -49,15 +48,15 @@ function doInfo(marker_){
     iwContents += "<div class='small'>" + pin.getLatLng().toUrlValue();
     iwContents += "<br/>Accuracy: " + pin.accuracy;
     if (pin.howMany > 1) {
-		iwContents += "<br/>" + pin.howMany;
-	}
+        iwContents += "<br/>" + pin.howMany;
+    }
     iwContents += "</div>";
     iwContents += "<a href='javascript:memo(markers[" + pin.index + "])'>Copy to memo area</a>";
     pin.bindInfoWindowHtml(iwContents);
     map.openInfoWindowHtml(pin.getLatLng(), iwContents);
 }
 
-function getCurrentLocation(){
+function getCurrentLocation(hidden){
     if (google.loader.ClientLocation) {
         var cl = google.loader.ClientLocation;
         //location = [cl.address.city, cl.address.region, cl.address.country].join(', ');
@@ -69,7 +68,11 @@ function getCurrentLocation(){
         var markerOptions = {
             icon: getIconBlue()
         };
-        createMarker(point, mylocation, ETF.CAT_POSITION, markerOptions);
-        map.setCenter(point, 10);
+        var marker = createMarker(point, mylocation, ETF.CAT_POSITION, markerOptions);
+        if (hidden) {
+            marker.hide();
+        } else {
+            map.setCenter(point, 10);
+        }
     }
 }

@@ -24,9 +24,12 @@ a,a:hover,a:visited
 
 #header{
 	margin-right:5px;
+	width:400px;
 }
-
-
+#links{
+	float:right;
+	width: 240px;
+}
 
 .clearboth{
 	clear: both;

@@ -110,7 +110,7 @@ function selcat(box, category){
 }
 
 
-function getHtmlTimes(o, category, location){
+function getHtmlTimes(marker, category, location){
 	var content='';
 	jQuery.each(timeMappings, function(id, o){
 		if (o.from === location){
@@ -120,12 +120,12 @@ function getHtmlTimes(o, category, location){
 	var html = fillTpl(ETF.tpl.timesAll, {title:location, content:content});
 	return html;
 }
-function getHtml(o, category){
+function getHtml(marker, category){
 	var html = '';
 	if (category === ETF.CAT_TIMES) {
-		html = getHtmlTimes(o, category, o.location||o.data.location);
+		html = getHtmlTimes(marker, category, marker.data.location);
 	} else {
-		html = fillTpl(ETF.tpl[category || o.category] || '', o);
+		html = fillTpl(ETF.tpl[category || marker.category] || '', marker.data);
 	}
 	return html;
 }
@@ -146,12 +146,23 @@ function addOverlayWindows(){
 	return ewindow;
 }
 
+var elprev={};
+function overwindow(event){
+	var category=event.data.category;
+	if (elprev[category]){
+		elprev[category].css('z-index','auto');
+	}
+	var el = jQuery(this);
+	el.css('z-index',9999);
+	elprev[category]=el;
+}
 function showcat(category){
 	jQuery(gmarkers).each(function(i, marker){
         if (marker.category === category) {
             marker.show();
 			updateTime(marker);
 			marker.ewindow=addOverlayWindows();
+			jQuery(marker.ewindow.div1).bind('mouseover', {category: category}, overwindow);
 			var html = getHtml(marker, category);
             marker.ewindow.openOnMarker(marker, html);
         }

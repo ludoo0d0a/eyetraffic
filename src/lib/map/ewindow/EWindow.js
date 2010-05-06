@@ -81,8 +81,9 @@ EWindow.prototype.openOnMap = function(point, html, offset){
     this.redraw(true);
 };
 EWindow.prototype.openOnMarker = function(marker, html){
-    var vx = marker.getIcon().iconAnchor.x - marker.getIcon().infoWindowAnchor.x;
-    var vy = marker.getIcon().iconAnchor.y - marker.getIcon().infoWindowAnchor.y;
+    var icon = marker.getIcon();
+	var vx = icon.iconAnchor.x - (icon.infoWindowAnchor)?icon.infoWindowAnchor.x:0;
+    var vy = icon.iconAnchor.y - (icon.infoWindowAnchor)?icon.infoWindowAnchor.y:0;
     this.openOnMap(marker.getPoint(), html, new GPoint(vx, vy));
 };
 EWindow.prototype.redraw = function(force){

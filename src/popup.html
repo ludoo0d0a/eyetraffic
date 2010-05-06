@@ -34,16 +34,18 @@
     <body onload="init();">
         <div id="header">
             <button name="refresh" id="refresh">Refresh</button>
-			<button name="convert" id="convert">Convert</button>
-			&nbsp;<a target="blank" href="maps.html">Map</a>
-            &nbsp;<a target="blank" href="http://www.cita.lu">CITA</a>
-            &nbsp;<a target="blank" href="http://www.lesfrontaliers.lu/index.php?p=parcours">Les frontaliers</a>
-            &nbsp;<a target="blank" href="http://auto.rtl.lu/trafic/traficinfo/">RTL</a>
-            &nbsp;<a target="blank" href="http://www.acl.lu/fr/trafic_news/info_trafic_luxembourg">ACL</a>
-            &nbsp;<a target="blank" href="http://www.guideroutier.lu/">Guide routier</a>
-            &nbsp;<a target="blank" href="http://www.driving.lu/index.php?module=auto&action=getListeCamera&idauto=1">driving.lu</a>
-            &nbsp;<a target="blank" href="http://www.bison-fute.equipement.gouv.fr">Bison futé</a>
-            &nbsp;<a target="blank" href="http://www.sanef.com/fr/travaux/">SANEF</a>
+			<button name="convert" id="convert" class="debug">Convert</button>
+			<div id="links">
+				<a target="blank" href="maps.html"><b>Map</b></a>
+	            &nbsp;<a target="blank" href="http://www.cita.lu">CITA</a>
+	            &nbsp;<a target="blank" href="http://www.lesfrontaliers.lu/index.php?p=parcours">Les frontaliers</a>
+	            &nbsp;<a target="blank" href="http://auto.rtl.lu/trafic/traficinfo/">RTL</a>
+	            &nbsp;<a target="blank" href="http://www.acl.lu/fr/trafic_news/info_trafic_luxembourg">ACL</a>
+	            &nbsp;<a target="blank" href="http://www.guideroutier.lu/">Guide routier</a>
+	            &nbsp;<a target="blank" href="http://www.driving.lu/index.php?module=auto&action=getListeCamera&idauto=1">driving.lu</a>
+	            &nbsp;<a target="blank" href="http://www.bison-fute.equipement.gouv.fr">Bison futé</a>
+	            &nbsp;<a target="blank" href="http://www.sanef.com/fr/travaux/">SANEF</a>
+			</div>
         </div>
         <div id="main">
             <div id="ptimes">
@@ -120,7 +122,7 @@
             <h2>Caméras</h2>
             <div id="cams">
                 <ul>
-                    <li><a href="#maps">Cartes<span class="camdesc">&nbsp;</span></a></li>
+                    <!--li><a href="#maps">Cartes<span class="camdesc">&nbsp;</span></a></li-->
                     <li><a href="#cam-A1">A1<span class="camdesc">Trèves</span></a></li>
                     <li><a href="#cam-A3">A3<span class="camdesc">France</span></a></li>
                     <li><a href="#cam-A4">A4<span class="camdesc">Esch</span></a></li>
@@ -151,7 +153,7 @@
             </div>
         </div>
         <div id="footer">
-            <textarea id="res" cols='60' rows='20'></textarea>
+            <textarea class="debug" id="res" cols='60' rows='20'></textarea>
 			<!--
             <div id="timeline" style="overflow-x: hidden; overflow-y: hidden; ">
             <UL class="tl-events">

@@ -6,107 +6,6 @@ var options = {
     memo: false
 };
 
-function getJSON(url, cb){
-    GDownloadUrl(url, cb);
-    /*
-     var p = 'file:///C:/Documents%20and%20Settings/Valente/My%20Documents/Aptana%20Studio%20Workspace/EyeTraffic/src/';
-     p = '';
-     jQuery.ajax({
-     url: p + url,
-     success: function(data){
-     if (data) {
-     var json = JSON.parse(data);
-     cb(json);
-     }
-     }
-     });*/
-    //$.getJSON(url, cb);
-}
-
-function findNearest(point, points){
-    var n = {};
-    jQuery(points).each(function(i, p){
-        var d = point.distanceFrom(p);
-        if (!np || (np && d < ld)) {
-            n = {
-                point: p,
-                distance: d
-            };
-        }
-    });
-    return n;
-}
-
-function calculateDistance(){
-    var dist = 0;
-    for (var i = 0; i < gpolys.length; i++) {
-        dist += gpolys[i].Distance();
-    }
-    return "Path length: " + (dist / 1000).toFixed(2) + " km.<br/>" + (dist / 1609.344).toFixed(2) + " miles.";
-}
-
-function updateMarkers(){
-    var o = [];
-    jQuery(routemarkers).each(function(i, marker){
-        var point = marker.getLatLng();
-        o.push({
-            i: marker.index + 1,
-            lat: point.lat(),
-            lng: point.lng(),
-            html: marker.html,
-            label: marker.getTitle()
-        });
-    });
-    jQuery('#jmarkers').html(JSON.stringify(o));
-}
-
-function createMarker(point, data, category, options){
-    var p;
-    if (point && point.lat) {
-        p = new GLatLng(point.lat, point.lng);
-    } else {
-        p = point;
-    }
-    var marker = new GMarker(p, options || {});
-    marker.category = category;
-    marker.data = data;
-    var html = getHtml(data, category);
-    function openwindow(){
-        marker.openInfoWindowHtml(html, {
-            maxWidth: 200
-        });
-    }
-    GEvent.addListener(marker, "click", openwindow);
-    //GEvent.addListener(marker, "mouseover", openwindow);
-    map.addOverlay(marker);
-    gmarkers.push(marker);
-    return marker;
-}
-
-function addEncodedPloyline(){
-    var encodedPolyline = new GPolyline.fromEncoded({
-        color: "#FF0000",
-        weight: 10,
-        points: "gxqmH_`kd@fEqbAwHcyAuo@g}@csAopAwqBal@k{BsVmb@_wA",
-        levels: "BBBBBBBB",
-        zoomFactor: 32,
-        numLevels: 4
-    });
-    map.addOverlay(encodedPolyline);
-}
-
-function addOverlayRect(map){
-    // Display a rectangle in the center of the map at about a quarter of
-    // the size of the main map
-    var bounds = map.getBounds();
-    var southWest = bounds.getSouthWest();
-    var northEast = bounds.getNorthEast();
-    var lngDelta = (northEast.lng() - southWest.lng()) / 1;//4
-    var latDelta = (northEast.lat() - southWest.lat()) / 1;//4
-    var rectBounds = new GLatLngBounds(new GLatLng(southWest.lat() + latDelta, southWest.lng() + lngDelta), new GLatLng(northEast.lat() - latDelta, northEast.lng() - lngDelta));
-    map.addOverlay(new Rectangle(rectBounds));
-}
-
 function initialize(){
     if (GBrowserIsCompatible()) {
         map = new GMap2(document.getElementById("map_canvas"));
@@ -192,6 +91,13 @@ function initialize(){
         });
         renderMarkersCams();
         renderMarkersTimes();
+		
+		makeSidebar();
+		//showcat('times');
+        //setSize(2);
+        //showLocation();
+        getCurrentLocation(true);
+				
     }
 }
 
@@ -235,6 +141,110 @@ function renderMarkers(json, category, options){
     });
 }
 
+
+
+function getJSON(url, cb){
+    GDownloadUrl(url, cb);
+    /*
+     var p = 'file:///C:/Documents%20and%20Settings/Valente/My%20Documents/Aptana%20Studio%20Workspace/EyeTraffic/src/';
+     p = '';
+     jQuery.ajax({
+     url: p + url,
+     success: function(data){
+     if (data) {
+     var json = JSON.parse(data);
+     cb(json);
+     }
+     }
+     });*/
+    //$.getJSON(url, cb);
+}
+
+function findNearest(point, points){
+    var n = {};
+    jQuery(points).each(function(i, p){
+        var d = point.distanceFrom(p);
+        if (!np || (np && d < ld)) {
+            n = {
+                point: p,
+                distance: d
+            };
+        }
+    });
+    return n;
+}
+
+function calculateDistance(){
+    var dist = 0;
+    for (var i = 0; i < gpolys.length; i++) {
+        dist += gpolys[i].Distance();
+    }
+    return "Path length: " + (dist / 1000).toFixed(2) + " km.<br/>" + (dist / 1609.344).toFixed(2) + " miles.";
+}
+
+function updateMarkers(){
+    var o = [];
+    jQuery(routemarkers).each(function(i, marker){
+        var point = marker.getLatLng();
+        o.push({
+            i: marker.index + 1,
+            lat: point.lat(),
+            lng: point.lng(),
+            html: marker.html,
+            label: marker.getTitle()
+        });
+    });
+    jQuery('#jmarkers').html(JSON.stringify(o));
+}
+
+function createMarker(point, data, category, options){
+    var p;
+    if (point && point.lat && typeof point.lat !=='function') {
+        p = new GLatLng(point.lat, point.lng);
+    } else {
+        p = point;
+    }
+    var marker = new GMarker(p, options || {});
+    marker.category = category;
+    marker.data = data;
+    var html = getHtml(marker, category);
+    function openwindow(){
+        marker.openInfoWindowHtml(html, {
+            maxWidth: 200
+        });
+    }
+    GEvent.addListener(marker, "click", openwindow);
+    //GEvent.addListener(marker, "mouseover", openwindow);
+    map.addOverlay(marker);
+    gmarkers.push(marker);
+    return marker;
+}
+
+function addEncodedPloyline(){
+    var encodedPolyline = new GPolyline.fromEncoded({
+        color: "#FF0000",
+        weight: 10,
+        points: "gxqmH_`kd@fEqbAwHcyAuo@g}@csAopAwqBal@k{BsVmb@_wA",
+        levels: "BBBBBBBB",
+        zoomFactor: 32,
+        numLevels: 4
+    });
+    map.addOverlay(encodedPolyline);
+}
+
+function addOverlayRect(map){
+    // Display a rectangle in the center of the map at about a quarter of
+    // the size of the main map
+    var bounds = map.getBounds();
+    var southWest = bounds.getSouthWest();
+    var northEast = bounds.getNorthEast();
+    var lngDelta = (northEast.lng() - southWest.lng()) / 1;//4
+    var latDelta = (northEast.lat() - southWest.lat()) / 1;//4
+    var rectBounds = new GLatLngBounds(new GLatLng(southWest.lat() + latDelta, southWest.lng() + lngDelta), new GLatLng(northEast.lat() - latDelta, northEast.lng() - lngDelta));
+    map.addOverlay(new Rectangle(rectBounds));
+}
+
+
 function terminate(){
     if (options.memo) {
         setCookie();
@@ -243,3 +253,5 @@ function terminate(){
 }
 
 window.onunload = terminate;
+
+
