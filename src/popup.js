@@ -15,7 +15,12 @@ function update(){
     req('updateflashs', onUpdateFlashs);
     updateCams();
 }
-
+function changebadgeref(event){
+	var id = event.data.id;
+	req('updateprefs', function(){
+		alert('Change done!');
+	}, {badge: {id: id}});
+}
 function onUpdateTimes(fragments){
     jQuery.each(fragments, function(zone, times){
         var el = jQuery('#time-' + zone);
@@ -23,7 +28,9 @@ function onUpdateTimes(fragments){
             el.html('');
             jQuery.each(times, function(i, t){
                 var label = (timeMappings[t.id])?(timeMappings[t.id].text):t.code;
-                el.append(label + '(' + t.id + ') : ' + t.time + '<br/>');
+                var link = jQuery('<a href="#">'+label+'(' + t.id + ')'+'</a>').bind('click', {id:t.id}, changebadgeref);
+				link.appendTo(el);
+				el.append(' : '+ t.time + '<br/>');
             });
         }
     });
@@ -59,11 +66,11 @@ function onUpdateFlashs(news){
     }
 }
 
-function req(message, cb){
+function req(message, cb, data){
     if (chrome.extension) {
-        chrome.extension.sendRequest({
-            message: message
-        }, cb);
+		var o = data || {};
+		o.message=message;
+        chrome.extension.sendRequest(o, cb);
     }
 }
 
@@ -278,17 +285,21 @@ function init(){
 	jQuery('#times').tabs();
     jQuery('#cams').tabs();
 	createCams();
-	
-   /* jQuery('#maps').tabs({
+	jQuery('#cams').tabs({
+        select: function(event, ui){
+			//click maps select cita as first sub-map
+			if (ui.panel.id==='maps'){
+				loadHtml($('#map-cita'), '#map-cita');
+			}
+        }
+    });
+    jQuery('#maps').tabs({
         select: function(event, ui){
             loadHtml($(ui.panel), ui.tab.hash);
         }
-    });*/
+    });
     window.setTimeout(function(){
         update();
 		window.setInterval(update, 30000);
     }, 1000);
-    /*window.setTimeout(function(){
-        loadHtml($('#map-cita'), '#map-cita');
-    }, 3000);*/
 }

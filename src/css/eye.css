@@ -59,6 +59,15 @@ a,a:hover,a:visited
 	overflow: auto;
 	height: 160px;
 }
+#alerts .news:nth-child(odd){ 
+  background-color:#eee; 
+}
+#alerts .news:nth-child(even)		{ 
+   background-color:#fff; 
+}
+#alerts .date{
+	font-weight:bold;
+}
 
 /*
  * Flashinfo
