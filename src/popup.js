@@ -160,14 +160,18 @@ function getUrlMap(id){
 }
 
 function createCams(){
-    jQuery.each(dcams, function(road, dcam){
-        var el = jQuery('#cam-' + road);
-        createMenuCams(el, dcam);
-        createImageCams(el, dcam, true);
-        createImageCams(el, dcam, false);
-        var urlMap = getUrlMap(road);
-        var div = jQuery('<div class="body zmap"><img src="' + urlMap + '"/></div>').hide();
-        el.append(div);
+    var i = 0;
+	jQuery.each(dcams, function(road, dcam){
+        var el= jQuery('#cam-' + road);
+		console.log('cam'+(i++));
+		if (el) {
+			createMenuCams(el, dcam);
+			createImageCams(el, dcam, true);
+			createImageCams(el, dcam, false);
+			var urlMap = getUrlMap(road);
+			var div = jQuery('<div class="body zmap"><img src="' + urlMap + '"/></div>').hide();
+			el.append(div);
+		}
     });
 }
 
@@ -192,12 +196,16 @@ function changeMenuCams(e){
 }
 
 function createImageCams(el, dcam, isin){
-    var txt = ((isin) ? 'in' : 'out');
-    var div = jQuery('<div class="body z' + txt + '"></div>').toggle(isin);
-    el.append(div);
+    var html='<div class="body z' + txt + '">',txt = ((isin) ? 'in' : 'out');
+    //var div = jQuery('<div class="body z' + txt + '"></div>');
     jQuery.each((isin) ? dcam.camsin : dcam.camsout, function(id, cam){
-        div.append('<div class="cam"><img class="icam" id="icam' + id + '" src="' + getUrlCam(id) + '" title="' + id + ' - ' + cam.text + '"/><span>' + cam.text + '</span></div>');
+			html+='<div class="cam"><img class="icam" id="icam' + id + '" src="' + getUrlCam(id) + '" title="' + id + ' - ' + cam.text + '"/><span>' + cam.text + '</span></div>';
+			//alert(id+':'+cam.text);
+			//div.append('<div class="cam">' + id +' - ' + cam.text +'</div>');
     });
+	html+='</div>';
+	el.html(html);
+	el.first().toggle(isin);
 }
 
 function xhr(a, cb){
@@ -212,9 +220,9 @@ function xhr(a, cb){
 }
 
 function getHtml(id){
-    if (id === '#map-bison') {
+    if (id === 'map-bison') {
         return '<iframe src="http://www.bison-fute.equipement.gouv.fr/astec_acai/internet/ie1_myrabel.html?langue=fr&evt=1" width="590" height="480"></iframe>';
-    } else if (id === '#map-cita') {
+    } else if (id === 'map-cita') {
         return '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="600" height="444" align="" vspace="0" hspace="0">' +
         '<param name="movie" value="http://www2.pch.etat.lu/cita/cita.swf"><param name="src" value="http://www2.pch.etat.lu/cita/cita.swf"><param name="play" value="true"><param name="wmode" value=""><param name="scale" value="2"><param name="quality" value="high"><param name="menu" value="false"><param name="bgcolor" value=""><param name="AllowScriptAccess" value="sameDomain"><param name="loop" value="false">' +
         '<embed src="http://www2.pch.etat.lu/cita/cita.swf" scale="" wmode="" play="true" quality="high" menu="false" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="600" height="444" align="" bgcolor="" allowscriptaccess="sameDomain" loop="false" hspace="0" vspace="0">' +
@@ -224,9 +232,13 @@ function getHtml(id){
     }
 }
 
-function loadHtml(el, id){
-    if (!el.attr('loaded')) {
-        el.html(getHtml(id)).attr('loaded', 1);
+function loadHtml(id){
+    var el = $('#'+id);
+	if (!el.attr('loaded')) {
+        var html = getHtml(id);
+		if (html) {
+			el.html(html).attr('loaded', 1);
+		}
     }
 }
 
@@ -281,21 +293,11 @@ function init(){
 		jQuery('.debug').hide();
 	}
     //jQuery('#flashinfo').hide();
-    jQuery('#cams').tabs();
 	jQuery('#times').tabs();
-    jQuery('#cams').tabs();
 	createCams();
 	jQuery('#cams').tabs({
         select: function(event, ui){
-			//click maps select cita as first sub-map
-			if (ui.panel.id==='maps'){
-				loadHtml($('#map-cita'), '#map-cita');
-			}
-        }
-    });
-    jQuery('#maps').tabs({
-        select: function(event, ui){
-            loadHtml($(ui.panel), ui.tab.hash);
+			loadHtml(ui.panel.id);
         }
     });
     window.setTimeout(function(){
