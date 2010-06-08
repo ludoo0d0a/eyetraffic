@@ -211,6 +211,9 @@ function createMenuCams(el, dcam){
 
 function changeMenuCams(e){
     var el = jQuery(e.target);
+	if (el.hasClass('selected')){
+		return;
+	}
     var id = el.get(0).className.replace(/^a/, '');
     var content = el.parents('.ui-tabs-panel');
     content.find('a').removeClass("selected");
