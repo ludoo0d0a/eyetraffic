@@ -43,7 +43,11 @@ a, a:hover, a:visited {
 }
 
 #times {
-    min-height: 130px;
+    min-height: 105px;
+}
+
+.time {
+    padding: 0.2em !important;
 }
 
 /*
@@ -62,10 +66,9 @@ a, a:hover, a:visited {
 }
 
 #alerts .news:nth-child(odd){
- 
   background-color:#eee; 
 }
-#alerts .news:nth-child(even)		{ 
+#alerts .news:nth-child(even){ 
    background-color:#fff; 
 }
 #alerts .date{
