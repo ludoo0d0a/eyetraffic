@@ -5,7 +5,7 @@
   "icons": { 
      "16": "images/16/Box_Grey.png",
      "32": "images/32/Box_Grey.png",
-     "48": "images/48/Box_Grey.png",
+     "48": "images/logo48.png",
      "128": "images/128/Box_Grey.png"
   },
   "default_locale": "en",

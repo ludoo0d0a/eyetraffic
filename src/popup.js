@@ -24,15 +24,17 @@ function update(){
 }
 function changebadgeref(event){
 	var id = event.data.id;
-	req('updateprefs', function(){
+	req('updateprefs', function(p){
 		//alert('Change done!');
 		jQuery('#times').find('a.selected').removeClass('selected');
 		jQuery('#lk'+id).addClass('selected');
+		prefs = p;
 	}, {badge: {id: id}});
 }
 function renderPlots(){
+	var limit = (prefs && prefs.limit)?prefs.limit:{red:20,orange:10};
 	req('history', function(values){
-		$('#history').sparkline(values);
+		$('#history').sparkline(values, { fillColor: false, normalRangeMin: limit.orange, normalRangeMax: limit.red, normalRangeColor: '#FDFF94' });
 		var last = values[values.length-1];
 		$('#history').attr('title', 'History - Last : '+last+' min');
 	});
