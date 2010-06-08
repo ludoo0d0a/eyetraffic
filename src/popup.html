@@ -13,6 +13,11 @@
         </script>
         <script type="application/javascript" src="lib/jquery.prettydate.js">
         </script>
+		<script type="text/javascript" src="lib/sparklines/jquery.sparkline.js">
+		</script>
+		<link type="text/css" href="css/zoomimage.css" rel="stylesheet">
+		<script type="text/javascript" src="lib/jquery.zoomimage.js">
+		</script>
 		<!--
         <script type="text/javascript" src="lib/jquery.jsPlumb-1.0.2-min.js">
         </script>
@@ -28,6 +33,8 @@
         </script>
         <script type="application/javascript" src="popup.js">
         </script>
+
+		
 		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAtEOPihzWueLlNCLMoB9gSRQzovFltyh3__eQzIYnI8zKDV9c-RSnWsxRr2N1XFC9jiUukMEh3_bzxw" type="text/javascript"></script>
         <title>Eye Traffic</title>
     </head>
@@ -35,9 +42,12 @@
         <div id="header">
             <button name="refresh" id="refresh">Refresh</button>
 			<button name="convert" id="convert" class="debug">Convert</button>
+			<div id="history" title="History"></div>
 			<div id="links">
 				<a target="blank" href="maps.html" class="debug"><b>Map</b></a>
+				<a target="blank" href="popup.html" class="debug"><b>Popup</b></a>
 	            &nbsp;<a target="blank" href="http://www.cita.lu">CITA</a>
+				&nbsp;<a target="blank" href="http://tunnel.cita.lu">Tunnel</a>
 	            &nbsp;<a target="blank" href="http://www.lesfrontaliers.lu/index.php?p=parcours">Les frontaliers</a>
 	            &nbsp;<a target="blank" href="http://auto.rtl.lu/trafic/traficinfo/">RTL</a>
 	            &nbsp;<a target="blank" href="http://www.acl.lu/fr/trafic_news/info_trafic_luxembourg">ACL</a>

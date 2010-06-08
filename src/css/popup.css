@@ -1,32 +1,30 @@
 /**
  * From Sexy undoclose
  */
-  
- .bold
-{
-	font-weight: bold;
+.bold {
+    font-weight: bold;
 }
-.contentDiv
-{
-	line-height: 95%;
-	overflow-x: hidden;
-	overflow-y: auto;
-	text-align: left;
-	width: 400px;
+
+.contentDiv {
+    line-height: 95%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: left;
+    width: 400px;
 }
-.table
-{
-	width: 380px;
+
+.table {
+    width: 380px;
 }
-img
-{
-	margin: 1px 5px 0 0;
-	vertical-align: top;
+
+img {
+    margin: 1px 5px 0 0;
+    vertical-align: top;
 }
-.contentDiv a
-{
-	background: #F6F7FF;
-	background: -webkit-gradient(linear, left top, left bottom,color-stop(0.0, #F7F8FF),color-stop(1.0, #FFF));
+
+.contentDiv a {
+    background: #F6F7FF;
+    background: -webkit-gradient(linear, left top, left bottom,color-stop(0.0, #F7F8FF),color-stop(1.0, #FFF));
 	border: 1px solid #F7F8FF;
 	border-radius: 4px;
 	color: #404352;

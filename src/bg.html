@@ -17,7 +17,6 @@ if (!prefs){
 	setPrefs(defaultPrefs);
 }
 //var notifier = new Notifier();
-
 var tictac;
 newTictac(true);
 
@@ -26,6 +25,8 @@ chrome.extension.onRequest.addListener(function(a, sender, callback){
         request(a, false, callback);
     } else if (a.message === 'badge') {
         updateBadge(a, callback);
+    } else if (a.message === 'prefs') {
+        callback(prefs);
     } else if (a.message === 'updatetimes') {
         updateTimes(a, callback);
     } else if (a.message === 'updatealerts') {
@@ -34,14 +35,22 @@ chrome.extension.onRequest.addListener(function(a, sender, callback){
         updateFlashs(a, callback);
     }else if (a.message === 'updateprefs') {
         updateprefs(a, callback);
+    }else if (a.message === 'history') {
+        getHistory(a, callback);
     }
 });
+
+var historyValues = [];
+function getHistory(a, cb){
+	cb(historyValues);
+}
 
 function updateprefs(a, cb){
 	if (a.badge) {
 		prefs = getPrefs();
 		if (a.badge.id) {
 			prefs.badge.id = a.badge.id;
+			historyValues = [];
 		}
 		if (a.badge.interval) {
 			prefs.badge.interval = a.badge.interval;
@@ -77,6 +86,11 @@ function getPref(option){
 function updateBadge(a, cb){				
 	//Send time to badge
     var time = parseInt(a.time, 10);
+
+	if (historyValues.length>20){
+		historyValues.shift();
+	}
+	historyValues.push(time);
 
     var color = 'Green';
     var bcolor = [0, 255, 0, 255];

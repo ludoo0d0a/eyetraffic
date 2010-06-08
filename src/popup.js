@@ -7,28 +7,48 @@
  */
 //UTF8: é
 var isDebug=false;
+var values = [], prefs;
 //var backgroundPage = chrome.extension.getBackgroundPage();
+function updateOnce(){
+	req('prefs', function(p){
+		prefs=p;
+	});
+}
 function update(){
     //updatepopup();
     req('updatetimes', onUpdateTimes);
     req('updatealerts', onUpdateAlerts);
     req('updateflashs', onUpdateFlashs);
     updateCams();
+	renderPlots();
 }
 function changebadgeref(event){
 	var id = event.data.id;
 	req('updateprefs', function(){
-		alert('Change done!');
+		//alert('Change done!');
+		jQuery('#times').find('a.selected').removeClass('selected');
+		jQuery('#lk'+id).addClass('selected');
 	}, {badge: {id: id}});
 }
+function renderPlots(){
+	req('history', function(values){
+		$('#history').sparkline(values);
+		var last = values[values.length-1];
+		$('#history').attr('title', 'History - Last : '+last+' min');
+	});
+}
 function onUpdateTimes(fragments){
-    jQuery.each(fragments, function(zone, times){
+    var badgeid= (prefs)?prefs.badge.id:false;
+	jQuery.each(fragments, function(zone, times){
         var el = jQuery('#time-' + zone);
         if (el) {
             el.html('');
             jQuery.each(times, function(i, t){
                 var label = (timeMappings[t.id])?(timeMappings[t.id].text):t.code;
-                var link = jQuery('<a href="#">'+label+'(' + t.id + ')'+'</a>').bind('click', {id:t.id}, changebadgeref);
+                var link = jQuery('<a href="#" id="lk'+ t.id +'">'+label+'(' + t.id + ')'+'</a>').bind('click', {id:t.id}, changebadgeref);
+				if (badgeid==t.id){
+					link.addClass('selected');
+				}
 				link.appendTo(el);
 				el.append(' : '+ t.time + '<br/>');
             });
@@ -143,10 +163,12 @@ function updatepopup(){
 }
 
 function updateCams(){
-    jQuery('.icam').each(function(i, img){
-        if (img && img.id) {
+    jQuery('.izi').each(function(i, a){       
+		var img=jQuery(a).find('.icam');
+		if (img && img.id) {
             var url = getUrlCam(img.id.replace('icam', ''));
-            img.src = url;
+            img.attr('src', url);
+			a.href = url;
         }
     });
 }
@@ -196,16 +218,25 @@ function changeMenuCams(e){
 }
 
 function createImageCams(el, dcam, isin){
-    var html='<div class="body z' + txt + '">',txt = ((isin) ? 'in' : 'out');
+    var txt = ((isin) ? 'in' : 'out'), html='<div class="body z' + txt + '">';
     //var div = jQuery('<div class="body z' + txt + '"></div>');
     jQuery.each((isin) ? dcam.camsin : dcam.camsout, function(id, cam){
-			html+='<div class="cam"><img class="icam" id="icam' + id + '" src="' + getUrlCam(id) + '" title="' + id + ' - ' + cam.text + '"/><span>' + cam.text + '</span></div>';
+			var u = getUrlCam(id), t= id + ' - ' + cam.text;
+			
+			html+='<div class="cam">'+
+			'<a class="izi" href="'+u+'" title="'+t+'">'+
+			'<img class="icam" id="icam' + id + '" src="'+u+'"/>'+
+			'</a>'+
+			'<span>' + cam.text + '</span></div>';
 			//alert(id+':'+cam.text);
 			//div.append('<div class="cam">' + id +' - ' + cam.text +'</div>');
     });
 	html+='</div>';
-	el.html(html);
-	//el.first().toggle(isin);
+	//el.html(html);
+	var nel = jQuery(html);
+	el.append(nel);
+	
+	nel.toggle(isin);
 }
 
 function xhr(a, cb){
@@ -300,8 +331,17 @@ function init(){
 			loadHtml(ui.panel.id);
         }
     });
+	jQuery('a.izi').zoomimage({
+		controlsTrigger: 'mouseover',
+		shadow: 40,
+		controls: false,
+		opacity: 0.6
+	});
+	updateOnce();
     window.setTimeout(function(){
         update();
 		window.setInterval(update, 30000);
     }, 1000);
 }
+
+
