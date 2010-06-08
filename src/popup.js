@@ -335,7 +335,7 @@ function init(){
     });
 	jQuery('a.izi').zoomimage({
 		controlsTrigger: 'mouseover',
-		shadow: 40,
+		shadow: 5,
 		controls: false,
 		opacity: 0.6
 	});

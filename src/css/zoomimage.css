@@ -3,7 +3,7 @@
 	display: none;
 	z-index: 5000;
 	outline: none;
-    cursor: url(../images/zoomout.cur), default;
+    cursor: url(../images/zoom/zoomout.png), default;
 }
 .zoomimage_focused {
 	z-index: 51000;
@@ -31,13 +31,13 @@
 	width: 6px;
 	height: 6px;
 	overflow: hidden;
-	background:transparent url(../images/shadow.png) no-repeat scroll 0 0;
+	background:transparent url(../images/zoom/shadow.png) no-repeat scroll 0 0;
 }
 .zoomimage_stc {
 	overflow: hidden;
 	height: 6px;
 	margin: 0 6px;
-	background: transparent url(../images/shadow.png) repeat-x scroll 0 -30px;
+	background: transparent url(../images/zoom/shadow.png) repeat-x scroll 0 -30px;
 }
 .zoomimage_str {
 	position: absolute;
@@ -46,7 +46,7 @@
 	width: 6px;
 	height: 6px;
 	overflow: hidden;
-	background:transparent url(../images/shadow.png) no-repeat scroll 0 -18px;
+	background:transparent url(../images/zoom/shadow.png) no-repeat scroll 0 -18px;
 }
 .zoomimage_sc {
 	position: absolute;
@@ -62,7 +62,7 @@
 	left: 0;
 	height: 100%;
 	width: 6px;
-	background: transparent url(../images/shadow-lr.png) repeat-y scroll 0pt;
+	background: transparent url(../images/zoom/shadow-lr.png) repeat-y scroll 0pt;
 }
 .zoomimage_scr {
 	position: absolute;
@@ -71,12 +71,12 @@
 	top: 0;
 	height: 100%;
 	width: 6px;
-	background:transparent url(../images/shadow-lr.png) repeat-y scroll -6px 0pt
+	background:transparent url(../images/zoom/shadow-lr.png) repeat-y scroll -6px 0pt
 }
 .zoomimage_scc {
 	margin: 0 6px;
 	height: 100%;
-	background:transparent url(../images/shadow-c.png);
+	background:transparent url(../images/zoom/shadow-c.png);
 	overflow: hidden;
 }
 .zoomimage_sb {
@@ -94,13 +94,13 @@
 	height: 6px;
 	left: 0;
 	top: 0;
-	background:transparent url(../images/shadow.png) no-repeat scroll 0pt -12px;
+	background:transparent url(../images/zoom/shadow.png) no-repeat scroll 0pt -12px;
 }
 .zoomimage_sbc {
 	height: 6px;
 	overflow: hidden;
 	margin: 0 6px;
-	background:transparent url(../images/shadow.png) repeat-x scroll 0pt -36px;
+	background:transparent url(../images/zoom/shadow.png) repeat-x scroll 0pt -36px;
 }
 .zoomimage_sbr {
 	position: absolute;
@@ -109,7 +109,7 @@
 	height: 6px;
 	right: 0;
 	top: 0;
-	background:transparent url(../images/shadow.png) no-repeat scroll 0pt -6px;
+	background:transparent url(../images/zoom/shadow.png) no-repeat scroll 0pt -6px;
 }
 .zoomimage img {
 	position: absolute;
@@ -131,7 +131,7 @@
 	font-weight: bold;
 }
 .zoomimage_loading {
-	background-image: url(../images/ajax_small.gif);
+	background-image: url(../images/zoom/ajax_small.gif);
 	background-repeat: no-repeat;
 	background-position: center;
 	height: 100%;
@@ -151,7 +151,7 @@
 	overflow: hidden;
 }
 .zoomimage_prev {
-	background: #fff url(../images/zoomimage_prev.gif) no-repeat center;
+	background: #fff url(../images/zoom/zoomimage_prev.gif) no-repeat center;
 	width: 39px;
 	height: 29px;
 	position: absolute;
@@ -159,7 +159,7 @@
 	left: 10px;
 }
 .zoomimage_next {
-	background: #fff url(../images/zoomimage_next.gif) no-repeat center;
+	background: #fff url(../images/zoom/zoomimage_next.gif) no-repeat center;
 	width: 39px;
 	height: 29px;
 	position: absolute;
