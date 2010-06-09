@@ -49,7 +49,16 @@ chrome.extension.onRequest.addListener(function(a, sender, callback){
 
 var historyValues = [];
 function getHistory(a, cb){
-	cb(historyValues);
+	//fit data of 1 hour into 20 points
+	if (!historyValues){
+		return;
+	}
+	var values = [], nplots=20, len=historyValues.length;
+	var step = Math.max(1,Math.round(len/nplots));
+	for (var i=0; i<len; i+=step){
+		values.push(historyValues[i]);
+	}
+	cb(values);
 }
 
 function updateprefs(a, cb){
@@ -94,7 +103,10 @@ function updateBadge(a, cb){
 	//Send time to badge
     var time = parseInt(a.time, 10);
 
-	if (historyValues.length>20){
+	//Limit on 1 hour
+	interval = getInterval();
+	var max = Math.max(10, Math.round(3600/interval));
+	if (historyValues.length>max){
 		historyValues.shift();
 	}
 	historyValues.push(time);
@@ -144,12 +156,16 @@ function newTictac(forceNow){
 		window.clearInterval(tictac);
 	}
 	badgeprefs = getPref('badge');
-	interval = (badgeprefs && badgeprefs.interval) ? badgeprefs.interval : 60;
+	interval = getInterval();
 	console.log('interval='+interval+';id='+badgeprefs.id);
 	tictac = window.setInterval(updateTimes, interval * 1000);
 	if (forceNow){
 		updateTimes();
 	}
+}
+
+function getInterval(){
+	return (badgeprefs && badgeprefs.interval) ? badgeprefs.interval : 60;
 }
 
 //Temps de parcours etat.lu

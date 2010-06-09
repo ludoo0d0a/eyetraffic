@@ -36,7 +36,7 @@ function renderPlots(){
 	req('history', function(values){
 		$('#history').sparkline(values, { fillColor: false, normalRangeMin: limit.orange, normalRangeMax: limit.red, normalRangeColor: '#FDFF94' });
 		var last = values[values.length-1];
-		$('#history').attr('title', 'History - Last : '+last+' min');
+		$('#history').attr('title', 'History on last hour');
 	});
 }
 function onUpdateTimes(fragments){
