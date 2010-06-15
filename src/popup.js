@@ -29,15 +29,17 @@ function changebadgeref(event){
 		jQuery('#times').find('a.selected').removeClass('selected');
 		jQuery('#lk'+id).addClass('selected');
 		prefs = p;
+		renderPlots();
 	}, {badge: {id: id}});
 }
 function renderPlots(){
+	var badgeid= (prefs)?prefs.badge.id:false;
 	var limit = (prefs && prefs.limit)?prefs.limit:{red:20,orange:10};
 	req('history', function(values){
 		$('#history').sparkline(values, { fillColor: false, normalRangeMin: limit.orange, normalRangeMax: limit.red, normalRangeColor: '#FDFF94' });
 		var last = values[values.length-1];
-		$('#history').attr('title', 'History on last hour');
-	});
+		$('#history').attr('title', 'History on last hour - '+last+'min');
+	}, {id:badgeid});
 }
 function onUpdateTimes(fragments){
     var badgeid= (prefs)?prefs.badge.id:false;
