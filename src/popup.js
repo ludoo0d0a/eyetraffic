@@ -33,12 +33,11 @@ function changebadgeref(event){
 	}, {badge: {id: id}});
 }
 function renderPlots(){
-	var badgeid= (prefs)?prefs.badge.id:false;
-	var limit = (prefs && prefs.limit)?prefs.limit:{red:20,orange:10};
-	req('history', function(values){
-		$('#history').sparkline(values, { fillColor: false, normalRangeMin: limit.orange, normalRangeMax: limit.red, normalRangeColor: '#FDFF94' });
-		var last = values[values.length-1];
-		$('#history').attr('title', 'History on last hour - '+last+'min');
+	var badgeid=(prefs)?prefs.badge.id:false;
+	req('history', function(a){
+		$('#history').sparkline(a.values, { fillColor: false, normalRangeMin: a.limit.orange, normalRangeMax: a.limit.red, normalRangeColor: '#FDFF94' });
+		var last = a.values[a.values.length-1];
+		$('#history').attr('title', 'History on last hour - '+last+'min - Orange:'+a.limit.orange+'min - Red:'+a.limit.red+'min');
 	}, {id:badgeid});
 }
 function onUpdateTimes(fragments){
