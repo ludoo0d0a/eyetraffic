@@ -12,6 +12,7 @@ var values = [], prefs;
 function updateOnce(){
 	req('prefs', function(p){
 		prefs=p;
+		createCams();
 	});
 }
 function update(){
@@ -188,7 +189,6 @@ function createCams(){
     var i = 0;
 	jQuery.each(dcams, function(road, dcam){
         var el= jQuery('#cam-' + road);
-		console.log('cam'+(i++));
 		if (el) {
 			createMenuCams(el, dcam);
 			createImageCams(el, dcam, true);
@@ -198,6 +198,12 @@ function createCams(){
 			el.append(div);
 		}
     });
+	jQuery('a.izi').zoomimage({
+		controlsTrigger: 'mouseover',
+		shadow: 5,
+		controls: false,
+		opacity: 0.6
+	});
 }
 
 function createMenuCams(el, dcam){
@@ -331,18 +337,11 @@ function init(){
 	}
     //jQuery('#flashinfo').hide();
 	jQuery('#times').tabs();
-	createCams();
 	jQuery('#cams').tabs({
         select: function(event, ui){
 			loadHtml(ui.panel.id);
         }
     });
-	jQuery('a.izi').zoomimage({
-		controlsTrigger: 'mouseover',
-		shadow: 5,
-		controls: false,
-		opacity: 0.6
-	});
 	updateOnce();
     window.setTimeout(function(){
         update();
