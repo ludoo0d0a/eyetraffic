@@ -145,3 +145,37 @@ img.icam {
 	border-bottom:1px solid #dfdfdf;
 	margin:5px;
 }
+
+.debug{
+	display:none !important;
+}
+
+/**
+ * Tooltip for times
+ */
+.tip{
+	position:absolute;
+	width:40px;
+	height:15px;
+	color:#000;
+	background-color:#fff;
+	border:1px solid #000; 
+	opacity:0.6;
+	text-align:center;
+	padding:2px;
+	-webkit-border-radius: 5px;
+	-webkit-box-shadow: 2px 2px 2px #888;
+}
+#tu_A1A6{
+	top:170px;
+	left:250px;
+}
+#tu_A3A1{
+	left:190px;
+	top:270px;
+}
+#tu_A6A1{
+	left:60px;
+	top:220px;
+}
+
