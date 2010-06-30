@@ -10,3 +10,8 @@ function fillTpl(tpl, o){
     }
     return txt;
 }
+
+function getRandom(max){
+	max =max || 100;
+	return Math.round(Math.random() * max)+1; 
+}
