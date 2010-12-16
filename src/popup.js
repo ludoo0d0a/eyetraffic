@@ -21,7 +21,7 @@ function update(){
     req('updatetimes', onUpdateTimes);
     req('updatealerts', onUpdateAlerts);
     req('updateflashs', onUpdateFlashs);
-    req('updatetunnel', onUpdateTunnel);
+    //req('updatetunnel', onUpdateTunnel);
     updateCams();
     renderPlots();
 }
