@@ -71,12 +71,12 @@ function getIconRed(){
 }
 
 function getIconBlueTiny(){
-    var tiny = new GIcon();
-    tiny.image = "http://labs.google.com/ridefinder/images/mm_20_blue.png";
-    tiny.shadow = "http://labs.google.com/ridefinder/images/mm_20_shadow.png";
-    tiny.iconSize = new GSize(12, 20);
-    tiny.shadowSize = new GSize(22, 20);
-    tiny.iconAnchor = new GPoint(6, 20);
-    tiny.infoWindowAnchor = new GPoint(5, 1);
+    var icon = new GIcon();
+    icon.image = "http://labs.google.com/ridefinder/images/mm_20_blue.png";
+    icon.shadow = "http://labs.google.com/ridefinder/images/mm_20_shadow.png";
+    icon.iconSize = new GSize(12, 20);
+    icon.shadowSize = new GSize(22, 20);
+    icon.iconAnchor = new GPoint(6, 20);
+    icon.infoWindowAnchor = new GPoint(5, 1);
     return icon;
 }

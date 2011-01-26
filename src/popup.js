@@ -18,6 +18,7 @@ function updateOnce(){
 
 function update(){
     req('updatetimes', onUpdateTimes);
+	req('updateservices', onUpdateServices);
     req('updatealerts', onUpdateAlerts);
     req('updateflashs', onUpdateFlashs);
     //req('updatetunnel', onUpdateTunnel);
@@ -53,6 +54,16 @@ function renderPlots(){
         $('#history').attr('title', 'History on last hour - ' + last + 'min - Orange:' + a.limit.orange + 'min - Red:' + a.limit.red + 'min');
     }, {
         id: badgeid
+    });
+}
+
+function onUpdateServices(fragments){
+    console.log('onUpdateServices');
+	//TODO : color polyline (use direction.getPolyline to be smoother ?)
+	//http://www.birdtheme.org/useful/googletool.html
+	//http://code.google.com/apis/maps/documentation/utilities/polylineutility.html
+	jQuery.each(fragments, function(i, t){
+       //statusId 1 : fluide ->  
     });
 }
 
@@ -240,6 +251,10 @@ function getHtml(id){
         var w = 590 + 360;
 		var url = 'http://routes.tomtom.com/map/?center=49.490%2C5.980&zoom=8&map=basic';
 		return '<div id="tomtomwrap"><div id="tomtomoffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
+    }else if (id === 'map-google') {
+        var w = 590;
+		var url = 'maps.html';
+		return '<div id="goowrap"><div id="goooffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
     } else if (id === 'map-cita') {
        //http://www2.pch.etat.lu/cita/cita.swf, w=840,h=694;
 	   var swf = 'http://www.cita.lu/flash/cita_integralite_zoom.swf',w=600,h=444;

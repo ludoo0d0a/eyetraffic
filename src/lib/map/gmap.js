@@ -5,9 +5,12 @@ var options = {
     showcontrols: false,
     memo: false
 };
-
+var INEXT = (typeof chrome!=='undefined' && typeof chrome.extension!=='undefined');
+var dirnRoadClick, dirnRoadDrag;
 function initialize(){
-    if (GBrowserIsCompatible()) {
+    showLocation();
+	
+	if (GBrowserIsCompatible()) {
         map = new GMap2(document.getElementById("map_canvas"));
         if (options.showcontrols) {
             map.addControl(new GLargeMapControl());
@@ -30,8 +33,8 @@ function initialize(){
         //initRect();
         //addOverlayRect(map);
         //addOverlayCanvas(map);
-        var dirnRoadClick = new GDirections();
-        var dirnRoadDrag = new GDirections();
+        dirnRoadClick = new GDirections();
+        dirnRoadDrag = new GDirections();
         //click put marker on the road
         GEvent.addListener(dirnRoadClick, "load", function(){
             var n = dirnRoadClick.getPolyline().getVertexCount();
@@ -91,24 +94,30 @@ function initialize(){
         });
         renderMarkersCams();
         renderMarkersTimes();
+		renderMarkersDirs();
 		
 		makeSidebar();
 		//showcat('times');
         //setSize(2);
         //showLocation();
         getCurrentLocation(true);
-				
     }
 }
 
 function renderMarkersCams(){
-    var markerOptions = {
-        icon: getIconRed()
-    };
-    renderMarkers(data_cams, ETF.CAT_CAMS, markerOptions);
-    /*getJSON('data/cams.json', function(json){
-     renderMarkers(json);
-     });*/
+	var markerOptions = function(point, data, category){
+		return {
+	        title:(data.titre)?(data.cam+':'+data.titre):'',
+			icon: getIconRed()
+    	};
+	};
+	if (INEXT){
+		getJSON('data/cams.json', function(json){
+     		renderMarkers(json, ETF.CAT_CAMS, markerOptions);
+     	});
+	}else{
+		renderMarkers(data_cams, ETF.CAT_CAMS, markerOptions);
+	}    
 }
 
 function renderMarkersTimes(){
@@ -116,17 +125,43 @@ function renderMarkersTimes(){
         markers: []
     };
     jQuery.each(timesCoords, function(i, data){
-        var o = {
-            location: i
-        };
-        jQuery.extend(o, data);
-        data_times.markers.push(o);
+        data_times.markers.push({
+            location: i,
+			name: data.name,
+			lat: data.from.lat,
+			lng: data.from.lng
+        });
     });
-    var markerOptions = {
-        icon: getIconPause()
-    };
-    renderMarkers(data_times, ETF.CAT_TIMES, markerOptions);
+	var markerOptions = function(point, data, category){
+		return {
+	        title:data.name||'',
+			icon: getIconPause()
+    	};
+	};
+	renderMarkers(data_times, ETF.CAT_CAMS, markerOptions);
 }
+function renderMarkersDirs(){
+    var data_times = {
+        markers: []
+    };
+    jQuery.each(dirCoords, function(i, data){
+        data_times.markers.push({
+            location: i,
+			name: i,
+			lat: data.lat,
+			lng: data.lng
+        });
+    });
+	var markerOptions = function(point, data, category){
+		return {
+	        title:data.name||'',
+			icon: getIconBlueTiny()
+    	};
+	};
+	renderMarkers(data_times, ETF.CAT_DIRS, markerOptions);
+}
+
+
 
 function renderMarkers(json, category, options){
     jQuery(json.markers).each(function(i, marker){
@@ -194,9 +229,28 @@ function updateMarkers(){
             label: marker.getTitle()
         });
     });
-    jQuery('#jmarkers').html(JSON.stringify(o));
+    var out = JSON.stringify(o);
+	
+	out+=logDirection(dirnRoadDrag);
+	out+=logDirection(dirnRoadClick);
+	
+	jQuery('#jmarkers').html(out);
 }
 
+function logDirection(dirn){
+	var poly=false, s = '';
+	if (dirn && (poly=dirn.getPolyline())){ 
+		var n = poly.getVertexCount();
+		if (n > 0) {
+			for(var i=0;i<n;i++){
+				var p = dirn.getPolyline().getVertex(i);
+				console.log(i+'-'+p.x+','+p.y);
+			}
+		}
+	}
+	return s;
+}
+	
 function createMarker(point, data, category, options){
     var p;
     if (point && point.lat && typeof point.lat !=='function') {
@@ -204,7 +258,13 @@ function createMarker(point, data, category, options){
     } else {
         p = point;
     }
-    var marker = new GMarker(p, options || {});
+	var opt = {};
+	if (typeof options ==='function'){
+		opt=options(point, data, category);
+	}else{
+		opt =options || {};
+	}
+    var marker = new GMarker(p, opt);
     marker.category = category;
     marker.data = data;
     var html = getHtml(marker, category);

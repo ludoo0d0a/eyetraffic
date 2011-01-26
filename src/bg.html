@@ -63,6 +63,8 @@
                     callback(prefs);
                 } else if (a.message === 'updatetimes') {
                     updateTimes(a, callback);
+                } else if (a.message === 'updateservices') {
+                    updateServices(a, callback);
                 } else if (a.message === 'updatealerts') {
                     updateAlerts(a, callback);
                 } else if (a.message === 'updateflashs') {
@@ -200,8 +202,8 @@
                     path: icon
                 });
                 
-				var map = timeMappings[a.key]||{};
-                var title = '' + (map.text||'...') + '\n' + time + ' minutes';
+                var map = timeMappings[a.key] || {};
+                var title = '' + (map.text || '...') + '\n' + time + ' minutes';
                 chrome.browserAction.setTitle({
                     title: title
                 });
@@ -237,19 +239,57 @@
                 return (badgeprefs && badgeprefs.interval) ? badgeprefs.interval : 60;
             }
             
+            //Niveau de services
+            function updateServices(a, callback){
+                //Temps de parcours
+                var cfg = $.extend(mcfg, {
+                    method: 'GET',
+                    url: urlService
+                });
+                xhr(cfg, function(xhr){
+                    var m, times = {}, data = xhr.responseJson;
+					var a = {}, pt={};
+                    $.each(data.collection.niveauService, function(i, o){
+                       
+					    /*<fileDate>2011-01-26T13:47:29+01:00</fileDate>
+                         <fromNodeId>2001</fromNodeId>
+                         <fromNodeText>Croix de Gasperich</fromNodeText>
+                         <id>36829</id><statusId>1</statusId>
+                         <statusText>Fluide</statusText>
+                         <streetId>A1</streetId><streetName>Autoroute de Trèves</streetName>
+                         <toNodeId>2002</toNodeId>
+                         <toNodeText>Echangeur Itzig</toNodeText>
+                         */
+                        //var map = timeMappings[o.direction]||{};
+                        console.log(o.fromNodeId + ':"' + o.fromNodeText + '"');
+						
+						a[o.fromNodeId+'_'+o.toNodeId]={
+							from:o.fromNodeText,
+							to:o.toNodeText
+						};	
+						pt[o.fromNodeText]=o.fromNodeText;					
+						pt[o.toNodeText]=o.toNodeText;
+                    });
+					console.log('aa:');
+					console.log(JSON.stringify(a));
+					console.log('pt:');
+					console.log(JSON.stringify(pt));
+                });
+            }
+            
             //Temps de parcours etat.lu
             function updateTimes(a, callback){
                 //Temps de parcours
-			    var cfg = $.extend(mcfg, {
-			        method: 'GET',
-			        url: urlTime}
-				);
-				xhr(cfg, function(xhr){
-                    var m, times = {}, data =  xhr.responseJson;
-					$.each(data.collection.tempsParcours, function(i,o){
-						var map = timeMappings[o.direction]||{};
-						var time = o.duree, key=o.direction, text = o.direction, date = o.fileDate;
-						var id = map.vid, zone = map.cat, code = map.code;
+                var cfg = $.extend(mcfg, {
+                    method: 'GET',
+                    url: urlTime
+                });
+                xhr(cfg, function(xhr){
+                    var m, times = {}, data = xhr.responseJson;
+                    $.each(data.collection.tempsParcours, function(i, o){
+                        var map = timeMappings[o.direction] || {};
+                        var time = o.duree, key = o.direction, text = o.direction, date = o.fileDate;
+                        var id = map.vid, zone = map.cat, code = map.code;
                         if (time === 'FLUIDE') {
                             time = 0;
                         } else {
@@ -268,21 +308,21 @@
                             id: id,
                             code: code,
                             time: time,
-							text:text
+                            text: text
                         });
                         if (!historyValues[id]) {
                             historyValues[id] = [];
                         }
                         historyValues[id].push(time);
-                        if (badgeprefs && ('' + badgeprefs.id) === id) {
+                        if (badgeprefs && (''+badgeprefs.id) === (''+id)) {
                             updateBadge({
                                 id: id,
-								key:key,
+                                key: key,
                                 time: time,
                                 code: code
                             });
                         }
-					});
+                    });
                     if (callback) {
                         callback(times);
                     }
@@ -296,7 +336,7 @@
                     url: urlAlert,
                     dataType: 'xml'
                 }, function(xhr){
-                    var o = xhr.responseJson||{};
+                    var o = xhr.responseJson || {};
                     var channel = o.rss.channel;
                     if (callback) {
                         callback(channel);
@@ -334,7 +374,7 @@
                     url: 'http://tunnel.cita.lu/reload.php',
                     dataType: 'json'
                 }, function(xhr){
-					if (callback) {
+                    if (callback) {
                         callback(xhr.responseJson);
                     }
                 });
@@ -357,11 +397,11 @@
                     var sep = (url.indexOf('?') > 0) ? '&' : '?';
                     url += sep + params.join('&');
                 }
-				if (a.username) {
-					xhr.open(a.method || 'get', url, true, a.username, a.password);
-				} else {
-					xhr.open(a.method || 'get', url, true);
-				}
+                if (a.username) {
+                    xhr.open(a.method || 'get', url, true, a.username, a.password);
+                } else {
+                    xhr.open(a.method || 'get', url, true);
+                }
                 //headers
                 if (a.headers) {
                     for (var kh in a.headers) {
@@ -376,11 +416,11 @@
                         var responseJson = false;
                         if (a.dataType === 'xml' && xhr.responseXML) {
                             responseJson = xml2json(xhr.responseXML, '');
-							responseJson=JSON.parse(responseJson);
+                            responseJson = JSON.parse(responseJson);
                         }
-						if (a.dataType === 'json'){
-							responseJson=JSON.parse(xhr.responseText);
-						} 
+                        if (a.dataType === 'json') {
+                            responseJson = JSON.parse(xhr.responseText);
+                        }
                         cb({
                             responseJson: responseJson,
                             responseText: xhr.responseText,

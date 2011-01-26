@@ -2,17 +2,19 @@ var ETF={
 	CAT_ROUTE:'route',
 	CAT_CAMS:'cams',
 	CAT_TIMES:'times',
-	CAT_POSITION:'position'
+	CAT_POSITION:'position',
+	CAT_DIRS:'directions'
 };
 
 ETF.tpl = {
 	cams:'<div class="tipcam"><a href="javascript:centeretzoom({lat},{lng})">'+
 '<img src="http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{cam}.jpg" height="80" width="120"/></a><br/>'+
-'<div class="titrepopup2">{titre}</div><div class="localitepopup2">{localite}</div></div>',
+'<div class="titrepopup2">{cam}:{titre}</div><div class="localitepopup2">{localite}</div></div>',
 	timesAll:'<table border="0" cellpadding="0" cellspacing="0"><tr><td width="100%" class="EWTitle" nowrap>{title}<\/td><\/tr><tr><td nowrap>{content}<\/td><\/tr><\/table>',
 	times:'<span>{to}</span><span>{duration}</span><br/>',
 	route:'',
-	position:'This is my position : {lat},{lng}'
+	position:'This is my position : {lat},{lng}',
+	directions:'<span class="mdir">{name}</span>'
 };
 
 var geocoder;
@@ -187,9 +189,10 @@ function hidecat(category){
 function makeSidebar(){
     var el = jQuery('#sidebar_cats');
     el.html('');
-    jQuery.each(timeMappings, function(id, o){
-        jQuery('<a id="' + id + '" href="#">' + o.text + '</a>').click(function(){
-            renderRoute(id, o);
+    jQuery.each(timeMappings, function(key, o){
+        jQuery('<a id="' + o.vid + '" href="#">' + o.text + '</a>').click(function(){
+            var id = o.vid;
+			renderRoute(id, o);
             el.find('.selected').each(function(){
                 if (routes[this.id]) {
                     routes[this.id].clear();
@@ -213,10 +216,10 @@ function renderRoute(id, o){
     GEvent.addListener(route, "error", function(){
         console.log('error');
     });
-    var source = timesCoords[o.from];
+    var source = timesCoords[o.from].from;
     //var ms = createMarker(source, source.name, 'times2', {icon:getIconStart()});
     var psource = new GLatLng(source.lat, source.lng);
-    var destination = timesCoords[o.to];
+    var destination = timesCoords[o.to].to;
     var pdest = new GLatLng(destination.lat, destination.lng);
     //var me = createMarker(destination, getHtml(destination), 'times2', {icon:getIconEnd()});
     function getDurationHtml(point, duration){
@@ -233,6 +236,7 @@ function renderRoute(id, o){
         getPolyline: true
         ,preserveViewport: true //false to zoom centered
     });
+	console.log("from: " + o.from + " to: " + o.to);
     //Geocoding					
     //route.load("from: " + source + " to: " + destination);
 }

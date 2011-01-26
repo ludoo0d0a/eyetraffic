@@ -1,4 +1,8 @@
-//http://www.wolfpil.de/map-in-a-box.html
+//resize map : http://www.wolfpil.de/map-in-a-box.html
+
+// http://www.birdtheme.org/useful/googletool.html
+// http://code.google.com/apis/maps/documentation/utilities/polylineutility.html
+
 var img_path = "images/map/";
 var polyShape;
 var polyLineColor = "#3355ff";
@@ -60,7 +64,9 @@ function leftClick(overlay, point){
 }
 
 function drawPoly(){
-    if (polyShape) map.removeOverlay(polyShape);
+    if (polyShape) {
+		map.removeOverlay(polyShape);
+	}
     polyPoints.length = 0;
     for (i = 0; i < markers.length; i++) {
         polyPoints.push(markers[i].getLatLng());
