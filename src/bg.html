@@ -200,7 +200,8 @@
                     path: icon
                 });
                 
-                var title = '' + timeMappings[a.id].text + '\n' + time + ' minutes';
+				var map = timeMappings[a.key]||{};
+                var title = '' + (map.text||'...') + '\n' + time + ' minutes';
                 chrome.browserAction.setTitle({
                     title: title
                 });
@@ -238,15 +239,17 @@
             
             //Temps de parcours etat.lu
             function updateTimes(a, callback){
-                xhr({
-                    method: 'GET',
-                    url: urlTime,
-                    dataType: 'text'
-                }, function(xhr){
-                    var m, times = {}, data = xhr.responseText;
-                    //&1A6_lux_sud=LUX-SUD  24 min.
-                    while ((m = reTime.exec(data)) !== null) {
-                        var id = m[1], code = m[2], zone = m[3], time = m[4];
+                //Temps de parcours
+			    var cfg = $.extend(mcfg, {
+			        method: 'GET',
+			        url: urlTime}
+				);
+				xhr(cfg, function(xhr){
+                    var m, times = {}, data =  xhr.responseJson;
+					$.each(data.collection.tempsParcours, function(i,o){
+						var map = timeMappings[o.direction]||{};
+						var time = o.duree, key=o.direction, text = o.direction, date = o.fileDate;
+						var id = map.vid, zone = map.cat, code = map.code;
                         if (time === 'FLUIDE') {
                             time = 0;
                         } else {
@@ -264,7 +267,8 @@
                         times[zone].push({
                             id: id,
                             code: code,
-                            time: time
+                            time: time,
+							text:text
                         });
                         if (!historyValues[id]) {
                             historyValues[id] = [];
@@ -273,11 +277,12 @@
                         if (badgeprefs && ('' + badgeprefs.id) === id) {
                             updateBadge({
                                 id: id,
+								key:key,
                                 time: time,
                                 code: code
                             });
                         }
-                    }
+					});
                     if (callback) {
                         callback(times);
                     }
@@ -291,7 +296,7 @@
                     url: urlAlert,
                     dataType: 'xml'
                 }, function(xhr){
-                    var o = JSON.parse(xhr.responseJson);
+                    var o = xhr.responseJson||{};
                     var channel = o.rss.channel;
                     if (callback) {
                         callback(channel);
@@ -352,7 +357,11 @@
                     var sep = (url.indexOf('?') > 0) ? '&' : '?';
                     url += sep + params.join('&');
                 }
-                xhr.open(a.method || 'get', url, true);
+				if (a.username) {
+					xhr.open(a.method || 'get', url, true, a.username, a.password);
+				} else {
+					xhr.open(a.method || 'get', url, true);
+				}
                 //headers
                 if (a.headers) {
                     for (var kh in a.headers) {
@@ -367,6 +376,7 @@
                         var responseJson = false;
                         if (a.dataType === 'xml' && xhr.responseXML) {
                             responseJson = xml2json(xhr.responseXML, '');
+							responseJson=JSON.parse(responseJson);
                         }
 						if (a.dataType === 'json'){
 							responseJson=JSON.parse(xhr.responseText);

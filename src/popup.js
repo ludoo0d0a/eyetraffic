@@ -17,7 +17,6 @@ function updateOnce(){
 }
 
 function update(){
-    //updatepopup();
     req('updatetimes', onUpdateTimes);
     req('updatealerts', onUpdateAlerts);
     req('updateflashs', onUpdateFlashs);
@@ -64,8 +63,10 @@ function onUpdateTimes(fragments){
         if (el) {
             el.html('');
             jQuery.each(times, function(i, t){
-                var label = (timeMappings[t.id]) ? (timeMappings[t.id].text) : t.code;
-                var link = jQuery('<a href="#" id="lk' + t.id + '">' + label + '(' + t.id + ')' + '</a>').bind('click', {
+                //var label = (timeMappings[t.id]) ? (timeMappings[t.id].text) : t.code;
+				//label += '(' + t.id + ')';
+				var label = t.text;
+                var link = jQuery('<a href="#" id="lk' + t.id + '">' + label + '</a>').bind('click', {
                     id: t.id
                 }, changebadgeref);
                 if (badgeid == t.id) {
@@ -124,74 +125,6 @@ function req(message, cb, data){
         o.message = message;
         chrome.extension.sendRequest(o, cb);
     }
-}
-
-function updatepopup(){
-    //Temps de parcours
-    xhr({
-        method: 'GET',
-        url: urlTime,
-        dataType: 'text'
-    }, function(xhr){
-        var m, html = {}, data = xhr.responseText;
-        //&1A6_lux_sud=LUX-SUD  24 min.
-        while ((m = reTime.exec(data)) !== null) {
-            var id = m[1], code = m[2], zone = m[3], time = m[4];
-            var label = (timeMappings[id]) ? (timeMappings[id].text) : code;
-            if (!html[zone]) {
-                html[zone] = '';
-            }
-            html[zone] += label + ' : ' + time + '<br/>';
-            if (code == prefs.timecode) {
-                chrome.extension.sendRequest({
-                    message: 'badge',
-                    title: time + ' minutes',
-                    time: time
-                });
-            }
-        }
-        jQuery.each(html, function(zone, h){
-            jQuery('#time-' + zone).html(h);
-        });
-    });
-    //alert info
-    xhr({
-        method: 'GET',
-        url: urlAlert,
-        dataType: 'xml'
-    }, function(xhr){
-        var o = JSON.parse(xhr.responseJson);
-        var channel = o.rss.channel;
-        if (channel && channel.item) {
-            jQuery('#alert').html('');
-            items = channel.item;
-            if (!jQuery.isArray(items)) {
-                items = [items];
-            }
-            jQuery.each(items, function(i, item){
-                //title,description,pubDate
-                item.date = jQuery.prettyDate.format(item.pubDate);
-                jQuery('#alert').prepend(tplAlert, item);
-            });
-        } else {
-            jQuery('#alert').html(LANG.NOTRAFFICINFO);
-        }
-    });
-    //flashinfo les frontaliers
-    xhr({
-        method: 'GET',
-        url: urlFlashInfo,
-        dataType: 'text'
-    }, function(xhr){
-        var m, data = xhr.responseText;
-        m = reFlashInfoLF.main.exec(data);
-        if (m && m[1]) {
-            var n = reFlashInfoLF.title.exec(m[1]), p = reFlashInfoLF.content.exec(m[1]), title = n[1], content = p[1], html = '<span class="title">' + title + '</span><br/>' + content;
-            jQuery('#flashinfo').html(html).show();
-        } else {
-            jQuery('#flashinfo').html('').hide();
-        }
-    });
 }
 
 function updateCams(){
@@ -302,12 +235,19 @@ function xhr(a, cb){
 
 function getHtml(id){
     if (id === 'map-bison') {
-        return '<iframe src="http://www.bison-fute.equipement.gouv.fr/astec_acai/internet/ie1_myrabel.html?langue=fr&evt=1" width="590" height="480"></iframe>';
+        return '<iframe src="http://www.bison-fute.equipement.gouv.fr/astec_acai/internet/ie1_myrabel.html?langue=fr&evt=1" frameborder="0" scrolling="no" width="590" height="480"></iframe>';
+    } else if (id === 'map-tomtom') {
+        var w = 590 + 360;
+		var url = 'http://routes.tomtom.com/map/?center=49.490%2C5.980&zoom=8&map=basic';
+		return '<div id="tomtomwrap"><div id="tomtomoffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
     } else if (id === 'map-cita') {
-        return '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="600" height="444" align="" vspace="0" hspace="0">' +
-        '<param name="movie" value="http://www2.pch.etat.lu/cita/cita.swf"><param name="src" value="http://www2.pch.etat.lu/cita/cita.swf"><param name="play" value="true"><param name="wmode" value=""><param name="scale" value="2"><param name="quality" value="high"><param name="menu" value="false"><param name="bgcolor" value=""><param name="AllowScriptAccess" value="sameDomain"><param name="loop" value="false">' +
-        '<embed src="http://www2.pch.etat.lu/cita/cita.swf" scale="" wmode="" play="true" quality="high" menu="false" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="600" height="444" align="" bgcolor="" allowscriptaccess="sameDomain" loop="false" hspace="0" vspace="0">' +
-        '</object>';
+       //http://www2.pch.etat.lu/cita/cita.swf, w=840,h=694;
+	   var swf = 'http://www.cita.lu/flash/cita_integralite_zoom.swf',w=600,h=444;
+	   /*return '<object width="'+w+'" height="'+h+'">' +
+        '<param name="movie" value="'+swf+'">' +
+        '<embed src="'+swf+'" width="'+w+'" height="'+h+'">' +
+        '</object>';*/
+		 return '<iframe src="'+swf+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe>';
     } else if (id === 'map-tunnel') {
         return '<img src="http://tunnel.cita.lu/img/trajets-map.png" height="350"/>';
     } else {

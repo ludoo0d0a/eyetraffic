@@ -33,7 +33,7 @@
         </script>
         <script type="application/javascript" src="popup.js">
         </script>	
-		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAtEOPihzWueLlNCLMoB9gSRQzovFltyh3__eQzIYnI8zKDV9c-RSnWsxRr2N1XFC9jiUukMEh3_bzxw" type="text/javascript"></script>
+		<!--<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAtEOPihzWueLlNCLMoB9gSRQzovFltyh3__eQzIYnI8zKDV9c-RSnWsxRr2N1XFC9jiUukMEh3_bzxw" type="text/javascript"></script>-->
         <title>Eye Traffic</title>
     </head>
     <body onload="init();">
@@ -43,8 +43,8 @@
 			<div id="history" title="History"></div>
 			<div id="links">
 				<a target="blank" href="maps.html" class="debug"><b>Map</b></a>
-				<a target="blank" href="popup.html" class="debug"><b>Popup</b></a>
-	            &nbsp;<a target="blank" href="http://www.cita.lu">CITA</a>
+				<a target="blank" href="popup.html" class="debug"><b>Popup</b>&nbsp;</a>
+	            <a target="blank" href="http://www.cita.lu">CITA</a>
 	            &nbsp;<a target="blank" href="http://www.lesfrontaliers.lu/index.php?p=parcours">Les frontaliers</a>
 	            &nbsp;<a target="blank" href="http://auto.rtl.lu/trafic/traficinfo/">RTL</a>
 	            &nbsp;<a target="blank" href="http://www.acl.lu/fr/trafic_news/info_trafic_luxembourg">ACL</a>
@@ -52,6 +52,7 @@
 	            &nbsp;<a target="blank" href="http://www.driving.lu/index.php?module=auto&action=getListeCamera&idauto=1">driving.lu</a>
 	            &nbsp;<a target="blank" href="http://www.bison-fute.equipement.gouv.fr">Bison futé</a>
 	            &nbsp;<a target="blank" href="http://www.sanef.com/fr/travaux/">SANEF</a>
+				&nbsp;<a target="blank" href="http://routes.tomtom.com/map/?center=49.405663703215%2C5.9357666015328&zoom=8&map=basic/">Tomtom</a>
 			</div>
         </div>
         <div id="main">
@@ -95,6 +96,7 @@
                     <li><a href="#cam-A13">A13<span class="camdesc">Longwy-Sarrebruck</span></a></li>
 					<li><a href="#map-cita">Carte<span class="camdesc">CITA</span></a></li>
 					<li><a href="#map-bison">Carte<span class="camdesc">Bison futé</span></a></li>
+					<li><a href="#map-tomtom">Carte<span class="camdesc">Tomtom</span></a></li>
                 </ul>
 				<div id="cam-A1">
                 </div>
@@ -111,6 +113,8 @@
 				<div id="map-cita">
                 </div>
 				<div id="map-bison">
+                </div>
+				<div id="map-tomtom">
                 </div>
             </div>
         </div>

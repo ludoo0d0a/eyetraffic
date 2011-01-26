@@ -29,6 +29,7 @@ a, a:hover, a:visited {
 #links {
     float: right;
     width: 240px;
+	font-size:0.9em;
 }
 
 .clearboth {
@@ -179,3 +180,14 @@ img.icam {
 	top:220px;
 }
 
+
+/*
+ * tomtom
+ */
+#tomtomoffset{
+	margin-left:-360px;
+	margin-top:-130px;
+}
+#tomtomwrap{
+	overflow: auto;
+}

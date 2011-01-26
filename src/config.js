@@ -57,7 +57,14 @@ var LANGS = {
 };
 var LANG = LANGS.en;
 //Temps de parcours
-var urlTime = 'http://www2.pch.etat.lu/info_trafic/temps_parcours/temps_parcours_convert.jsp';
+var mcfg = {
+	username: 'valente',
+	password:'fR6'+'UmJ',
+	dataType: 'xml',
+	headers:[{'Accept':'application/json'},{'Content-Type':'application/json'}]
+};
+//var urlTime = 'http://www2.pch.etat.lu/info_trafic/temps_parcours/temps_parcours_convert.jsp';
+var urlTime = 'http://www2.pch.etat.lu/citaRS/seam/resource/rest/cita/tempsParcours/actuel';
 var timesCoords = {
     treves: {
         i: 1,
@@ -115,145 +122,165 @@ var timesCoords = {
     }
 };
 var timeMappings = {
-    2: {
-        code: 'A6_france',
-        cat: 'FRANCE',
-        from: 'belgique',
-        to: 'france',
-        text: 'Belgique ' + LANG.to + ' France'
-    },
-    17: {
-        code: 'A1_france',
-        cat: 'FRANCE',
-        from: 'treves',
-        to: 'france',
-        text: 'Wasserbillig ' + LANG.to + ' France'
-    },
-    19: {
-        code: 'A1_france',
-        cat: 'FRANCE',
-        from: 'luxest',
-        to: 'france',
-        text: 'Senningerberg ' + LANG.to + ' France'
-    },
-    6: {
-        code: 'A3_france',
-        cat: 'FRANCE',
-        from: 'hollerich',
-        to: 'france',
-        text: 'Gasperich ' + LANG.to + ' France'
-    },
-    4: {
-        code: 'A3_belgique',
-        cat: 'BELGIQUE',
-        from: 'france',
-        to: 'belgique',
-        text: 'France ' + LANG.to + ' Belgique'
-    },
-    14: {
-        code: 'A13_belgique',
-        cat: 'BELGIQUE',
-        from: 'schengen',
-        to: 'belgique',
-        text: 'Schengen ' + LANG.to + ' Belgique'
-    },
-    20: {
-        code: 'A1_belgique',
-        cat: 'BELGIQUE',
-        from: 'luxest',
-        to: 'belgique',
-        text: 'Senningerberg ' + LANG.to + ' Belgique'
-    },
-    5: {
-        code: 'A6_belgique',
-        cat: 'BELGIQUE',
-        from: 'bridel',
-        to: 'belgique',
-        text: 'Bridel ' + LANG.to + ' Belgique'
-    },
-    1: {
+    'Fr. Belgique vers Gasperich': {
         code: 'A6_lux_sud',
+		vid:1,
         cat: 'LUX-SUD',
         from: 'belgique',
         to: 'gasperich',
         text: 'Belgique ' + LANG.to + ' Gasperich'
     },
-    9: {
-        code: 'A4_lux_sud',
-        cat: 'LUX-SUD',
-        from: 'esch',
-        to: 'gasperich',
-        text: 'Esch ' + LANG.to + ' Gasperich'
-    },
-    3: {
-        code: 'A3_lux_sud',
-        cat: 'LUX-SUD',
-        from: 'esch',
-        to: 'hollerich',
-        text: 'Esch ' + LANG.to + ' Lux Hollerich'
-    },
-    12: {
-        code: 'A13_lux_sud',
-        cat: 'LUX-SUD',
-        from: 'schengen',
-        to: 'gasperich',
-        text: 'Schengen ' + LANG.to + ' Gasperich'
-    },
-    16: {
-        code: 'A1_lux_sud',
-        cat: 'LUX-SUD',
-        from: 'treves',
-        to: 'gasperich',
-        text: 'Wasserbillig ' + LANG.to + ' Gasperich'
-    },
-    18: {
-        code: 'A1_lux_sud',
-        cat: 'LUX-SUD',
-        from: 'luxest',
-        to: 'gasperich',
-        text: 'Senningerberg ' + LANG.to + ' Gasperich'
-    },
-    7: {
+	'Fr. Belgique vers Kirchberg': {
         code: 'A6_lux_est',
+		vid:7,
         cat: 'LUX-EST',
         from: 'belgique',
         to: 'luxest',
         text: 'Belgique ' + LANG.to + ' Lux Est'
     },
-    10: {
+	'Fr. Belgique vers Fr. France': {
+        code: 'A6_france',
+		vid:2,
+        cat: 'FRANCE',
+        from: 'belgique',
+        to: 'france',
+        text: 'Belgique ' + LANG.to + ' France'
+    },
+	'Lallange vers Merl': {
+        code: 'A4_lux_hol',
+		vid:8,
+        cat: 'LUX-HOL',
+        from: 'france',
+        to: 'gasperich',
+        text: 'France ' + LANG.to + ' Gasperich'
+    },
+	'Lallange vers Gasperich': {
+        code: 'A4_lux_sud',
+		vid:9,
+        cat: 'LUX-SUD',
+        from: 'esch',
+        to: 'gasperich',
+        text: 'Esch ' + LANG.to + ' Gasperich'
+    },
+	'Lallange vers Kirchberg': {
         code: 'A4_lux_est',
+		vid:10,
         cat: 'LUX-EST',
         from: 'esch',
         to: 'luxest',
         text: 'Esch ' + LANG.to + ' Lux Est'
     },
-    11: {
+	'Fr. France vers Gasperich': {
+        code: 'A3_lux_sud',
+		vid:3,
+        cat: 'LUX-SUD',
+        from: 'esch',
+        to: 'hollerich',
+        text: 'Esch ' + LANG.to + ' Lux Hollerich'
+    },
+    'Fr. France vers Kirchberg': {
         code: 'A3_lux_est',
+		vid:11,
         cat: 'LUX-EST',
         from: 'france',
         to: 'luxest',
         text: 'France ' + LANG.to + ' Lux Est'
     },
-    13: {
+	 'Fr. France vers Fr. Belgique': {
+        code: 'A3_belgique',
+		vid:4,
+        cat: 'BELGIQUE',
+        from: 'france',
+        to: 'belgique',
+        text: 'France ' + LANG.to + ' Belgique'
+    },
+	'Schengen vers Gasperich': {
+        code: 'A13_lux_sud',
+		vid:12,
+        cat: 'LUX-SUD',
+        from: 'schengen',
+        to: 'gasperich',
+        text: 'Schengen ' + LANG.to + ' Gasperich'
+    },
+	'Schengen vers Kirchberg': {
         code: 'A13_lux_est',
+		vid:13,
         cat: 'LUX-EST',
         from: 'schengen',
         to: 'luxest',
         text: 'Schengen ' + LANG.to + ' Lux Est'
     },
-    15: {
+    'Schengen vers Fr. Belgique': {
+        code: 'A13_belgique',
+		vid:14,
+        cat: 'BELGIQUE',
+        from: 'schengen',
+        to: 'belgique',
+        text: 'Schengen ' + LANG.to + ' Belgique'
+    },
+	 'Wasserbillig vers Kirchberg': {
         code: 'A1_lux_est',
+		vid:15,
         cat: 'LUX-EST',
         from: 'treves',
         to: 'luxest',
         text: 'Wasserbillig ' + LANG.to + ' Lux Est'
     },
-    8: {
-        code: 'A4_lux_hol',
-        cat: 'LUX-HOL',
-        from: 'france',
+    'Wasserbillig vers Gasperich': {
+        code: 'A1_lux_sud',
+		vid:16,
+        cat: 'LUX-SUD',
+        from: 'treves',
         to: 'gasperich',
-        text: 'France ' + LANG.to + ' Gasperich'
+        text: 'Wasserbillig ' + LANG.to + ' Gasperich'
+    },
+	'Wasserbillig vers Fr. France': {
+        code: 'A1_france',
+		vid:17,
+        cat: 'FRANCE',
+        from: 'treves',
+        to: 'france',
+        text: 'Wasserbillig ' + LANG.to + ' France'
+    },
+    'Senningerberg vers Gasperich': {
+        code: 'A1_lux_sud',
+		vid:18,
+        cat: 'LUX-SUD',
+        from: 'luxest',
+        to: 'gasperich',
+        text: 'Senningerberg ' + LANG.to + ' Gasperich'
+    },
+    'Senningerberg vers Fr. France': {
+        code: 'A1_france',
+		vid:19,
+        cat: 'FRANCE',
+        from: 'luxest',
+        to: 'france',
+        text: 'Senningerberg ' + LANG.to + ' France'
+    },
+    'Senningerberg vers Fr. Belgique': {
+        code: 'A1_belgique',
+		vid:20,
+        cat: 'BELGIQUE',
+        from: 'luxest',
+        to: 'belgique',
+        text: 'Senningerberg ' + LANG.to + ' Belgique'
+    },
+	'Gasperich vers Fr. France': {
+        code: 'A3_france',
+		vid:6,
+        cat: 'FRANCE',
+        from: 'hollerich',
+        to: 'france',
+        text: 'Gasperich ' + LANG.to + ' France'
+    },
+    'Bridel vers Fr. Belgique': {
+        code: 'A6_belgique',
+		vid:5,
+        cat: 'BELGIQUE',
+        from: 'bridel',
+        to: 'belgique',
+        text: 'Bridel ' + LANG.to + ' Belgique'
     }
 };
 var reTime = /&(\d+)([^=]+)=([\w-]+)\s+(.*)/g;
