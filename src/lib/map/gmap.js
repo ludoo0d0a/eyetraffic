@@ -1,317 +1,266 @@
-var map, lastmarker, gtimes = {}, gmarkers = [], routemarkers = [], mylocation = false;
-var options = {
-    nearRoad: true,
-    drawDirection: true,
-    showcontrols: false,
-    memo: false
-};
-var INEXT = (typeof chrome!=='undefined' && typeof chrome.extension!=='undefined');
+var map, places = {};
+//var lastmarker, gtimes = {},  routemarkers = [], mylocation = false;
 var dirnRoadClick, dirnRoadDrag;
-function initialize(){
-    showLocation();
-	
-	if (GBrowserIsCompatible()) {
-        map = new GMap2(document.getElementById("map_canvas"));
-        if (options.showcontrols) {
-            map.addControl(new GLargeMapControl());
-            map.addControl(new GMapTypeControl());
-        }
-        // Add the self created control
-        //map.addControl(new MoreControl());
-        map.enableScrollWheelZoom();
-        //map.setUIToDefault();
-        map.setCenter(new GLatLng(49.62672481765915, 6.24847412109375), 10);//lux
-        geocoder = new GClientGeocoder();
-        //geocoder = new GClientGeocoder(new GGeocodeCache()); 
-        if (options.memo) {
-            var c = getCookie();
-            if (c) {
-                map.setCenter(new GLatLng(c.lat, c.lng), c.zoom, map.getMapTypes()[c.maptype]);
-            }
-        }
-        //addEncodedPloyline();
-        //initRect();
-        //addOverlayRect(map);
-        //addOverlayCanvas(map);
-        dirnRoadClick = new GDirections();
-        dirnRoadDrag = new GDirections();
-        //click put marker on the road
-        GEvent.addListener(dirnRoadClick, "load", function(){
-            var n = dirnRoadClick.getPolyline().getVertexCount();
-            var p = dirnRoadClick.getPolyline().getVertex(n - 1);
-            addMarker(p, ETF.CAT_ROUTE);
-            if (options.drawDirection && routemarkers.length > 0) {
-                map.addOverlay(dirnRoadClick.getPolyline());
-            }
-            updateMarkers();
-        });
-        //drag move marker on the road
-        GEvent.addListener(dirnRoadDrag, "load", function(){
-            var p = dirnRoadDrag.getPolyline().getVertex(0);
-            lastmarker.setPoint(p);
-            updateHtml(lastmarker);
-            updateMarkers();
-        });
-        function addMarker(point, category){
-            var index = routemarkers.length;
-            var o = {
-                index: index,
-                category: category,
-                lat: point.lat(),
-                lng: point.lng()
-            };
-            var marker = createMarker(point, o, category, {
-                draggable: true,
-                icon: getIconCafe()
-            });
-            marker.index = index;
-            routemarkers.push(marker);
-            GEvent.addListener(marker, "dragend", function(point){
-                lastmarker = marker;
-                var p = marker.getPoint();
-                if (options.nearRoad) {
-                    dirnRoadDrag.loadFromWaypoints([p.toUrlValue(6), p.toUrlValue(6)], {
-                        getPolyline: true
-                    });
-                } else {
-                    updateHtml(marker);
-                    updateMarkers();
-                }
-            });
-        }
-        GEvent.addListener(map, "click", function(overlay, point, overlaylatlng){
-            if (overlay) {
-                return false;
-            }
-            if (options.nearRoad) {
-                var sp = (routemarkers && routemarkers.length > 0) ? (routemarkers[routemarkers.length - 1].getPoint()) : point.toUrlValue(6);
-                dirnRoadClick.loadFromWaypoints([sp, point.toUrlValue(6)], {
-                    getPolyline: true
-                });
+
+var initialLocation;
+var browserSupportFlag = new Boolean();
+
+function addControls(text, title, fn){
+
+    addControl('Home', 'Locate me', function(){
+        locateme();
+    }, google.maps.ControlPosition.TOP_LEFT);
+    addControl('Luxembourg', 'Luxembourg', function(){
+        locate('lux');
+    }, google.maps.ControlPosition.TOP_LEFT);
+    
+    $.each(FILTERS, function(id, o){
+        //html.push('<span>' + o.label + ': <input type="checkbox" id="cat_' + id + '" /></span>');
+        addControl(o.label, o.label, function(status){
+            if (o.fn) {
+                o.fn(this, id);
             } else {
-                addMarker(point, ETF.CAT_ROUTE);
+                selcat(this, id, status);
             }
         });
-        renderMarkersCams();
-        renderMarkersTimes();
-		renderMarkersDirs();
-		
-		makeSidebar();
-		//showcat('times');
-        //setSize(2);
-        //showLocation();
-        getCurrentLocation(true);
-    }
-}
-
-function renderMarkersCams(){
-	var markerOptions = function(point, data, category){
-		return {
-	        title:(data.titre)?(data.cam+':'+data.titre):'',
-			icon: getIconRed()
-    	};
-	};
-	if (INEXT){
-		getJSON('data/cams.json', function(json){
-     		renderMarkers(json, ETF.CAT_CAMS, markerOptions);
-     	});
-	}else{
-		renderMarkers(data_cams, ETF.CAT_CAMS, markerOptions);
-	}    
-}
-
-function renderMarkersTimes(){
-    var data_times = {
-        markers: []
-    };
-    jQuery.each(timesCoords, function(i, data){
-        data_times.markers.push({
-            location: i,
-			name: data.name,
-			lat: data.from.lat,
-			lng: data.from.lng
-        });
-    });
-	var markerOptions = function(point, data, category){
-		return {
-	        title:data.name||'',
-			icon: getIconPause()
-    	};
-	};
-	renderMarkers(data_times, ETF.CAT_CAMS, markerOptions);
-}
-function renderMarkersDirs(){
-    var data_times = {
-        markers: []
-    };
-    jQuery.each(dirCoords, function(i, data){
-        data_times.markers.push({
-            location: i,
-			name: i,
-			lat: data.lat,
-			lng: data.lng
-        });
-    });
-	var markerOptions = function(point, data, category){
-		return {
-	        title:data.name||'',
-			icon: getIconBlueTiny()
-    	};
-	};
-	renderMarkers(data_times, ETF.CAT_DIRS, markerOptions);
-}
-
-
-
-function renderMarkers(json, category, options){
-    jQuery(json.markers).each(function(i, marker){
-        createMarker(marker, marker, category, options);
-    });
-    jQuery(json.lines).each(function(i, line){
-        var pts = [];
-        for (var j = 0; j < line.points.length; j++) {
-            pts[j] = new GLatLng(line.points[j].lat, line.points[j].lng);
-        }
-        map.addOverlay(new GPolyline(pts, line.colour, line.width));
     });
 }
-
-
-
-function getJSON(url, cb){
-    GDownloadUrl(url, cb);
-    /*
-     var p = 'file:///C:/Documents%20and%20Settings/Valente/My%20Documents/Aptana%20Studio%20Workspace/EyeTraffic/src/';
-     p = '';
-     jQuery.ajax({
-     url: p + url,
-     success: function(data){
-     if (data) {
-     var json = JSON.parse(data);
-     cb(json);
-     }
-     }
-     });*/
-    //$.getJSON(url, cb);
-}
-
-function findNearest(point, points){
-    var n = {};
-    jQuery(points).each(function(i, p){
-        var d = point.distanceFrom(p);
-        if (!np || (np && d < ld)) {
-            n = {
-                point: p,
-                distance: d
-            };
-        }
-    });
-    return n;
-}
-
-function calculateDistance(){
-    var dist = 0;
-    for (var i = 0; i < gpolys.length; i++) {
-        dist += gpolys[i].Distance();
-    }
-    return "Path length: " + (dist / 1000).toFixed(2) + " km.<br/>" + (dist / 1609.344).toFixed(2) + " miles.";
-}
-
-function updateMarkers(){
-    var o = [];
-    jQuery(routemarkers).each(function(i, marker){
-        var point = marker.getLatLng();
-        o.push({
-            i: marker.index + 1,
-            lat: point.lat(),
-            lng: point.lng(),
-            html: marker.html,
-            label: marker.getTitle()
-        });
-    });
-    var out = JSON.stringify(o);
-	
-	out+=logDirection(dirnRoadDrag);
-	out+=logDirection(dirnRoadClick);
-	
-	jQuery('#jmarkers').html(out);
-}
-
-function logDirection(dirn){
-	var poly=false, s = '';
-	if (dirn && (poly=dirn.getPolyline())){ 
-		var n = poly.getVertexCount();
-		if (n > 0) {
-			for(var i=0;i<n;i++){
-				var p = dirn.getPolyline().getVertex(i);
-				console.log(i+'-'+p.x+','+p.y);
-			}
+function addControl(text, title, fn, position){
+    var c = $('<div class="gm-control" title="' + title + '"></div>');
+    //var input = c.append('<input type="checkbox" style="vertical-align: middle; ">');
+    c.append('<label style="vertical-align: middle; cursor: pointer; ">' + text + '</label>');
+    google.maps.event.addDomListener(c[0], 'click', function(e){
+        //$(e.target)
+        var b = !$(this).hasClass('gm_selected');
+        if (b) {
+            $(this).siblings().removeClass('gm_selected');
+            $(this).addClass('gm_selected');
+        }else{
+			//disable
+			$(this).removeClass('gm_selected');
 		}
-	}
-	return s;
+		fn(b);
+    });
+    map.controls[position || google.maps.ControlPosition.BOTTOM_CENTER].push(c[0]);   
 }
-	
+
+function initialize(){
+    places.lux = new google.maps.LatLng(49.62672481765915, 6.24847412109375);
+    
+    var myOptions = {
+        zoom: 10,
+        center: places.lux,
+        panControl: true,
+        zoomControl: true,
+        scaleControl: true,
+        scaleControlOptions: {
+            position: google.maps.ControlPosition.TOP_LEFT
+        },
+        streetViewControl: false,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+            //style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR
+        },
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+    
+    addControls();
+    
+    /*    
+     
+     geocoder = new GClientGeocoder();
+     //geocoder = new GClientGeocoder(new GGeocodeCache());
+     if (options.memo) {
+     var c = getCookie();
+     if (c) {
+     map.setCenter(new GLatLng(c.lat, c.lng), c.zoom, map.getMapTypes()[c.maptype]);
+     }
+     }
+     */
+    /*
+     dirnRoadClick = new GDirections();
+     dirnRoadDrag = new GDirections();
+     //click put marker on the road
+     google.maps.event.addListener(dirnRoadClick, "load", function(){
+     var n = dirnRoadClick.getPolyline().getVertexCount();
+     var p = dirnRoadClick.getPolyline().getVertex(n - 1);
+     addMarker(p, ETF.CAT_ROUTE);
+     if (options.drawDirection && routemarkers.length > 0) {
+     map.addOverlay(dirnRoadClick.getPolyline());
+     }
+     updateMarkers();
+     });
+     //drag move marker on the road
+     google.maps.event.addListener(dirnRoadDrag, "load", function(){
+     var p = dirnRoadDrag.getPolyline().getVertex(0);
+     lastmarker.setPoint(p);
+     updateHtml(lastmarker);
+     updateMarkers();
+     });
+     function addMarker(point, category){
+     var index = routemarkers.length;
+     var o = {
+     index: index,
+     category: category,
+     lat: point.lat(),
+     lng: point.lng()
+     };
+     var marker = createMarker(point, o, category, {
+     draggable: true,
+     icon: getIconCafe()
+     });
+     marker.index = index;
+     routemarkers.push(marker);
+     google.maps.event.addListener(marker, "dragend", function(point){
+     lastmarker = marker;
+     var p = marker.getPoint();
+     if (options.nearRoad) {
+     dirnRoadDrag.loadFromWaypoints([p.toUrlValue(6), p.toUrlValue(6)], {
+     getPolyline: true
+     });
+     } else {
+     updateHtml(marker);
+     updateMarkers();
+     }
+     });
+     }
+     google.maps.event.addListener(map, "click", function(overlay, point, overlaylatlng){
+     if (overlay) {
+     return false;
+     }
+     if (options.nearRoad) {
+     var sp = (routemarkers && routemarkers.length > 0) ? (routemarkers[routemarkers.length - 1].getPoint()) : point.toUrlValue(6);
+     dirnRoadClick.loadFromWaypoints([sp, point.toUrlValue(6)], {
+     getPolyline: true
+     });
+     } else {
+     addMarker(point, ETF.CAT_ROUTE);
+     }
+     });
+     */
+}
+function locate(place){
+    if (place) {
+        if (places[place]) {
+            map.setCenter(places[place]);
+        }
+    } else {
+        locateme();
+    }
+}
+function locateme(){
+    // Try W3C Geolocation (Preferred)
+    if (navigator.geolocation) {
+        browserSupportFlag = true;
+        navigator.geolocation.getCurrentPosition(function(position){
+            initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            map.setCenter(initialLocation);
+        }, function(){
+            handleNoGeolocation(browserSupportFlag);
+        });
+        // Try Google Gears Geolocation
+    } else if (google.gears) {
+        browserSupportFlag = true;
+        var geo = google.gears.factory.create('beta.geolocation');
+        geo.getCurrentPosition(function(position){
+            initialLocation = new google.maps.LatLng(position.latitude, position.longitude);
+            map.setCenter(initialLocation);
+        }, function(){
+            handleNoGeoLocation(browserSupportFlag);
+        });
+        // Browser doesn't support Geolocation
+    } else {
+        browserSupportFlag = false;
+        handleNoGeolocation(browserSupportFlag);
+    }
+    
+    function handleNoGeolocation(errorFlag){
+        if (errorFlag == true) {
+            alert("Geolocation service failed.");
+            initialLocation = newyork;
+        } else {
+            alert("Your browser doesn't support geolocation. We've placed you in Siberia.");
+            initialLocation = siberia;
+        }
+        map.setCenter(initialLocation);
+    }
+}
+
+function detectBrowser(){
+    var useragent = navigator.userAgent;
+    var mapdiv = document.getElementById("map_canvas");
+    
+    if (useragent.indexOf('iPhone') != -1 || useragent.indexOf('Android') != -1) {
+        mapdiv.style.width = '100%';
+        mapdiv.style.height = '100%';
+    } else {
+        mapdiv.style.width = '600px';
+        mapdiv.style.height = '800px';
+    }
+}
+var singleTip = null;
 function createMarker(point, data, category, options){
     var p;
-    if (point && point.lat && typeof point.lat !=='function') {
-        p = new GLatLng(point.lat, point.lng);
+    if (point && point.lat && typeof point.lat !== 'function') {
+        p = new google.maps.LatLng(point.lat, point.lng);
     } else {
         p = point;
     }
-	var opt = {};
-	if (typeof options ==='function'){
-		opt=options(point, data, category);
-	}else{
-		opt =options || {};
-	}
-    var marker = new GMarker(p, opt);
+    var opt = {};
+    if (typeof options === 'function') {
+        opt = options(point, data, category);
+    } else {
+        opt = options || {};
+    }
+    
+    opt = $.extend(opt, {
+        position: p,
+        title: '',
+        map: map,
+        draggable: true
+    });
+    var marker = new google.maps.Marker(opt);
     marker.category = category;
     marker.data = data;
     var html = getHtml(marker, category);
-    function openwindow(){
-        marker.openInfoWindowHtml(html, {
-            maxWidth: 200
-        });
+    if (html) {
+        function openwindow(){
+            marker.tip = new google.maps.InfoWindow({
+				html:html,
+				maxWidth: 200
+			});
+			//marker.tip.setContent(html);
+			marker.tip.open(map, marker);
+			singleTip=marker.tip;
+        }
+		function opensinglewindow(){
+			if (!singleTip) {
+				singleTip = new google.maps.InfoWindow();
+			}
+			singleTip.setContent(html);
+			singleTip.open(map, marker);
+			//maxWidth: 200
+        }
+		
+		function closewindow(){
+			if (singleTip) {
+				singleTip.close();
+			}
+		}
+
+		var b = opt.windowbehavior||'mouseover';
+		if (b=='click'){
+			google.maps.event.addListener(marker, "click", openwindow);
+			google.maps.event.addListener(map, 'click', closewindow);
+		}else{
+			google.maps.event.addListener(marker, 'mouseover', opensinglewindow);
+			google.maps.event.addListener(marker, 'mouseout', closewindow);
+			google.maps.event.addListener(map, 'click', closewindow);
+		}
     }
-    GEvent.addListener(marker, "click", openwindow);
-    //GEvent.addListener(marker, "mouseover", openwindow);
-    map.addOverlay(marker);
+    //map.addOverlay(marker);
     gmarkers.push(marker);
     return marker;
 }
-
-function addEncodedPloyline(){
-    var encodedPolyline = new GPolyline.fromEncoded({
-        color: "#FF0000",
-        weight: 10,
-        points: "gxqmH_`kd@fEqbAwHcyAuo@g}@csAopAwqBal@k{BsVmb@_wA",
-        levels: "BBBBBBBB",
-        zoomFactor: 32,
-        numLevels: 4
-    });
-    map.addOverlay(encodedPolyline);
-}
-
-function addOverlayRect(map){
-    // Display a rectangle in the center of the map at about a quarter of
-    // the size of the main map
-    var bounds = map.getBounds();
-    var southWest = bounds.getSouthWest();
-    var northEast = bounds.getNorthEast();
-    var lngDelta = (northEast.lng() - southWest.lng()) / 1;//4
-    var latDelta = (northEast.lat() - southWest.lat()) / 1;//4
-    var rectBounds = new GLatLngBounds(new GLatLng(southWest.lat() + latDelta, southWest.lng() + lngDelta), new GLatLng(northEast.lat() - latDelta, northEast.lng() - lngDelta));
-    map.addOverlay(new Rectangle(rectBounds));
-}
-
-
-function terminate(){
-    if (options.memo) {
-        setCookie();
-    }
-    GUnload();
-}
-
-window.onunload = terminate;
-
-

@@ -15,3 +15,11 @@ function getRandom(max){
 	max =max || 100;
 	return Math.round(Math.random() * max)+1; 
 }
+
+function req(message, cb, data){
+    if (chrome.extension) {
+        var o = data || {};
+        o.message = message;
+        chrome.extension.sendRequest(o, cb);
+    }
+}

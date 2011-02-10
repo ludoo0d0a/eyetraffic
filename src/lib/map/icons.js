@@ -1,82 +1,128 @@
-var baseIcon = new GIcon(G_DEFAULT_ICON);
-baseIcon.iconSize = new GSize(24, 38);
-var icon1 = G_START_ICON;
-var icon2 = G_PAUSE_ICON;
-var icon3 = G_END_ICON;
-var icon4 = getIconWhite();
-function getIconWhite(){
-    var icon4 = new GIcon(baseIcon, "http://labs.google.com/ridefinder/images/mm_20_white.png");
-    icon4.shadow = "http://labs.google.com/ridefinder/images/mm_20_shadow.png";
-    icon4.iconSize = new GSize(12, 20);
-    icon4.shadowSize = new GSize(22, 20);
-    icon4.iconAnchor = new GPoint(6, 20);
-    icon4.infoWindowAnchor = new GPoint(5, 1);
-}
-
-function getIconCafe(){
-    var icon = new GIcon();
-    icon.image = "http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=cafe|996600";
-    icon.shadow = "http://chart.apis.google.com/chart?chst=d_map_pin_shadow";
-    icon.iconSize = new GSize(12, 20);
-    icon.shadowSize = new GSize(22, 20);
-    icon.iconAnchor = new GPoint(6, 20);
-    icon.infoWindowAnchor = new GPoint(5, 1);
-    return icon;
-}
-
 function getIconBlue(){
-    var icon = new GIcon(G_DEFAULT_ICON);
-    icon.image = "http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png";
-    return icon;
+    return getIcon("http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png");
 }
 
 function getIconPause(){
-    var icon = new GIcon(G_DEFAULT_ICON);
-    icon.image = "http://www.google.com/intl/en_ALL/mapfiles/icon-dd-pause-trans.png";
-    return icon;
+   return getIcon("http://www.google.com/intl/en_ALL/mapfiles/icon-dd-pause-trans.png");
 }
 
 function getIconStart(){
-    var icon = new GIcon(G_DEFAULT_ICON);
-    icon.image = "http://www.google.com/intl/en_ALL/mapfiles/icon-dd-play-trans.png";
-    return icon;
+    return getIcon("http://www.google.com/intl/en_ALL/mapfiles/icon-dd-play-trans.png");
 }
 
 function getIconEnd(){
-    var icon = new GIcon(G_DEFAULT_ICON);
-    icon.image = "http://www.google.com/intl/en_ALL/mapfiles/icon-dd-stop-trans.png";
-    return icon;
+    return getIcon("http://www.google.com/intl/en_ALL/mapfiles/icon-dd-stop-trans.png");
 }
 
 function getIconA(){
-    var icon = new GIcon(G_DEFAULT_ICON);
-    icon.image = "http://maps.gstatic.com/intl/en_us/mapfiles/kml/paddle/go.png";
-    return icon;
+   return getIcon("http://maps.gstatic.com/intl/en_us/mapfiles/kml/paddle/go.png");
 }
 
 function getIconB(){
-    var icon = new GIcon(G_DEFAULT_ICON);
-    icon.image = "http://maps.gstatic.com/intl/en_us/mapfiles/kml/paddle/stop.png";
-    return icon;
+    return getIcon("http://maps.gstatic.com/intl/en_us/mapfiles/kml/paddle/stop.png");
 }
 
+function getIconWhite(){
+    return getIcon({
+	    image: {
+			url: "http://labs.google.com/ridefinder/images/mm_20_white.png",
+			width:12, 
+			height:20,
+			anchor:{x:6,y:20}
+		},
+	    shadow: { 
+			url:"http://labs.google.com/ridefinder/images/mm_20_shadow.png",
+			width:22, 
+			height:20,
+			anchor:{x:6,y:20}
+		}
+	});
+}
+
+function getIconCafe(){
+        return getIcon({
+	    image: {
+			url: "http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=cafe|996600",
+			width:12, 
+			height:20,
+			anchor:{x:6,y:20}
+		},
+	    shadow: { 
+			url:"http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
+			width:22, 
+			height:20,
+			anchor:{x:6,y:20}
+		}
+	});
+}
+
+
 function getIconRed(){
-    var icon = new GIcon();
-    icon.image = "http://labs.google.com/ridefinder/images/mm_20_red.png";
-    icon.shadow = "http://labs.google.com/ridefinder/images/mm_20_shadow.png";
-    icon.iconSize = new GSize(12, 20);
-    icon.shadowSize = new GSize(22, 20);
-    icon.iconAnchor = new GPoint(6, 20);
-    return icon;
+    return getIcon({
+	    image: {
+			url: "http://labs.google.com/ridefinder/images/mm_20_red.png",
+			width:12, 
+			height:20,
+			anchor:{x:6,y:20}
+		},
+	    shadow: { 
+			url:"http://labs.google.com/ridefinder/images/mm_20_shadow.png",
+			width:22, 
+			height:20,
+			anchor:{x:6,y:20}
+		}
+	});
 }
 
 function getIconBlueTiny(){
-    var icon = new GIcon();
-    icon.image = "http://labs.google.com/ridefinder/images/mm_20_blue.png";
-    icon.shadow = "http://labs.google.com/ridefinder/images/mm_20_shadow.png";
-    icon.iconSize = new GSize(12, 20);
-    icon.shadowSize = new GSize(22, 20);
-    icon.iconAnchor = new GPoint(6, 20);
-    icon.infoWindowAnchor = new GPoint(5, 1);
-    return icon;
+    return getIcon({
+	    image: {
+			url: "http://labs.google.com/ridefinder/images/mm_20_blue.png",
+			width:12, 
+			height:20,
+			anchor:{x:6,y:20}
+		},
+	    shadow: { 
+			url:"http://labs.google.com/ridefinder/images/mm_20_shadow.png",
+			width:22, 
+			height:20,
+			anchor:{x:6,y:20}
+		}
+	});
+    //icon.infoWindowAnchor = new GPoint(5, 1);
 }
+
+function getIcon(image, shadow, coords ){
+    //http://code.google.com/apis/maps/documentation/javascript/examples/icon-complex.html
+	//image : url, size, origin, anchor
+	//shadow : url, size, origin, anchor
+
+	var o = {};
+	if (typeof image === 'string') {
+		o.icon= image;
+	}else{
+		image.origin = image.origin || {};
+		image.anchor = image.anchor || {};
+		o.image = new google.maps.MarkerImage(image.url, 
+		new google.maps.Size(image.width, image.height), 
+		new google.maps.Point(image.origin.x || 0, image.origin.y || 0), 
+		new google.maps.Point(image.anchor.x || 0, image.anchor.y || image.height || 0)
+		);
+	}
+    if (shadow) {
+		shadow.origin=shadow.origin||{};
+		shadow.anchor=shadow.anchor||{};
+		o.shadow = new google.maps.MarkerImage(shadow.url,
+			new google.maps.Size(shadow.width, shadow.height), 
+			new google.maps.Point(shadow.origin.x||0, shadow.origin.y||0), 
+			new google.maps.Point(shadow.anchor.x||0, shadow.anchor.y||shadow.height||0));
+	}
+    if (coords) {
+		o.shape = {
+			coord: coords, //[1, 1, 1, 20, 18, 20, 18, 1]
+			type: 'poly'
+		};
+	}
+    return o;
+}
+

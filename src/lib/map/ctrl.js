@@ -1,20 +1,181 @@
-var ETF={
-	CAT_ROUTE:'route',
-	CAT_CAMS:'cams',
-	CAT_TIMES:'times',
-	CAT_POSITION:'position',
-	CAT_DIRS:'directions'
+var gmarkers = [];
+var ETF = {
+    CAT_CAMS: 'cams',
+    CAT_POSITION: 'position',
+    CAT_ROUTE: 'route',
+    CAT_TIMES: 'times',
+    CAT_DIRS: 'directions',
+    CAT_TRAFFIC: 'traffic',
+    CAT_PARKING: 'parking',
+    CAT_BUS: 'bus'
 };
 
-ETF.tpl = {
-	cams:'<div class="tipcam"><a href="javascript:centeretzoom({lat},{lng})">'+
-'<img src="http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{cam}.jpg" height="80" width="120"/></a><br/>'+
-'<div class="titrepopup2">{cam}:{titre}</div><div class="localitepopup2">{localite}</div></div>',
-	timesAll:'<table border="0" cellpadding="0" cellspacing="0"><tr><td width="100%" class="EWTitle" nowrap>{title}<\/td><\/tr><tr><td nowrap>{content}<\/td><\/tr><\/table>',
-	times:'<span>{to}</span><span>{duration}</span><br/>',
-	route:'',
-	position:'This is my position : {lat},{lng}',
-	directions:'<span class="mdir">{name}</span>'
+var options = {
+    nearRoad: true,
+    drawDirection: true,
+    showcontrols: false,
+    memo: false
+};
+//0:inconnu, 1:fluide, 3:ralenti, charge, sature
+var COLORS_STATUS = {
+    0: '#aaaaaa',
+    1: '#00FF00',
+    2: '#ffc83f',
+    3: '#ffe100',
+    4: '#FF0000',
+    5: '#000000'
+};
+var INEXT = (typeof chrome !== 'undefined' && typeof chrome.extension !== 'undefined');
+
+var FILTERS = {
+    cams: {
+        label: 'Cameras',
+        tpl: '<div class="tipcam"><a href="javascript:centeretzoom({lat},{lng})">' +
+        '<img src="http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{id}.jpg" height="80" width="120"/></a><br/>' +
+        '<div class="titrepopup2">{cam}:{name}</div><div class="localitepopup2">{location}</div></div>',
+        url: 'data/cams.json',
+        data: 'data_cams',
+        markerOptions: function(point, data, category){
+            console.log(data);
+			return $.extend(getIconRed(), {
+                name: data.titre,
+                cam: data.cam || '',
+                id: data.cam || '',
+                location: data.localite || ''                
+            });
+        }
+    },
+    position: {
+        label: 'Current Position',
+        tpl: 'This is my position : {lat},{lng}'
+    },
+    route: {
+        label: 'Route',
+        tpl: ''
+    },
+    times: {
+        label: 'Times',
+        tpl: '<span>{to}</span><span>{duration}</span><br/>',
+        tplAll: '<table border="0" cellpadding="0" cellspacing="0"><tr><td width="100%" class="EWTitle" nowrap>{title}<\/td><\/tr><tr><td nowrap>{content}<\/td><\/tr><\/table>',
+        markerOptions: function(point, data, category){
+            return $.extend(getIconPause(), {
+                title: data.name || ''
+            });
+        },
+        mapping: function(input){
+            var json = {
+                markers: []
+            };
+            jQuery.each(timesCoords, function(i, data){
+                json.markers.push({
+                    location: i,
+                    name: data.name,
+                    lat: data.from.lat,
+                    lng: data.from.lng
+                });
+            });
+            return json;
+        }
+    },
+    directions: {
+        label: 'Directions',
+        tpl: '<span class="mdir">{name}</span>',
+        markerOptions: function(point, data, category){
+            return $.extend(getIconBlueTiny(), {
+                title: data.name || ''
+            });
+        },
+        mapping: function(input){
+            var json = {
+                markers: []
+            };
+            jQuery.each(dirCoords, function(i, data){
+                json.markers.push({
+                    location: i,
+                    name: i,
+                    lat: data.lat,
+                    lng: data.lng
+                });
+            });
+            return json;
+        }
+    },
+    traffic: {
+        label: 'Traffic',
+        fn: function(el){
+            showTraffic(el);
+        },
+        tpl: ''
+    },
+    parking: {
+        label: 'Parkings',
+        tpl: '<div class="tip-parking">'+
+		'<p>[{id}]Parking {name} - {status}</p>'+
+		'<p>{percent}% : {actuel}/{total} <img src="{urlTendance}"/>::{tendance}</p>'+
+		'<p><a target="_blankp" href="{url}"><img width="100px" src="{pic}"/></a></p>'+
+		'</div>',
+        url: 'http://service.vdl.lu/rss/circulation_guidageparking.php',
+        options: {
+            dataType: 'xml'
+        },
+        path: 'responseJson.rss.channel.item',
+        data: 'data_parking',
+        markerOptions: function(point, data, category){
+			return $.extend(getIconRed(), {
+                name: data.name,
+                id: data.id || '',
+                location: data.location || ''
+            });
+        },
+        mapping: function(input){
+            var json = {
+                markers: []
+            };
+            
+            jQuery.each(input, function(i, data){
+                //for tpl
+				if (data.id==19){
+					console.log(data);
+				}
+				var o = {
+					total: parseInt(data['vdlxml:total'],10),
+					actuel: parseInt(data['vdlxml:actuel'],10),
+					tendance: parseInt(data['vdlxml:tendance'],10),
+					ouvert: data['vdlxml:ouvert'],
+					complet: data['vdlxml:complet']
+				};
+				var percent= Math.round((o.actuel*100)/o.total);
+				var status = (o.complet==1)?'Complet':((o.ouvert==1)?'Ouvert':'Fermé');
+				var pt = 'flat';
+				if (o.tendance > 0) {
+					pt = 'up';
+				} else if (o.tendance < 0) {
+					pt = 'down';
+				}
+				var urlTendance= 'http://service.vdl.lu/export/graphics/arrow_'+pt+'.png';
+                json.markers.push({
+                    id: data.id||i,
+					url:(data.guid)?('http://www.vdl.lu/index.php?id=11640&start=no&vdl_f=detail&vdl_id='+data.guid):'',
+					location: data.title,
+                    name: data.title,
+                    lat: data['vdlxml:localisation']['vdlxml:localisationLatitude'],
+                    lng: data['vdlxml:localisation']['vdlxml:localisationLongitude'],
+					pic: data['vdlxml:divers']['vdlxml:pictureUrl'],
+					total:o.total,
+					actuel:o.actuel,
+					status: status,
+					tendance: o.tendance,
+					urlTendance:urlTendance,
+					percent:percent
+                });
+            });
+            return json;
+        }
+    },
+    bus: {
+        label: 'Bus',
+        tpl: ''
+    }
 };
 
 var geocoder;
@@ -101,8 +262,68 @@ function clearRoute(){
     }
 }
 
-function selcat(box, category){
+function showTraffic(box){
     if (box.checked) {
+        //TODO: setInteral
+        req('updateservices', onUpdateServices);
+    } else {
+        clearTraffic();
+    }
+}
+
+
+function getHtmlTimes(marker, category, location){
+    var content = '';
+    jQuery.each(timeMappings, function(id, o){
+        if (o.from === location) {
+            content += fillTpl(FILTERS.times.tpl, o);
+        }
+    });
+    var html = fillTpl(FILTERS.times.tplAll, {
+        title: location,
+        content: content
+    });
+    return html;
+}
+function getHtml(marker, category){
+    var html = '';
+    if (category === ETF.CAT_TIMES) {
+        html = getHtmlTimes(marker, category, marker.data.location);
+    } else {
+        html = fillTpl(FILTERS[category || marker.category].tpl || '', marker.data);
+    }
+    return html;
+}
+function updateHtml(marker){
+    marker.bindInfoWindowHtml(getHtml(marker));
+}
+function updateTime(marker){
+    if (marker.data) {
+        marker.duration = gtimes[marker.data.location] || '';
+    }
+}
+
+var ewindows = [];
+function addOverlayWindows(){
+    var ewindow = new EWindow(map, E_STYLE_7, 'lib/map/ewindow/');
+    map.addOverlay(ewindow);
+    ewindows.push(ewindow);
+    return ewindow;
+}
+
+var elprev = {};
+function overwindow(event){
+    var cat = event.data.category;
+    if (elprev[cat]) {
+        elprev[cat].css('z-index', 'auto');
+    }
+    var el = jQuery(this);
+    el.css('z-index', 9999);
+    elprev[cat] = el;
+}
+
+function selcat(box, category, status){
+    if (status || box.checked) {
         showcat(category);
     } else {
         hidecat(category);
@@ -111,61 +332,25 @@ function selcat(box, category){
     makeSidebar();
 }
 
-
-function getHtmlTimes(marker, category, location){
-	var content='';
-	jQuery.each(timeMappings, function(id, o){
-		if (o.from === location){
-			content += fillTpl(ETF.tpl.times, o);
-		} 
-	});
-	var html = fillTpl(ETF.tpl.timesAll, {title:location, content:content});
-	return html;
+function showcat(cat){
+    if (!FILTERS[cat].rendered) {
+        renderMarker(cat, function(){
+            displaycat(cat);
+        });
+    } else {
+        displaycat(cat);
+    }
 }
-function getHtml(marker, category){
-	var html = '';
-	if (category === ETF.CAT_TIMES) {
-		html = getHtmlTimes(marker, category, marker.data.location);
-	} else {
-		html = fillTpl(ETF.tpl[category || marker.category] || '', marker.data);
-	}
-	return html;
-}
-function updateHtml(marker){
-    marker.bindInfoWindowHtml(getHtml(marker));
-}
-function updateTime(marker){
-    if (marker.data) {
-		marker.duration = gtimes[marker.data.location] || '';
-	}
-}
-
-var ewindows=[];
-function addOverlayWindows(){
-	var ewindow = new EWindow(map, E_STYLE_7, 'lib/map/ewindow/');
-	map.addOverlay(ewindow);
-	ewindows.push(ewindow);
-	return ewindow;
-}
-
-var elprev={};
-function overwindow(event){
-	var category=event.data.category;
-	if (elprev[category]){
-		elprev[category].css('z-index','auto');
-	}
-	var el = jQuery(this);
-	el.css('z-index',9999);
-	elprev[category]=el;
-}
-function showcat(category){
-	jQuery(gmarkers).each(function(i, marker){
+function displaycat(category){
+    jQuery(gmarkers).each(function(i, marker){
         if (marker.category === category) {
             marker.show();
-			updateTime(marker);
-			marker.ewindow=addOverlayWindows();
-			jQuery(marker.ewindow.div1).bind('mouseover', {category: category}, overwindow);
-			var html = getHtml(marker, category);
+            updateTime(marker);
+            marker.ewindow = addOverlayWindows();
+            jQuery(marker.ewindow.div1).bind('mouseover', {
+                category: category
+            }, overwindow);
+            var html = getHtml(marker, category);
             marker.ewindow.openOnMarker(marker, html);
         }
     });
@@ -176,9 +361,9 @@ function hidecat(category){
     jQuery(gmarkers).each(function(i, marker){
         if (marker.category === category) {
             marker.hide();
-			if (marker.ewindow) {
-				marker.ewindow.hide();
-			}
+            if (marker.ewindow) {
+                marker.ewindow.hide();
+            }
         }
     });
     document.getElementById('cat_' + category).checked = false;
@@ -192,7 +377,7 @@ function makeSidebar(){
     jQuery.each(timeMappings, function(key, o){
         jQuery('<a id="' + o.vid + '" href="#">' + o.text + '</a>').click(function(){
             var id = o.vid;
-			renderRoute(id, o);
+            renderRoute(id, o);
             el.find('.selected').each(function(){
                 if (routes[this.id]) {
                     routes[this.id].clear();
@@ -205,38 +390,104 @@ function makeSidebar(){
     });
 }
 
-var routes = {};
-function renderRoute(id, o){
-    var route = routes[id];
-    if (!route) {
-        route = new GDirections(map);
-        routes[id] = route;
+var jams = [];
+function onUpdateServices(fragments){
+    //TODO : color polyline (use direction.getPolyline to be smoother ?)
+    //http://www.birdtheme.org/useful/googletool.html
+    //http://code.google.com/apis/maps/documentation/utilities/polylineutility.html
+    clearTraffic();
+    jQuery.each(fragments, function(i, f){
+        //statusId 0 inconnu, 1 : fluide ->  5?charge
+        jams.push(drawPolyline(f.from, f.to, f.status));
+    });
+}
+//Delete polylines
+function clearTraffic(){
+    jams = jams || [];
+    jQuery.each(jams, function(i, jam){
+        map.removeOverlay(jam);
+    });
+    jams = [];
+}
+
+
+function renderMarker(cat, cb){
+	var f = FILTERS[cat];
+	if (f && f.url) {
+		if (INEXT) {
+			getJSON(f.url, function(json){
+				var o = json;
+				if (f.path){
+					var segs = f.path.split('.');
+					$.each(segs, function(i,seg){
+						if (seg) {
+							o = o[seg] || {};
+						}
+					});
+				}
+				if (f.mapping) {
+					o = f.mapping(o);
+				}
+				renderMarkers(o, cat);
+				if (cb) {
+					cb();
+				}
+			},f.options||{});
+		} else {
+			var o = window[f.data];
+			/*if (f.mapping) {
+				o = f.mapping(o);
+			}*/
+			renderMarkers(window[f.data], cat);
+			if (cb) {
+				cb();
+			}
+		}
+		FILTERS[cat].rendered = true;
+	}
+}
+
+function renderMarkers(json, category, options){
+    options=options||FILTERS[category].markerOptions;
+	jQuery(json.markers).each(function(i, marker){
+        createMarker(marker, marker, category, options);
+    });
+    jQuery(json.lines).each(function(i, line){
+        var pts = [];
+        for (var j = 0; j < line.points.length; j++) {
+            pts[j] = new GLatLng(line.points[j].lat, line.points[j].lng);
+        }
+        map.addOverlay(new GPolyline(pts, line.colour, line.width));
+    });
+}
+
+function updateMarkers(){
+    var o = [];
+    jQuery(routemarkers).each(function(i, marker){
+        var point = marker.getLatLng();
+        o.push({
+            i: marker.index + 1,
+            lat: point.lat(),
+            lng: point.lng(),
+            html: marker.html,
+            label: marker.getTitle()
+        });
+    });
+    var out = JSON.stringify(o);
+    
+    out += logDirection(dirnRoadDrag);
+    out += logDirection(dirnRoadClick);
+    
+    jQuery('#jmarkers').html(out);
+}
+
+
+function getJSON(url, cb, opt){
+    if (INEXT) {
+        opt = opt || {};
+        opt.url = url;
+        req('xhr', cb, opt);
+    } else {
+        GDownloadUrl(url, cb);
     }
-    route.clear();
-    GEvent.addListener(route, "error", function(){
-        console.log('error');
-    });
-    var source = timesCoords[o.from].from;
-    //var ms = createMarker(source, source.name, 'times2', {icon:getIconStart()});
-    var psource = new GLatLng(source.lat, source.lng);
-    var destination = timesCoords[o.to].to;
-    var pdest = new GLatLng(destination.lat, destination.lng);
-    //var me = createMarker(destination, getHtml(destination), 'times2', {icon:getIconEnd()});
-    function getDurationHtml(point, duration){
-        return point.name + ' : ' + (duration || '');
-    }
-    GEvent.addListener(route, "load", function(){
-        var d = route.getDuration();
-        var ms = route.getMarker(0);
-		console.log(ms);
-		console.log(d.html);
-        ms.bindInfoWindowHtml(getDurationHtml(ms.getPoint(), d.html));
-    });
-    route.loadFromWaypoints([psource.toUrlValue(6), pdest.toUrlValue(6)], {
-        getPolyline: true
-        ,preserveViewport: true //false to zoom centered
-    });
-	console.log("from: " + o.from + " to: " + o.to);
-    //Geocoding					
-    //route.load("from: " + source + " to: " + destination);
 }
