@@ -6,42 +6,70 @@ var initialLocation;
 var browserSupportFlag = new Boolean();
 
 function addControls(text, title, fn){
-
     addControl('Home', 'Locate me', function(){
         locateme();
     }, google.maps.ControlPosition.TOP_LEFT);
     addControl('Luxembourg', 'Luxembourg', function(){
         locate('lux');
     }, google.maps.ControlPosition.TOP_LEFT);
+    addControl('Destination', 'Destination', function(){
+    
+    }, google.maps.ControlPosition.TOP_LEFT, '#location', 'destination');
+    addControl('Direction', 'Direction', function(){
+    
+    }, google.maps.ControlPosition.TOP_LEFT, '#route', 'route');
+    
+    addControl('Small', 'Small', function(){
+        setSize(0);
+    }, google.maps.ControlPosition.LEFT_BOTTOM);
+    addControl('Medium', 'Medium', function(){
+        setSize(1);
+    }, google.maps.ControlPosition.LEFT_BOTTOM);
+    addControl('Large', 'Large', function(){
+        setSize(2);
+    }, google.maps.ControlPosition.LEFT_BOTTOM);
     
     $.each(FILTERS, function(id, o){
         //html.push('<span>' + o.label + ': <input type="checkbox" id="cat_' + id + '" /></span>');
         addControl(o.label, o.label, function(status){
             if (o.fn) {
-                o.fn(this, id);
+                o.fn(this, id, status);
             } else {
                 selcat(this, id, status);
             }
-        });
+        }, google.maps.ControlPosition.BOTTOM_CENTER);
     });
 }
-function addControl(text, title, fn, position){
-    var c = $('<div class="gm-control" title="' + title + '"></div>');
-    //var input = c.append('<input type="checkbox" style="vertical-align: middle; ">');
-    c.append('<label style="vertical-align: middle; cursor: pointer; ">' + text + '</label>');
-    google.maps.event.addDomListener(c[0], 'click', function(e){
-        //$(e.target)
-        var b = !$(this).hasClass('gm_selected');
+function addControl(text, title, fn, position, menu, id){
+	var elmenu, c = $('<div class="gm-container gm-pos-' + position + '"></div>');
+	if (id){
+		c[0].id='ctn-'+id;
+	}
+    var m = $('<div class="gm-control" title="' + title + '"></div>');
+    m.append('<label style="vertical-align: middle; cursor: pointer; ">' + text + '</label>');
+    c.append(m);
+    if (menu) {
+        elmenu = $('<div class="gm-menu"></div>');
+        elmenu.hide();
+        elmenu.append($(menu));
+        c.append(elmenu);
+    }
+    google.maps.event.addDomListener(m[0], 'click', function(e){
+        var b = !$(this).hasClass('gm-selected');
         if (b) {
-            $(this).siblings().removeClass('gm_selected');
-            $(this).addClass('gm_selected');
-        }else{
-			//disable
-			$(this).removeClass('gm_selected');
-		}
-		fn(b);
+            $('.gm-pos-' + position + ' .gm-control').removeClass('gm-selected');
+            $('.gm-pos-' + position + ' .gm-menu').hide();
+            $(this).addClass('gm-selected');
+        } else {
+            //disable
+            $(this).removeClass('gm-selected');
+        }
+        if (menu) {
+            elmenu.toggle(b);
+        }
+        fn(b);
     });
-    map.controls[position || google.maps.ControlPosition.BOTTOM_CENTER].push(c[0]);   
+    map.controls[position || google.maps.ControlPosition.BOTTOM_CENTER].push(c[0]);
 }
 
 function initialize(){
@@ -54,7 +82,7 @@ function initialize(){
         zoomControl: true,
         scaleControl: true,
         scaleControlOptions: {
-            position: google.maps.ControlPosition.TOP_LEFT
+            position: google.maps.ControlPosition.RIGHT_BOTTOM
         },
         streetViewControl: false,
         mapTypeControl: true,
@@ -68,17 +96,6 @@ function initialize(){
     
     addControls();
     
-    /*    
-     
-     geocoder = new GClientGeocoder();
-     //geocoder = new GClientGeocoder(new GGeocodeCache());
-     if (options.memo) {
-     var c = getCookie();
-     if (c) {
-     map.setCenter(new GLatLng(c.lat, c.lng), c.zoom, map.getMapTypes()[c.maptype]);
-     }
-     }
-     */
     /*
      dirnRoadClick = new GDirections();
      dirnRoadDrag = new GDirections();
@@ -141,52 +158,6 @@ function initialize(){
      });
      */
 }
-function locate(place){
-    if (place) {
-        if (places[place]) {
-            map.setCenter(places[place]);
-        }
-    } else {
-        locateme();
-    }
-}
-function locateme(){
-    // Try W3C Geolocation (Preferred)
-    if (navigator.geolocation) {
-        browserSupportFlag = true;
-        navigator.geolocation.getCurrentPosition(function(position){
-            initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            map.setCenter(initialLocation);
-        }, function(){
-            handleNoGeolocation(browserSupportFlag);
-        });
-        // Try Google Gears Geolocation
-    } else if (google.gears) {
-        browserSupportFlag = true;
-        var geo = google.gears.factory.create('beta.geolocation');
-        geo.getCurrentPosition(function(position){
-            initialLocation = new google.maps.LatLng(position.latitude, position.longitude);
-            map.setCenter(initialLocation);
-        }, function(){
-            handleNoGeoLocation(browserSupportFlag);
-        });
-        // Browser doesn't support Geolocation
-    } else {
-        browserSupportFlag = false;
-        handleNoGeolocation(browserSupportFlag);
-    }
-    
-    function handleNoGeolocation(errorFlag){
-        if (errorFlag == true) {
-            alert("Geolocation service failed.");
-            initialLocation = newyork;
-        } else {
-            alert("Your browser doesn't support geolocation. We've placed you in Siberia.");
-            initialLocation = siberia;
-        }
-        map.setCenter(initialLocation);
-    }
-}
 
 function detectBrowser(){
     var useragent = navigator.userAgent;
@@ -200,11 +171,11 @@ function detectBrowser(){
         mapdiv.style.height = '800px';
     }
 }
-var singleTip = null;
+var singleTip = null, anchorTip = false;
 function closewindow(){
-	if (singleTip) {
-		singleTip.close();
-	}
+    if (singleTip) {
+        singleTip.close();
+    }
 }
 function createMarker(point, data, category, options){
     var p;
@@ -213,13 +184,10 @@ function createMarker(point, data, category, options){
     } else {
         p = point;
     }
-    var opt = {};
-    if (typeof options === 'function') {
-        opt = options(point, data, category);
-    } else {
-        opt = options || {};
+    var opt = options || {};
+    if (typeof opt === 'function') {
+        opt = opt(point, data, category);
     }
-    
     opt = $.extend(opt, {
         position: p,
         title: '',
@@ -227,40 +195,91 @@ function createMarker(point, data, category, options){
         draggable: true
     });
     var marker = new google.maps.Marker(opt);
-    marker.category = category;
     marker.data = data;
-    var html = getHtml(marker, category);
+    var html = '';
+	if (category) {
+		marker.category = category;
+		html = getHtml(marker, category);
+	}else{
+		html = opt.html;
+	}
     if (html) {
-        function openwindow(){
-            marker.tip = new google.maps.InfoWindow({
-				html:html,
-				maxWidth: 200
-			});
-			//marker.tip.setContent(html);
-			marker.tip.open(map, marker);
-			singleTip=marker.tip;
+        function openwindowp(){
+            if (marker.tip && marker.tip.getVisible()) {
+                marker.tip.close();
+            } else {
+                openwindow(true);
+            }
         }
-		function opensinglewindow(){
-			if (!singleTip) {
-				singleTip = new google.maps.InfoWindow();
-			}
-			singleTip.setContent(html);
-			singleTip.open(map, marker);
-			//maxWidth: 200
+        function openwindow(anchor){
+            anchorTip = anchor;
+            if (!marker.tip) {
+                var otip = options.tip || {};
+                marker.tip = new google.maps.InfoWindow($.extend(otip, {
+                    html: html
+                }));
+            }
+            //marker.tip.setContent(html);
+            marker.tip.open(map, marker);
+            singleTip = marker.tip;
         }
-
-		var b = opt.windowbehavior||'mouseover';
-		if (b=='click'){
-			google.maps.event.addListener(marker, "click", openwindow);
-			google.maps.event.addListener(map, 'click', closewindow);
-		}else{
-			google.maps.event.addListener(marker, 'mouseover', opensinglewindow);
-			google.maps.event.addListener(marker, 'mouseout', closewindow);
-			google.maps.event.addListener(map, 'click', closewindow);
-		}
+        function opensinglewindow(){
+            if (!singleTip) {
+                singleTip = new google.maps.InfoWindow();
+            }
+            singleTip.setContent(html);
+            singleTip.open(map, marker);
+            //maxWidth: 200
+        }
+        
+        var b = opt.windowbehavior || 'auto';
+        if (b == 'click') {
+            google.maps.event.addListener(marker, "click", openwindow);
+            google.maps.event.addListener(map, 'click', closewindow);
+        } else if (b == 'mouseover') {
+            google.maps.event.addListener(marker, 'mouseover', opensinglewindow);
+            google.maps.event.addListener(marker, 'mouseout', closewindow);
+            google.maps.event.addListener(map, 'click', closewindow);
+        } else {
+            google.maps.event.addListener(marker, "click", openwindowp);
+            google.maps.event.addListener(marker, 'mouseover', opensinglewindow);
+            google.maps.event.addListener(marker, 'mouseout', closewindow);
+        }
     }
-    //map.addOverlay(marker);
-    gmarkers[category]=gmarkers[category]||[];
-	gmarkers[category].push(marker);
+	if (category){
+	    //map.addOverlay(marker);
+	    gmarkers[category] = gmarkers[category] || [];
+	    gmarkers[category].push(marker);
+	}
     return marker;
+}
+
+function drawPolyline(from, to, color, weight, opacity){
+    var path = [new google.maps.LatLng(from.lat, from.lng), new google.maps.LatLng(to.lat, to.lng)];
+    return new google.maps.Polyline({
+        map: map,
+        path: path,
+        strokeColor: COLORS_STATUS[color] || COLORS_STATUS[5],
+        strokeWeight: weight || 6,
+        strokeOpacity: opacity || 0.5
+    });
+}
+var myPosMarker;
+function centerMap(location, optMarker){
+    if (optMarker) {
+        if (!myPosMarker) {
+			var opt = optMarker;
+			if (typeof opt !== 'object') {
+				opt = {};
+			}
+			myPosMarker = createMarker(location, false, false, opt);
+		} else {
+			myPosMarker.setPosition(location);
+			//TOOD: tip is lazy created !!! 
+			if (optMarker && optMarker.html && myPosMarker.tip) {
+				myPosMarker.tip.setContent(optMarker.html);
+			}
+        }
+    }
+    centerMap(location);
 }

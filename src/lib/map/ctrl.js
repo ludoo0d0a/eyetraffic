@@ -30,36 +30,38 @@ var INEXT = (typeof chrome !== 'undefined' && typeof chrome.extension !== 'undef
 var FILTERS = {
     cams: {
         label: 'Cameras',
-        tpl: '<div class="tipcam"><a href="javascript:centeretzoom({lat},{lng})">' +
-        '<img src="http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{cam}.jpg" height="80" width="120"/></a><br/>' +
-        '<div class="titrepopup2">{cam}:{titre}</div><div class="localitepopup2">{localite}</div></div>',
+        tpl: '<div class="tipcam">' +
+        '<img src="http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{cam}.jpg" height="80" width="120"/><br/>' +
+        '<div class="titrepopup2">{cam}:{titre}, {localite}</div>',
         url: 'data/cams.json',
         data: 'data_cams',
-        markerOptions: function(point, data, category){
-			return getIconRed();
-			/*return $.extend(getIconRed(), {
-                name: data.titre,
-                cam: data.cam || '',
-                location: data.localite || ''                
-            });*/
-        }
+        options: {
+			marker:function(point, data, category){
+				return getIconRed();
+	        },
+			tip:{
+				maxWidth:150
+			}
+		}
     },
-    position: {
+    /*position: {
         label: 'Current Position',
         tpl: 'This is my position : {lat},{lng}'
-    },
-    route: {
+    },*/
+    /*route: {
         label: 'Route',
         tpl: ''
-    },
+    },*/
     times: {
         label: 'Times',
         tpl: '<span>{to}</span><span>{duration}</span><br/>',
         tplAll: '<table border="0" cellpadding="0" cellspacing="0"><tr><td width="100%" class="EWTitle" nowrap>{title}<\/td><\/tr><tr><td nowrap>{content}<\/td><\/tr><\/table>',
-        markerOptions: function(point, data, category){
-            return $.extend(getIconPause(), {
-                title: data.name || ''
-            });
+        options: {
+			marker: function(point, data, category){
+	            return $.extend(getIconPause(), {
+	                title: data.name || ''
+	            });
+			}
         },
         mapping: function(input){
             var json = {
@@ -79,10 +81,12 @@ var FILTERS = {
     directions: {
         label: 'Directions',
         tpl: '<span class="mdir">{name}</span>',
-        markerOptions: function(point, data, category){
-            return $.extend(getIconBlueTiny(), {
-                title: data.name || ''
-            });
+        options: {
+			marker: function(point, data, category){
+				return $.extend(getIconBlueTiny(), {
+					title: data.name || ''
+				});
+			}
         },
         mapping: function(input){
             var json = {
@@ -101,8 +105,8 @@ var FILTERS = {
     },
     traffic: {
         label: 'Traffic',
-        fn: function(el){
-            showTraffic(el);
+        fn: function(el,status){
+            showTraffic(el,status);
         },
         tpl: ''
     },
@@ -119,12 +123,14 @@ var FILTERS = {
         },
         path: 'responseJson.rss.channel.item',
         data: 'data_parking',
-        markerOptions: function(point, data, category){
-			return $.extend(getIconRed(), {
-                name: data.name,
-                id: data.id || '',
-                location: data.location || ''
-            });
+        options: {
+			marker: function(point, data, category){
+				return $.extend(getIconRed(), {
+	                name: data.name,
+	                id: data.id || '',
+	                location: data.location || ''
+	            });
+			}
         },
         mapping: function(input){
             var json = {
@@ -177,33 +183,18 @@ var FILTERS = {
     }
 };
 
-var geocoder;
-function searchMap(){
-    var addressSource = document.getElementById("addressSource").value;
-    if (geocoder) {
-        geocoder.getLatLng(addressSource, function(point){
-            if (point) {
-                map.setCenter(point, 13);
-                var marker = new GMarker(point);
-                map.addOverlay(marker);
-                marker.openInfoWindowHtml(addressSource);
-            }
-        });
-    }
-}
-
 function saveLocation(){
     var point = map.getCenter();
     setCookie();
 }
-
+/*
 function resetLocation(){
     if (mylocation) {
-        var point = new GLatLng(mylocation.lat, mylocation.lng);
+        var point = new google.maps.LatLng(mylocation.lat, mylocation.lng);
         map.setCenter(point);
     }
-}
-
+}*/
+/*
 function showRoute(showLoc){
     jQuery('#location').toggle(showLoc);
     jQuery('#route').toggle(!showLoc);
@@ -212,7 +203,7 @@ function showRoute(showLoc){
 function showLocation(){
     showRoute(true);
 }
-
+*/
 var sizes = [{
     w: 400,
     h: 335
@@ -261,8 +252,8 @@ function clearRoute(){
     }
 }
 
-function showTraffic(box){
-    if (box.checked) {
+function showTraffic(box,status){
+    if (status) {
         //TODO: setInteral
         req('updateservices', onUpdateServices);
     } else {
@@ -301,7 +292,7 @@ function updateTime(marker){
         marker.duration = gtimes[marker.data.location] || '';
     }
 }
-
+/*
 var ewindows = [];
 function addOverlayWindows(){
     var ewindow = new EWindow(map, E_STYLE_7, 'lib/map/ewindow/');
@@ -320,7 +311,7 @@ function overwindow(event){
     el.css('z-index', 9999);
     elprev[cat] = el;
 }
-
+*/
 function selcat(box, category, status){
     if (status || box.checked) {
         showcat(category);
@@ -328,7 +319,7 @@ function selcat(box, category, status){
         hidecat(category);
     }
     // == rebuild the side bar
-    makeSidebar();
+    //makeSidebar();
 }
 
 function showcat(cat){
@@ -361,9 +352,9 @@ function hidecat(category){
             }*/
     });
     // == close the info window, in case its open on a marker that we just hid
-    closeWindow();
+    closewindow();
 }
-
+/*
 function makeSidebar(){
     var el = jQuery('#sidebar_cats');
     el.html('');
@@ -382,6 +373,7 @@ function makeSidebar(){
         }).appendTo(el).after('<br>');
     });
 }
+*/
 
 var jams = [];
 function onUpdateServices(fragments){
@@ -441,16 +433,21 @@ function renderMarker(cat, cb){
 }
 
 function renderMarkers(json, category, options){
-    options=options||FILTERS[category].markerOptions;
+    options=options||FILTERS[category].options;
 	jQuery(json.markers).each(function(i, marker){
-        createMarker(marker, marker, category, options);
+        createMarker(marker, marker, category, options.markers);
     });
     jQuery(json.lines).each(function(i, line){
-        var pts = [];
-        for (var j = 0; j < line.points.length; j++) {
-            pts[j] = new GLatLng(line.points[j].lat, line.points[j].lng);
-        }
-        map.addOverlay(new GPolyline(pts, line.colour, line.width));
+        var path = [];
+        $.each(line.points,function(i,point){
+			path.push(new google.maps.LatLng(point.lat, point.lng));
+		});
+        var p = new google.maps.Polyline({
+			map: map,
+			path: path,
+			strokeColor: line.colour,
+			strokeWeight: line.width
+		});
     });
 }
 
@@ -483,4 +480,20 @@ function getJSON(url, cb, opt){
     } else {
         GDownloadUrl(url, cb);
     }
+}
+
+function searchAddress(){
+	var address = $('#adfrom').val();
+	var point = getPosition(address, function(point){
+		if (point) {
+			locate(point, {html:'<p>Address: '+address+'</p>'});
+		}
+		$('#ctn-destination .gm-menu').hide();
+	});
+}
+
+function searchDirection(){
+	var from = $('#rfrom').val(), to = $('#rto').val();
+	Direction.show(map, from, to);
+	$('#ctn-route .gm-menu').hide();
 }
