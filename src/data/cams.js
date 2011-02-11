@@ -1,3 +1,15 @@
+var data_parking = {
+	"markers": [
+	{
+        "lat": 49.4763228757454,
+        "lng": 6.35893821716309,
+        "html": "Park1 html",
+        "titre": "Park1",
+        "label": "Park1-..."
+    }
+	]
+};
+	
 var data_cams = {
     "markers": [
     
