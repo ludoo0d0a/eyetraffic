@@ -201,6 +201,11 @@ function detectBrowser(){
     }
 }
 var singleTip = null;
+function closewindow(){
+	if (singleTip) {
+		singleTip.close();
+	}
+}
 function createMarker(point, data, category, options){
     var p;
     if (point && point.lat && typeof point.lat !== 'function') {
@@ -243,12 +248,6 @@ function createMarker(point, data, category, options){
 			singleTip.open(map, marker);
 			//maxWidth: 200
         }
-		
-		function closewindow(){
-			if (singleTip) {
-				singleTip.close();
-			}
-		}
 
 		var b = opt.windowbehavior||'mouseover';
 		if (b=='click'){
@@ -261,6 +260,7 @@ function createMarker(point, data, category, options){
 		}
     }
     //map.addOverlay(marker);
-    gmarkers.push(marker);
+    gmarkers[category]=gmarkers[category]||[];
+	gmarkers[category].push(marker);
     return marker;
 }

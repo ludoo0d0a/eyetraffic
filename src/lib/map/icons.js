@@ -24,70 +24,58 @@ function getIconB(){
 
 function getIconWhite(){
     return getIcon({
-	    image: {
 			url: "http://labs.google.com/ridefinder/images/mm_20_white.png",
 			width:12, 
 			height:20,
 			anchor:{x:6,y:20}
-		},
-	    shadow: { 
+		}, { 
 			url:"http://labs.google.com/ridefinder/images/mm_20_shadow.png",
 			width:22, 
 			height:20,
 			anchor:{x:6,y:20}
-		}
 	});
 }
 
 function getIconCafe(){
         return getIcon({
-	    image: {
 			url: "http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=cafe|996600",
 			width:12, 
 			height:20,
 			anchor:{x:6,y:20}
-		},
-	    shadow: { 
+		}, { 
 			url:"http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
 			width:22, 
 			height:20,
 			anchor:{x:6,y:20}
-		}
 	});
 }
 
 
 function getIconRed(){
     return getIcon({
-	    image: {
 			url: "http://labs.google.com/ridefinder/images/mm_20_red.png",
 			width:12, 
 			height:20,
 			anchor:{x:6,y:20}
-		},
-	    shadow: { 
+		},{ 
 			url:"http://labs.google.com/ridefinder/images/mm_20_shadow.png",
 			width:22, 
 			height:20,
 			anchor:{x:6,y:20}
-		}
 	});
 }
 
 function getIconBlueTiny(){
-    return getIcon({
-	    image: {
+    return getIcon( {
 			url: "http://labs.google.com/ridefinder/images/mm_20_blue.png",
 			width:12, 
 			height:20,
 			anchor:{x:6,y:20}
-		},
-	    shadow: { 
+		},{ 
 			url:"http://labs.google.com/ridefinder/images/mm_20_shadow.png",
 			width:22, 
 			height:20,
 			anchor:{x:6,y:20}
-		}
 	});
     //icon.infoWindowAnchor = new GPoint(5, 1);
 }
@@ -103,7 +91,7 @@ function getIcon(image, shadow, coords ){
 	}else{
 		image.origin = image.origin || {};
 		image.anchor = image.anchor || {};
-		o.image = new google.maps.MarkerImage(image.url, 
+		o.icon = new google.maps.MarkerImage(image.url, 
 		new google.maps.Size(image.width, image.height), 
 		new google.maps.Point(image.origin.x || 0, image.origin.y || 0), 
 		new google.maps.Point(image.anchor.x || 0, image.anchor.y || image.height || 0)

@@ -31,18 +31,17 @@ var FILTERS = {
     cams: {
         label: 'Cameras',
         tpl: '<div class="tipcam"><a href="javascript:centeretzoom({lat},{lng})">' +
-        '<img src="http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{id}.jpg" height="80" width="120"/></a><br/>' +
-        '<div class="titrepopup2">{cam}:{name}</div><div class="localitepopup2">{location}</div></div>',
+        '<img src="http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{cam}.jpg" height="80" width="120"/></a><br/>' +
+        '<div class="titrepopup2">{cam}:{titre}</div><div class="localitepopup2">{localite}</div></div>',
         url: 'data/cams.json',
         data: 'data_cams',
         markerOptions: function(point, data, category){
-            console.log(data);
-			return $.extend(getIconRed(), {
+			return getIconRed();
+			/*return $.extend(getIconRed(), {
                 name: data.titre,
                 cam: data.cam || '',
-                id: data.cam || '',
                 location: data.localite || ''                
-            });
+            });*/
         }
     },
     position: {
@@ -342,33 +341,27 @@ function showcat(cat){
     }
 }
 function displaycat(category){
-    jQuery(gmarkers).each(function(i, marker){
-        if (marker.category === category) {
-            marker.show();
-            updateTime(marker);
-            marker.ewindow = addOverlayWindows();
-            jQuery(marker.ewindow.div1).bind('mouseover', {
-                category: category
-            }, overwindow);
-            var html = getHtml(marker, category);
-            marker.ewindow.openOnMarker(marker, html);
-        }
+    jQuery(gmarkers[category]).each(function(i, marker){
+        marker.setVisible(true);
+        //updateTime(marker);
+        /*marker.ewindow = addOverlayWindows();
+        jQuery(marker.ewindow.div1).bind('mouseover', {
+            category: category
+        }, overwindow);
+        var html = getHtml(marker, category);
+        marker.ewindow.openOnMarker(marker, html);*/
     });
-    document.getElementById('cat_' + category).checked = true;
 }
 
 function hidecat(category){
-    jQuery(gmarkers).each(function(i, marker){
-        if (marker.category === category) {
-            marker.hide();
-            if (marker.ewindow) {
+    jQuery(gmarkers[category]).each(function(i, marker){
+            marker.setVisible(false);
+            /*if (marker.ewindow) {
                 marker.ewindow.hide();
-            }
-        }
+            }*/
     });
-    document.getElementById('cat_' + category).checked = false;
     // == close the info window, in case its open on a marker that we just hid
-    map.closeInfoWindow();
+    closeWindow();
 }
 
 function makeSidebar(){
