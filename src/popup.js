@@ -6,7 +6,7 @@
  * @web xeoos.fr
  */
 //UTF8: é
-var isDebug = false;
+var isDebug = true;
 var values = [], prefs;
 //var backgroundPage = chrome.extension.getBackgroundPage();
 function updateOnce(){
@@ -251,7 +251,7 @@ function getHtml(id){
         var w = 590 + 360;
 		var url = 'http://routes.tomtom.com/map/?center=49.490%2C5.980&zoom=8&map=basic';
 		return '<div id="tomtomwrap"><div id="tomtomoffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
-    }else if (id === 'map-google') {
+    }else if (id === 'map-custom') {
         var w = 590;
 		var url = 'maps.html';
 		return '<div id="goowrap"><div id="goooffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
@@ -265,7 +265,10 @@ function getHtml(id){
 		 return '<iframe src="'+swf+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe>';
     } else if (id === 'map-tunnel') {
         return '<img src="http://tunnel.cita.lu/img/trajets-map.png" height="350"/>';
-    } else {
+    } else if (id === 'map-google') {
+        initGmap();
+        return '';
+    }else {
         return '';
     }
 }
@@ -275,8 +278,9 @@ function loadHtml(id){
     if (!el.attr('loaded')) {
         var html = getHtml(id);
         if (html) {
-            el.html(html).attr('loaded', 1);
+            el.html(html);
         }
+        el.attr('loaded', 1);
     }
 }
 
@@ -347,3 +351,18 @@ function init(){
 }
 
 
+
+function initGmap(){
+    if (google.maps){
+	    var map = new google.maps.Map(document.getElementById("gmap"), {
+	      zoom: 11,
+	      center: new google.maps.LatLng(49.56, 6.130),//Lux
+	      mapTypeId: google.maps.MapTypeId.ROADMAP
+	    });
+	   
+	    var trafficLayer = new google.maps.TrafficLayer();
+	    trafficLayer.setMap(map);
+    }
+}
+
+window.onload = init;
