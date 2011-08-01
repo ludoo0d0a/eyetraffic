@@ -6,7 +6,7 @@
  * @web xeoos.fr
  */
 //UTF8: é
-var isDebug = true;
+var isDebug = false;
 var values = [], prefs;
 //var backgroundPage = chrome.extension.getBackgroundPage();
 function updateOnce(){
