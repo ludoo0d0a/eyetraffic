@@ -217,7 +217,7 @@
 	 * template object and macro parameters.
 	 */
 	$.fn.domManip = function( args, table, reverse, callback ) {
-		if (args[0].isTemplate) {
+		if (args[0] && args[0].isTemplate) {
 			// Apply the template and it's arguments...
 			args[0] = args[0].apply( args[1] );
 			// Get rid of the arguements, we don't want to pass them on

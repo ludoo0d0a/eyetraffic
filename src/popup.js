@@ -13,12 +13,16 @@ function updateOnce(){
     req('prefs', function(p){
         prefs = p;
         createCams();
+        if (p.options){
+        	//Display at open
+        	onUpdateFlashs(p.options.flash);
+        }
     });
 }
 
 function update(){
     req('updatetimes', onUpdateTimes);
-	req('updateservices', onUpdateServices);
+	//req('updateservices', onUpdateServices);
     req('updatealerts', onUpdateAlerts);
     req('updateflashs', onUpdateFlashs);
     //req('updatetunnel', onUpdateTunnel);
@@ -58,13 +62,12 @@ function renderPlots(){
 }
 
 function onUpdateServices(fragments){
-    console.log('onUpdateServices');
 	//TODO : color polyline (use direction.getPolyline to be smoother ?)
 	//http://www.birdtheme.org/useful/googletool.html
 	//http://code.google.com/apis/maps/documentation/utilities/polylineutility.html
-	jQuery.each(fragments, function(i, t){
+	/*jQuery.each(fragments, function(i, t){
        //statusId 1 : fluide ->  
-    });
+    });*/
 }
 
 function onUpdateTimes(fragments){
@@ -170,11 +173,11 @@ function createCams(){
             el.append(div);
         }
     });
-    jQuery('a.izi').zoomimage({
-        controlsTrigger: 'mouseover',
-        shadow: 5,
-        controls: false,
-        opacity: 0.6
+    
+    jQuery('a.izi').fancyZoom({
+    	directory:'images/fancyzoom',
+    	scaleImg: true,
+    	closeOnClick: true
     });
 }
 
@@ -208,17 +211,14 @@ function createImageCams(el, dcam, isin){
         var u = getUrlCam(id), t = id + ' - ' + cam.text;
         
         html += '<div class="cam">' +
-        '<a class="izi" href="' +
-        u +
-        '" title="' +
-        t +
-        '">' +
-        '<img class="icam" id="icam' +
-        id +
-        '" src="' +
-        u +
-        '"/>' +
+        '<a class="izi" href="#fz'+id+'" title="'+t+'">' +
+        '<img class="icam" id="icam'+id+'" src="'+u+'"/>' +
         '</a>' +
+        
+        '<div class="fzc" id="fz'+id+'" style="display:none;">' +
+        '<img src="'+u+'"/>' +
+        '</div>' +
+        
         '<span>' +
         cam.text +
         '</span></div>';
@@ -268,7 +268,11 @@ function getHtml(id){
     } else if (id === 'map-google') {
         initGmap();
         return '';
-    }else {
+    }else if (id === 'map-ir57') {
+		 var w = 2000, h=2000;
+		var url = 'http://www.inforoute57.fr';
+		return '<div id="irwrap"><div id="iroffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
+    } else {
         return '';
     }
 }
@@ -349,8 +353,6 @@ function init(){
         window.setInterval(update, 30000);
     }, 1000);
 }
-
-
 
 function initGmap(){
     if (google.maps){
