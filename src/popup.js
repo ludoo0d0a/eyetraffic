@@ -176,6 +176,7 @@ function createCams(){
     
     jQuery('a.izi').fancyZoom({
     	directory:'images/fancyzoom',
+    	overlay:0.8,
     	scaleImg: true,
     	closeOnClick: true
     });
@@ -212,11 +213,12 @@ function createImageCams(el, dcam, isin){
         
         html += '<div class="cam">' +
         '<a class="izi" href="#fz'+id+'" title="'+t+'">' +
-        '<img class="icam" id="icam'+id+'" src="'+u+'"/>' +
+        '<img class="icam" alt="'+cam.text+'" id="icam'+id+'" src="'+u+'"/>' +
         '</a>' +
         
         '<div class="fzc" id="fz'+id+'" style="display:none;">' +
         '<img src="'+u+'"/>' +
+        '<div class="overlay-text">'+cam.text+'</div>'+
         '</div>' +
         
         '<span>' +

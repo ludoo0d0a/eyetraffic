@@ -116,6 +116,20 @@ a, a:hover, a:visited {
 	width:680px;
 }
 
+.overlay-text{
+	position: relative;
+	bottom: 0px;
+	left: 0px;
+	z-index: 99999;
+	height: 30px;
+	text-align: center;
+	color: white;
+	background-color:gray;
+	/*-webkit-transition-duration: 2s;
+	-webkit-transform: translate(0em,30px);*/
+	/*-webkit-transition: -webkit-transform 0.5s ease-in-out; */
+}
+
 .mtab .ui-tabs-panel{
 	min-height:360px;
 }
