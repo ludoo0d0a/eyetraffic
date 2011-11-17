@@ -272,6 +272,9 @@ function getHtml(id){
 		 var w = 2000, h=2000;
 		var url = 'http://www.inforoute57.fr';
 		return '<div id="irwrap"><div id="iroffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
+    } else if (id === 'map-rtl') {
+		return '<img id="img-'+id+'"" />'+
+		'<script>refreshMapRtl();setInterval(refreshMapRtl,10000);</script>';
     } else {
         return '';
     }
@@ -365,6 +368,11 @@ function initGmap(){
 	    var trafficLayer = new google.maps.TrafficLayer();
 	    trafficLayer.setMap(map);
     }
+}
+function refreshMapRtl(){
+	var url = 'http://images.newmedia.lu/trafic_map/feature.jpg';
+	var rnd = Math.round(1+Math.random()*10000);
+	jQuery('#img-map-rtl').attr('src',url+'?r='+rnd);
 }
 
 window.onload = init;

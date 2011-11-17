@@ -223,3 +223,9 @@ img.icam {
 	overflow: hidden;
 }
 
+/*
+ * RTL
+ */
+#img-map-rtl{
+	max-height: 400px;
+}
