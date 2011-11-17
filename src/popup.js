@@ -106,7 +106,7 @@ function onUpdateAlerts(channel){
         }
         jQuery.each(items, function(i, item){
             //title,description,pubDate
-            item.date = jQuery.prettyDate.format(item.pubDate);
+            item.date = jQuery.prettyDate.format(item.pubDate, mylang);
             jQuery('#alert').prepend(xtplAlert, item);
         });
     } else {
@@ -246,38 +246,64 @@ function xhr(a, cb){
 
 function getHtml(id){
     if (id === 'map-bison') {
-        return '<iframe src="http://www.bison-fute.equipement.gouv.fr/astec_acai/internet/ie1_myrabel.html?langue=fr&evt=1" frameborder="0" scrolling="no" width="590" height="480"></iframe>';
+        var url = 'http://www.bison-fute.equipement.gouv.fr/astec_acai/internet/ie1_myrabel.html?langue=fr&evt=1';
+        //return '<iframe src="'+url+'" frameborder="0" scrolling="no" width="590" height="480"></iframe>';
+        return writeIframe(id,url,590,480);
     } else if (id === 'map-tomtom') {
         var w = 590 + 360;
 		var url = 'http://routes.tomtom.com/map/?center=49.490%2C5.980&zoom=8&map=basic';
-		return '<div id="tomtomwrap"><div id="tomtomoffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
+		//return '<div id="tomtomwrap"><div id="tomtomoffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
+		return writeIframe(id,url,w,480);
     }else if (id === 'map-custom') {
-        var w = 590;
 		var url = 'maps.html';
-		return '<div id="goowrap"><div id="goooffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
+		//return '<div id="goowrap"><div id="goooffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
+		return writeIframe(id,url,590,480);
     } else if (id === 'map-cita') {
        //http://www2.pch.etat.lu/cita/cita.swf, w=840,h=694;
-	   var swf = 'http://www.cita.lu/flash/cita_integralite_zoom.swf',w=600,h=444;
-	   /*return '<object width="'+w+'" height="'+h+'">' +
-        '<param name="movie" value="'+swf+'">' +
-        '<embed src="'+swf+'" width="'+w+'" height="'+h+'">' +
-        '</object>';*/
-		 return '<iframe src="'+swf+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe>';
+	   var url = 'http://www.cita.lu/flash/cita_integralite_zoom.swf',w=600,h=444;
+		// return '<iframe src="'+swf+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe>';
+		return writeIframe(id,url,w,h,'http://www.cita.lu'); 
     } else if (id === 'map-tunnel') {
         return '<img src="http://tunnel.cita.lu/img/trajets-map.png" height="350"/>';
     } else if (id === 'map-google') {
         initGmap();
         return '';
     }else if (id === 'map-ir57') {
-		 var w = 2000, h=2000;
+		var w = 2000, h=2000;
 		var url = 'http://www.inforoute57.fr';
-		return '<div id="irwrap"><div id="iroffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
+		//return '<div id="irwrap"><div id="iroffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
+		return writeIframe(id,url);
     } else if (id === 'map-rtl') {
 		return '<img id="img-'+id+'"" />'+
 		'<script>refreshMapRtl();setInterval(refreshMapRtl,10000);</script>';
-    } else {
+    } else if (id === 'map-mobilinfo') {
+		var w=800, h=600;
+		var url = 'http://www.mobilinfo.be/mobilinfo/';
+		return writeIframe(id,url,w,h,'http://trafic.lesoir.be');
+    } else if (id === 'map-wallonie') {
+		var w=800, h=670;
+		var url = 'http://trafiroutes.wallonie.be/trafiroutes/maptempsreel/';
+		return writeIframe(id,url,w,h);
+    } else if (id === 'map-verkehrsinfo') {
+		var w=800, h=670;
+		var url = 'http://www.verkehrsinfo.de';
+		return writeIframe(id,url,w,h);
+    }  else if (id === 'map-swr3') {
+		var w=800, h=670;
+		var url = 'http://www.swr3.de/info/verkehr/stauanzeige/SWR3-Verkehrszentrum/-/id=64076/did=929404/urt9vu/index.html';
+		return writeIframe(id,url,w,h);
+    }else {
         return '';
     }
+}
+
+function writeIframe(id,url,w,h,page){
+	w=w||800;
+	h=h||600;
+	page=page||url;
+	var html='<div class="overview"><a target="blank" href="'+page+'">Source</a></div>';
+	html+='<div class="mwrap"><div class="moffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
+	return html;
 }
 
 function loadHtml(id){
@@ -340,11 +366,16 @@ function convert(){
 function init(){
     //jQuery('#flashinfo').hide();
     jQuery('#times').tabs();
-    jQuery('#cams').tabs({
+    jQuery('.mtab').tabs({
         select: function(event, ui){
             loadHtml(ui.panel.id);
         }
     });
+    //load first tab
+    //jQuery('#maps').
+    loadHtml('map-cita');
+    i18n();
+    
     updateOnce();
     jQuery('#refresh').button().click(update);
     jQuery('#convert').button().click(convert);
@@ -355,6 +386,16 @@ function init(){
         update();
         window.setInterval(update, 30000);
     }, 1000);
+}
+function i18n(){
+	function upd(id){
+		jQuery('#'+id).text(LANG[id]);
+	}
+	upd('refresh');
+	upd('_info');
+	upd('_times');
+	upd('_cams');
+	upd('_maps');
 }
 
 function initGmap(){

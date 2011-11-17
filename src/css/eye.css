@@ -31,7 +31,7 @@ a, a:hover, a:visited {
 
 #links {
     float: right;
-    width: 240px;
+    width: 235px;
 	font-size:0.9em;
 }
 
@@ -39,6 +39,22 @@ a, a:hover, a:visited {
     clear: both;
 }
 
+/**
+ * 	Menu
+ */
+
+#menu{
+	z-index:9999;
+	width:170px;
+	text-align:center;
+	height:13px;
+	position:fixed;
+	right:10px;
+	top:0px;
+	border:1px solid black;
+	background-image: -webkit-linear-gradient(top,whiteSmoke,#F1F1F1);
+	opacity:0.6;
+}
 /*
  * Temps
  */
@@ -100,8 +116,8 @@ a, a:hover, a:visited {
 	width:680px;
 }
 
-#cams .ui-tabs-panel{
-	min-height:400px;
+.mtab .ui-tabs-panel{
+	min-height:360px;
 }
 
 a.selected{
@@ -119,9 +135,9 @@ img.icam {
 
 .cam{
 	float:left;
-	padding:6px;
+	padding-top:6px;
 	width: 120px;
-	height: 130px;
+	height: 110px;
 }
 
 .camdesc{
@@ -190,15 +206,18 @@ img.icam {
 }
 
 
+.moffset{
+	max-height: 700px;
+}
+
 /*
  * tomtom
  */
-#tomtomoffset{
+#map-tomtom .moffset{
 	margin-left:-360px;
 	margin-top:-130px;
-	max-height: 600px;
 }
-#tomtomwrap{
+#map-tomtom .mwrap{
 	overflow: auto;
 }
 
@@ -214,12 +233,34 @@ img.icam {
 /*
  * inforoute57
  */
-#iroffset{
-	margin-left:-130px;
+#map-ir57 .moffset{
+	margin-left:0px;
 	margin-top:-120px;
-	max-height: 600px;
 }
-#irwrap{
+#map-ir57 .mwrap{
+	overflow: hidden;
+}
+
+/*
+ * mobilinfo.be
+ */
+#map-mobilinfo .moffset{
+	margin-left:-100px;
+	margin-top:0px;
+}
+#map-mobilinfo .mwrap{
+	overflow: hidden;
+}
+
+
+/*
+ * trafiroutes.wallonie.be
+ */
+#map-wallonie .moffset{
+	margin-left:-250px;
+	margin-top:-220px;
+}
+#map-wallonie .mwrap{
 	overflow: hidden;
 }
 
@@ -227,5 +268,28 @@ img.icam {
  * RTL
  */
 #img-map-rtl{
-	max-height: 400px;
+	max-height: 600px;
+}
+
+/*
+ * swr3
+ */
+#map-swr3 .moffset{
+	margin-left:-100px;
+	margin-top:-100px;
+}
+#map-swr3 .mwrap{
+	overflow: hidden;
+}
+
+
+/*
+ * verkehrsinfo
+ */
+#map-verkehrsinfo .moffset{
+	margin-left:-230px;
+	margin-top:-120px;
+}
+#map-verkehrsinfo .mwrap{
+	overflow: hidden;
 }

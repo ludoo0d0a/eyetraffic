@@ -52,10 +52,27 @@ var LANGS = {
     en: {
         NOTRAFFICINFO: 'No traffic info',
         to: 'to',
-        map: 'Map'
+        map: 'Map',
+        refresh:'Refresh',
+        _info:'Info',
+        _times:'Times',
+        _cams:'Cams',
+        _maps:'Maps'
+    },
+    fr: {
+        NOTRAFFICINFO: 'Aucune info trafic',
+        to: 'vers',
+        map: 'Carte',
+        refresh:'Rafraîchir',
+        _info:'Info',
+        _times:'Temps',
+        _cams:'Caméras',
+        _maps:'Cartes'
     }
 };
-var LANG = LANGS.en;
+var mylang = 'fr';
+var LANG = LANGS[mylang];
+
 //Temps de parcours
 var mcfg = {
     username: 'valente',
