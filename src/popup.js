@@ -261,7 +261,6 @@ function getHtml(id){
 		//return '<div id="goowrap"><div id="goooffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
 		return writeIframe(id,url,590,480);
     } else if (id === 'map-cita') {
-       //http://www2.pch.etat.lu/cita/cita.swf, w=840,h=694;
 	   var url = 'http://www.cita.lu/flash/cita_integralite_zoom.swf',w=600,h=444;
 		// return '<iframe src="'+swf+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe>';
 		return writeIframe(id,url,w,h,'http://www.cita.lu'); 

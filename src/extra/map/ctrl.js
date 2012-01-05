@@ -31,7 +31,7 @@ var FILTERS = {
     cams: {
         label: 'Cameras',
         tpl: '<div class="tipcam">' +
-        '<img src="http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{cam}.jpg" height="80" width="120"/><br/>' +
+        '<img src="http://www.cita.lu/info_trafic/cameras/images/cccam_{cam}.jpg" height="80" width="120"/><br/>' +
         '<div class="titrepopup2">{cam}:{titre}, {localite}</div>',
         url: 'data/cams.json',
         data: 'data_cams',

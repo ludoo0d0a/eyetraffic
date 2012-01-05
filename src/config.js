@@ -25,8 +25,8 @@
 //chantiers
 //www.vdl.lu/Chantiers_de_courte_dur�e-path-1,641223,1445670.html
 //www.vdl.lu/Chantiers_de_longue_dur�e-path-1,641223,1445670.html
-//http://www2.pch.etat.lu/chantiers/tableau_chantiers_autoroutes.jsp
-//http://www2.pch.etat.lu/chantiers/tableau_chantiers_autoroutes.jsp?type=1&service=all&show=longue
+//http://www.cita.lu/chantiers/tableau_chantiers_autoroutes.jsp
+//http://www.cita.lu/chantiers/tableau_chantiers_autoroutes.jsp?type=1&service=all&show=longue
 //www.pch.public.lu/chantiers/chantiers/chantiers.jsp?type=1&service=all
 //www.pch.public.lu/chantiers/chantiers/chantiers.jsp?type=2&service=all
 //API googlemaps : http://www.guideroutier.lu/xmlgen.php?catid=7&localite=&numeromaison=undefined
@@ -84,8 +84,8 @@ var mcfg = {
         'Content-Type': 'application/json'
     }]
 };
-//var urlTime = 'http://www2.pch.etat.lu/info_trafic/temps_parcours/temps_parcours_convert.jsp';
-var urlTime = 'http://www2.pch.etat.lu/citaRS/seam/resource/rest/cita/tempsParcours/actuel';
+//var urlTime = 'http://www.cita.lu/info_trafic/temps_parcours/temps_parcours_convert.jsp';
+var urlTime = 'http://www.cita.lu/citaRS/seam/resource/rest/cita/tempsParcours/actuel';
 var timesCoords = {
     treves: {
         i: 1,
@@ -623,8 +623,8 @@ var timeMappings = {
 };
 var reTime = /&(\d+)([^=]+)=([\w-]+)\s+(.*)/g;
 //Service
-//var urlService = 'http://www2.pch.etat.lu/info_trafic/niveau_service/niveau_service_convert.jsp';
-var urlService = 'http://www2.pch.etat.lu/citaRS/seam/resource/rest/cita/niveauService/actuel';
+//var urlService = 'http://www.cita.lu/info_trafic/niveau_service/niveau_service_convert.jsp';
+var urlService = 'http://www.cita.lu/citaRS/seam/resource/rest/cita/niveauService/actuel';
 var services = {
     "2001_2002": {
         "from": "Croix de Gasperich",
@@ -1128,8 +1128,8 @@ var urlAlert = 'http://www.cita.lu/rss_feeds/rtl/index.xml';
 var tplAlert = '<div class="news"><div class="desc">${description}</div><div class="date">${date}</div></div>';
 //Cams
 //CITA
-//var urlCam = 'http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{0}.jpg?cachekill=5058852'
-var urlCam = 'http://www2.pch.etat.lu/info_trafic/cameras/images/cccam_{0}.jpg?cachekill={1}';
+//var urlCam = 'http://www.cita.lu/info_trafic/cameras/images/cccam_{0}.jpg?cachekill=5058852'
+var urlCam = 'http://www.cita.lu/info_trafic/cameras/images/cccam_{0}.jpg?cachekill={1}';
 var urlFlashInfo = 'http://www.lesfrontaliers.lu/index.php';
 var reFlashInfoLF = {
     main: /<div\s+id="info_flash">[^<]*<div[^>]*>(.*?<\/div>)/,
