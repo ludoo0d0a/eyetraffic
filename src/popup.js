@@ -365,16 +365,22 @@ function convert(){
 }
 
 function init(){
+    var mapsel = localStorage.getItem('tab-maps');
+    mapsel=mapsel||'map-tomtom';
+    
     //jQuery('#flashinfo').hide();
     jQuery('#times').tabs();
     jQuery('.mtab').tabs({
         select: function(event, ui){
-            loadHtml(ui.panel.id);
+            mapsel=ui.panel.id;
+            var el = ui.panel.parentNode;
+            if (el && el.id==='maps'){
+            	localStorage.setItem('tab-maps',mapsel);
+            }
+            loadHtml(mapsel);
         }
     });
-    //load first tab
-    //jQuery('#maps').
-    loadHtml('map-cita');
+
     i18n();
     
     updateOnce();
@@ -383,10 +389,15 @@ function init(){
     if (isDebug) {
         jQuery('.debug').removeClass('debug');
     }
+    
+    //load first tab
+    jQuery('#maps').tabs('option', 'selected', mapsel);
+
     window.setTimeout(function(){
         update();
         window.setInterval(update, 30000);
     }, 1000);
+    
 }
 function i18n(){
 	function upd(id){

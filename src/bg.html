@@ -51,6 +51,9 @@
             if (!prefs.limit) {
                 prefs.limit = defaultPrefs.limit;
             }
+            if (!prefs.badge) {
+                prefs.badge = defaultPrefs.badge;
+            }
             //var notifier = new Notifier();
             var tictac;
             newTictac(true);
@@ -234,7 +237,7 @@
                 if (tictac) {
                     window.clearInterval(tictac);
                 }
-                badgeprefs = getPref('badge');
+                //badgeprefs = getPref('badge');
                 interval = getInterval();
                 //console.log('interval='+interval+';id='+badgeprefs.id);
                 tictac = window.setInterval(updateBg, interval * 1000);
@@ -248,6 +251,7 @@
             }
             
             function getInterval(){
+                var badgeprefs=prefs.badge;
                 return (badgeprefs && badgeprefs.interval) ? badgeprefs.interval : 60;
             }
             
@@ -298,6 +302,9 @@
                 });
                 xhr(cfg, function(xhr){
                     var m, times = {}, data = xhr.responseJson;
+                    if (!data){
+                    	return;
+                    }
                     $.each(data.collection.tempsParcours, function(i, o){
                         var map = timeMappings[o.direction] || {};
                         var time = o.duree, key = o.direction, text = o.direction, date = o.fileDate;
@@ -326,6 +333,7 @@
                             historyValues[id] = [];
                         }
                         historyValues[id].push(time);
+                        var badgeprefs=prefs.badge;
                         if (badgeprefs && (''+badgeprefs.id) === (''+id)) {
                             updateBadge({
                                 id: id,
