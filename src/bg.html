@@ -4,6 +4,7 @@
         <title>GoogleReaderPlus Icon Background</title>
         <script type="application/javascript" src="lib/jquery-1.7.min.js"></script>
         <script type="application/javascript" src="lib/webkit.js"></script>
+        <script type="application/javascript" src="lib/base64.js"></script>
         <script type="application/javascript" src="lib/xml2json.js"></script>
         <script type="application/javascript" src="config.js"></script>
         <script type="application/javascript">
@@ -444,11 +445,13 @@
                     var sep = (url.indexOf('?') > 0) ? '&' : '?';
                     url += sep + params.join('&');
                 }
-                if (a.username) {
-                    xhr.open(a.method || 'get', url, true, a.username, a.password);
-                } else {
-                    xhr.open(a.method || 'get', url, true);
+                if (a.username && a.password) {
+                    a.headers=a.headers||{};
+                    if (!a.headers.Authorization){
+                    	a.headers.Authorization='Basic '+Base64.encode(a.username+':'+a.password);
+                    }
                 }
+                xhr.open(a.method || 'get', url, true);
                 //headers
                 if (a.headers) {
                     for (var kh in a.headers) {

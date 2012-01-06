@@ -75,15 +75,16 @@ var LANG = LANGS[mylang];
 
 //Temps de parcours
 var mcfg = {
-    username: 'va'+'le'+'nte',
-    password: 'fR6' + 'UmJ',
-    /*headers: [{
-        'Accept': 'text/xml'
-    }, {
-        'Content-Type': 'text/xml'
-    }],*/
-    dataType: 'xml'
+    //username: 'va'+'le'+'nte',
+    //password: 'fR6' + 'UmJ',
+    dataType: 'xml'    
 };
+mcfg.headers= {
+	//'Accept': 'text/xml', 
+	//'Content-Type': 'text/xml',
+	'Authorization': 'Basic dmFsZW50ZTpmUjZVbUo='
+};
+    
 //var urlTime = 'http://www.cita.lu/info_trafic/temps_parcours/temps_parcours_convert.jsp';
 var urlTime = 'http://www.cita.lu/citaRS/seam/resource/rest/cita/tempsParcours/actuel';
 var timesCoords = {
