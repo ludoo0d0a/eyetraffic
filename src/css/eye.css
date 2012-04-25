@@ -132,7 +132,7 @@ a, a:hover, a:visited {
 
 .mtab .ui-tabs-panel{
 	min-height:100px;
-	max-height:220px;
+	/*max-height:220px;*/
 	overflow-y:auto;
 }
 
