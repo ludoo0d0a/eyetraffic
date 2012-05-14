@@ -419,7 +419,7 @@ function i18n(){
 	upd('_cams');
 	upd('_maps');
 }
-var ox=0, oy=0;
+
 function initGmap(){
     if (google.maps){
     	
@@ -445,19 +445,20 @@ function initGmap(){
 	    var maxis={
 	    	1:{x:2,y:3, ox:940, oy:579},
 	    	2:{x:5,y:7, ox:1880, oy:1158},
-	    	4:{x:11,y:15, ox:7528, oy:4645}
+	    	4:{x:11,y:15, ox:7526, oy:4645}
 	    };
 	    map.mapTypes.set("RTL", new google.maps.ImageMapType({
 			getTileUrl : function(coord, zoom) {
 				var url=null, z=zoom-10, mm=maxis[z];
 				if (mm){
 					//http://images.newmedia.lu/trafic_map/tiles/4x/complete2_4x_6_12.png
-					var x = Math.round(coord.x-(mm.ox+ox)), y= Math.round(coord.y-(mm.oy+oy));
+					var x = Math.round(coord.x-mm.ox), y= Math.round(coord.y-mm.oy);
 					//1x_2_3  
 					//2x_5_7
 					//4x_11_15
 					if (x>=0 && x<=mm.x && y>=0 && y<=mm.y){
-						url = "http://images.newmedia.lu/trafic_map/tiles/" + z + "x/complete2_"+z+"x_" + x + "_" + y + ".png";
+						var r = Math.round(Math.random()*10000)+1;
+						url = "http://images.newmedia.lu/trafic_map/tiles/" + z + "x/complete2_"+z+"x_" + x + "_" + y + ".png?r="+r;
 					}
 				}
 				return url;
