@@ -6,16 +6,53 @@
  * @web xeoos.fr
  */
 //UTF8: é
-var isDebug = false;
-var values = [], prefs;
+var isDebug = true, values = [], prefs;
+
 //var backgroundPage = chrome.extension.getBackgroundPage();
+function initPopup(){
+    var mapsel = localStorage.getItem('tab-maps');
+    mapsel=mapsel||'map-tomtom';
+    
+    //jQuery('#flashinfo').hide();
+    jQuery('#times').tabs();
+    jQuery('.mtab').tabs({
+        select: function(event, ui){
+            mapsel=ui.panel.id;
+            var el = ui.panel.parentNode;
+            if (el && el.id==='maps'){
+            	localStorage.setItem('tab-maps',mapsel);
+            }
+            loadHtml(mapsel);
+        }
+    });
+
+    i18n();
+    if (isDebug) {
+        jQuery('.debug').removeClass('debug');
+    }
+    
+    updateOnce();
+    jQuery('#refresh').button().click(update);
+    jQuery('#convert').button().click(convert);
+    //load first tab
+    jQuery('#maps').tabs('option', 'selected', mapsel);
+
+    window.setTimeout(function(){
+        update();
+        window.setInterval(update, 30000);
+    }, 1000);
+}
 function updateOnce(){
     req('prefs', function(p){
         prefs = p;
-        createCams();
+        setTimeout(function(){
+        	createCams(false)
+        });
         if (p.options){
         	//Display at open
-        	onUpdateFlashs(p.options.flash);
+        	setTimeout(function(){
+        		onUpdateFlashs(p.options.flash);
+        	},100);
         }
     });
 }
@@ -102,12 +139,15 @@ function onUpdateAlerts(channel){
             items = [items];
         }
         if (!xtplAlert) {
-            xtplAlert = $.template(tplAlert);
+            xtplAlert = tplAlert;
+            //xtplAlert = $.template(tplAlert);
         }
         jQuery.each(items, function(i, item){
             //title,description,pubDate
             item.date = jQuery.prettyDate.format(item.pubDate, mylang);
-            jQuery('#alert').prepend(xtplAlert, item);
+            var output = Mustache.render(xtplAlert, item);
+            //jQuery('#alert').prepend(xtplAlert, item);
+            jQuery('#alert').prepend(output);
         });
     } else {
         jQuery('#alert').html(LANG.NOTRAFFICINFO);
@@ -160,16 +200,16 @@ function getUrlMap(id){
     return urlMap.replace('{0}', id);
 }
 
-function createCams(){
+function createCams(static){
     var i = 0;
     jQuery.each(dcams, function(road, dcam){
         var el = jQuery('#cam-' + road);
         if (el) {
             createMenuCams(el, dcam);
-            createImageCams(el, dcam, true);
-            createImageCams(el, dcam, false);
-            var urlMap = getUrlMap(road);
-            var div = jQuery('<div class="body zmap"><img src="' + urlMap + '"/></div>').hide();
+            createImageCams(el, dcam, true, static);
+            createImageCams(el, dcam, false, static);
+            var url = getUrlMap(road);
+            var div = jQuery('<div class="body zmap"><img src="' + url + '"/></div>').hide();
             el.append(div);
         }
     });
@@ -205,12 +245,11 @@ function changeMenuCams(e){
     content.find('.z' + id).show();
 }
 
-function createImageCams(el, dcam, isin){
+function createImageCams(el, dcam, isin, static){
     var txt = ((isin) ? 'in' : 'out'), html = '<div class="body z' + txt + '">';
     //var div = jQuery('<div class="body z' + txt + '"></div>');
     jQuery.each((isin) ? dcam.camsin : dcam.camsout, function(id, cam){
-        var u = getUrlCam(id), t = id + ' - ' + cam.text;
-        
+        var u = (static) ? urlCamNa : getUrlCam(id), t = id + ' - ' + cam.text;
         html += '<div class="cam">' +
         '<a class="izi" href="#fz'+id+'" title="'+t+'">' +
         '<img class="icam" alt="'+cam.text+'" id="icam'+id+'" src="'+u+'"/>' +
@@ -261,9 +300,13 @@ function getHtml(id){
 		//return '<div id="goowrap"><div id="goooffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
 		return writeIframe(id,url,590,480);
     } else if (id === 'map-cita') {
-	   var url = 'http://www.cita.lu/flash/cita_integralite_zoom.swf',w=600,h=444;
-		// return '<iframe src="'+swf+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe>';
-		return writeIframe(id,url,w,h,'http://www.cita.lu'); 
+       //http://www2.pch.etat.lu/cita/cita.swf, w=840,h=694;
+	   var swf = 'http://www.cita.lu/flash/cita_integralite_zoom.swf',w=600,h=444;
+	   /*return '<object width="'+w+'" height="'+h+'">' +
+        '<param name="movie" value="'+swf+'">' +
+        '<embed src="'+swf+'" width="'+w+'" height="'+h+'">' +
+        '</object>';
+		 return '<iframe src="'+swf+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe>';
     } else if (id === 'map-tunnel') {
         return '<img src="http://tunnel.cita.lu/img/trajets-map.png" height="350"/>';
     } else if (id === 'map-google') {
@@ -307,7 +350,6 @@ return html;
         return '';
     }
 }
-
 function writeIframe(id,url,w,h,page){
 	w=w||800;
 	h=h||600;
@@ -316,7 +358,31 @@ function writeIframe(id,url,w,h,page){
 	html+='<div class="mwrap"><div class="moffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
 	return html;
 }
+function renderCita(){
+	var map = new OpenLayers.Map({
+	    div: "map-cita-ol",
+	    layers: [
+	        new OpenLayers.Layer.WMS(
+	            "WMS", "http://vmap0.tiles.osgeo.org/wms/vmap0",
+	            {layers: "basic"}
+	        ),
+	        new OpenLayers.Layer.Vector("KML", {
+	            strategies: [new OpenLayers.Strategy.Fixed()],
+	            protocol: new OpenLayers.Protocol.HTTP({
+	                url: "http://cita.lu/kml/services_axe.kml?src=EyeTraffic",
+	                format: new OpenLayers.Format.KML({
+	                    extractStyles: true, 
+	                    extractAttributes: true,
+	                    maxDepth: 2
+	                })
+	            })
+	        })
+	    ],
+	    center: new OpenLayers.LonLat(6.13, 49.61),
+	    zoom: 11
+	});
 
+}
 function loadHtml(id){
     var el = $('#' + id);
     if (!el.attr('loaded')) {
@@ -374,41 +440,6 @@ function convert(){
     });
 }
 
-function init(){
-    var mapsel = localStorage.getItem('tab-maps');
-    mapsel=mapsel||'map-tomtom';
-    
-    //jQuery('#flashinfo').hide();
-    jQuery('#times').tabs();
-    jQuery('.mtab').tabs({
-        select: function(event, ui){
-            mapsel=ui.panel.id;
-            var el = ui.panel.parentNode;
-            if (el && el.id==='maps'){
-            	localStorage.setItem('tab-maps',mapsel);
-            }
-            loadHtml(mapsel);
-        }
-    });
-
-    i18n();
-    
-    updateOnce();
-    jQuery('#refresh').button().click(update);
-    jQuery('#convert').button().click(convert);
-    if (isDebug) {
-        jQuery('.debug').removeClass('debug');
-    }
-    
-    //load first tab
-    jQuery('#maps').tabs('option', 'selected', mapsel);
-
-    window.setTimeout(function(){
-        update();
-        window.setInterval(update, 30000);
-    }, 1000);
-    
-}
 function i18n(){
 	function upd(id){
 		jQuery('#'+id).text(LANG[id]);
@@ -418,6 +449,7 @@ function i18n(){
 	upd('_times');
 	upd('_cams');
 	upd('_maps');
+    
 }
 
 function initGmap(){
@@ -487,5 +519,6 @@ function refreshMapRtl(){
 }
 
 
-
-window.onload = init;
+$(function() {
+  initPopup();
+});

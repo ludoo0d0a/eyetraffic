@@ -1,6 +1,7 @@
 {
+  "manifest_version": 2,
   "name": "__MSG_extension_name__",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "__MSG_extension_description__",
   "icons": { 
      "16": "images/logo16.png",
@@ -9,16 +10,20 @@
      "128": "images/logo128.png"
   },
   "default_locale": "fr",
-  "background_page": "bg.html",
+  "background": {
+    "page":"bg.html"
+  },
+  "options_page": "popup.html",
   "browser_action": {
     "default_icon": "images/16/Box_Grey.png",
 	"default_title": "__MSG_browser_action_tooltip_default__",
     "popup": "popup.html"
   },
+  "content_security_policy": "script-src 'self' https://www.google.com https://maps.googleapis.com https://maps.gstatic.com; object-src 'self'",
   "permissions": [
     "tabs",
     "notifications",
-	"http://*.etat.lu/","http://*.cita.lu/","http://*.rtl.lu/","http://*.lesfrontaliers.lu/"
+	"http://*.etat.lu/","http://*.cita.lu/","http://*.rtl.lu/","http://*.lesfrontaliers.lu/","http://*.openlayer.org/"
   ]
 
 }

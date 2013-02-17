@@ -52,41 +52,23 @@ var LANGS = {
     en: {
         NOTRAFFICINFO: 'No traffic info',
         to: 'to',
-        map: 'Map',
-        refresh:'Refresh',
-        _info:'Info',
-        _times:'Times',
-        _cams:'Cams',
-        _maps:'Maps'
-    },
-    fr: {
-        NOTRAFFICINFO: 'Aucune info trafic',
-        to: 'vers',
-        map: 'Carte',
-        refresh:'Rafraîchir',
-        _info:'Info',
-        _times:'Temps',
-        _cams:'Caméras',
-        _maps:'Cartes'
+        map: 'Map'
     }
 };
-var mylang = 'fr';
-var LANG = LANGS[mylang];
-
+var LANG = LANGS.en;
 //Temps de parcours
 var mcfg = {
-    //username: 'va'+'le'+'nte',
-    //password: 'fR6' + 'UmJ',
-    dataType: 'xml'    
+    username: 'valente',
+    password: 'fR6' + 'UmJ',
+    dataType: 'xml',
+    headers: [{
+        'Accept': 'application/json'
+    }, {
+        'Content-Type': 'application/json'
+    }]
 };
-mcfg.headers= {
-	//'Accept': 'text/xml', 
-	//'Content-Type': 'text/xml',
-	'Authorization': 'Basic dmFsZW50ZTpmUjZVbUo='
-};
-    
-//var urlTime = 'http://www.cita.lu/info_trafic/temps_parcours/temps_parcours_convert.jsp';
-var urlTime = 'http://www.cita.lu/citaRS/seam/resource/rest/cita/tempsParcours/actuel';
+//var urlTime = 'http://www2.pch.etat.lu/info_trafic/temps_parcours/temps_parcours_convert.jsp';
+var urlTime = 'http://www2.pch.etat.lu/citaRS/seam/resource/rest/cita/tempsParcours/actuel';
 var timesCoords = {
     treves: {
         i: 1,
@@ -1124,13 +1106,25 @@ var services = {
         "to": "Echangeur Schengen"
     }
 };
+var CONFIG = {
+	alert:{
+		url:'http://www.cita.lu/rss_feeds/rtl/index.xml',
+		tpl:'<div class="news"><div class="desc">{{description}}</div><div class="date">{{date}}</div></div>'
+	},
+	flash:{
+		url:''
+	},
+	map:{
+		cam:''
+	}
+};
 //Alertes
 var urlAlert = 'http://www.cita.lu/rss_feeds/rtl/index.xml';
 var tplAlert = '<div class="news"><div class="desc">${description}</div><div class="date">${date}</div></div>';
 //Cams
 //CITA
-//var urlCam = 'http://www.cita.lu/info_trafic/cameras/images/cccam_{0}.jpg?cachekill=5058852'
-var urlCam = 'http://www.cita.lu/info_trafic/cameras/images/cccam_{0}.jpg?cachekill={1}';
+var urlCam = 'http://www.cita.lu/info_trafic/cameras/images/cccam_{0}.jpg?src=EyeTraffic&~{1}';
+var urlCamNa = 'images/na.jpg';
 var urlFlashInfo = 'http://www.lesfrontaliers.lu/index.php';
 var reFlashInfoLF = {
     main: /<div\s+id="info_flash">[^<]*<div[^>]*>(.*?<\/div>)/,

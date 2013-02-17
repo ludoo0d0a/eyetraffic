@@ -3,29 +3,24 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link type="text/css" href="css/eye.css" rel="stylesheet">
-        <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
-        <script type="application/javascript" src="lib/jquery-1.7.min.js"></script>
-        <script type="text/javascript" src="lib/jquery-ui-1.8.14.custom.min.js"></script>
+        
+        <link type="text/css" href="lib/jqueryui/jquery-ui-1.10.1.custom/css/smoothness/jquery-ui-1.10.1.custom.min.css" rel="stylesheet" />
+        <script type="application/javascript" src="lib/jqueryui/jquery-ui-1.10.1.custom/js/jquery-1.9.1.js"></script>
+        <script type="text/javascript" src="lib/jqueryui/jquery-ui-1.10.1.custom/js/jquery-ui-1.10.1.custom.min.js"></script>
+        <!-- 
         <script type="application/javascript" src="lib/jquery.template.js"></script>
+        -->*<script type="application/javascript" src="lib/mustache.js"></script>
         <script type="application/javascript" src="lib/jquery.prettydate.js"></script>
-		<script type="text/javascript" src="lib/sparklines/jquery.sparkline.js"></script>
 		
+		<script type="text/javascript" src="lib/sparklines/jquery.sparkline.js"></script>
+		<script type="text/javascript" src="lib/openlayer/OpenLayers.js"></script>
+		<link rel="stylesheet" href="lib/openlayer/style.css" type="text/css">
 		<script type="text/javascript" src="lib/fancyzoom.min.js"></script>
-
-		<!--
-        <script type="text/javascript" src="extra/jquery.jsPlumb-1.0.2-min.js">
-        </script>
-        <script type="application/javascript" src="extra/jquery.mousewheel.js">
-        </script>
-        <script type="application/javascript" src="extra/jquery.timeline.js">
-        </script>
-        <link type="text/css" href="css/timeline.css" rel="stylesheet">
-        -->
 		<script type="application/javascript" src="lib/base64.js"></script>
         <script type="application/javascript" src="config.js"></script>
-		<script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
-		<!--<script src="http://maps.google.com/maps?file=api&amp;v=3&amp;sensor=false&amp;key=ABQIAAAAtEOPihzWueLlNCLMoB9gSRQzovFltyh3__eQzIYnI8zKDV9c-RSnWsxRr2N1XFC9jiUukMEh3_bzxw" type="text/javascript"></script>-->
-		
+		<!--
+		<script src="https://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+		-->
 		<script type="application/javascript" src="popup.js"></script>	
         
         <title>Eye Traffic</title>
@@ -74,7 +69,7 @@
         <div id="header">
             <button name="refresh" id="refresh">Refresh</button>
 			<button name="convert" id="convert" class="debug">Convert</button>
-			<div id="history" title="History"></div>
+			<div id="history" title="History"> </div>
 			<div id="links">
 				<a target="blank" href="maps.html" class="debug"><b>Map</b></a>
 				<a target="blank" href="popup.html" class="debug"><b>Popup</b>&nbsp;</a>
@@ -86,6 +81,8 @@
 	            &nbsp;<a target="blank" href="http://www.driving.lu/index.php?module=auto&action=getListeCamera&idauto=1">driving.lu</a>
 	            &nbsp;<a target="blank" href="http://www.bison-fute.equipement.gouv.fr">Bison futé</a>
 	            &nbsp;<a target="blank" href="http://www.sanef.com/fr/travaux/">SANEF</a>
+				&nbsp;<a target="blank" href="http://routes.tomtom.com/map/?center=49.405663703215%2C5.9357666015328&zoom=8&map=basic/">Tomtom</a>
+				&nbsp;<a target="blank" href="http://www.inforoute57.fr">InfoRoute57</a>
 			</div>
         </div>
         <div id="menu">
@@ -93,7 +90,7 @@
         </div>
         <div id="main">
             <div id="ptimes">
-                <a name="ltimes"></a>
+                <a name="ltimes"> </a>
                 <h2>Temps de parcours</h2>
                 <div id="times">
                     <ul>
@@ -116,14 +113,14 @@
                 </div>
             </div>
             <div id="alerts">
-                <a name="linfo"></a>
+                <a name="linfo"> </a>
                 <h2>Trafic info</h2>
                 <div class="content">
-                    <div id="flashinfo"></div>
-                    <div id="alert"></div>
+                    <div id="flashinfo"> </div>
+                    <div id="alert"> </div>
                 </div>
             </div>
-            <a name="lcams"></a>
+            <a name="lcams"> </a>
             <h2>Caméras</h2>
             <div class="mtab" id="cams">
                 <ul>
@@ -147,7 +144,7 @@
                 <div id="cam-A13">
                 </div>
             </div>
-            <a name="lmaps"></a>
+            <a name="lmaps"> </a>
             <h2>Cartes</h2>
             <div class="mtab" id="maps">
                 <ul>
@@ -162,19 +159,19 @@
 					<li><a href="#map-verkehrsinfo">(de) Verkehrsinfo</a></li>
 					<li><a href="#map-swr3">(de) SWR3</a></li>
                 </ul>
-				<div id="map-cita"></div>
-				<div id="map-tomtom"></div>
-				<div id="map-google"><div id="gmap"></div></div>
-				<div id="map-rtl"></div>
-				<div id="map-ir57"></div>
-				<div id="map-bison"></div>
-				<div id="map-mobilinfo"></div>
-				<div id="map-wallonie"></div>
-				<div id="map-verkehrsinfo"></div>
-				<div id="map-swr3"></div>
+				<div id="map-cita"> </div>
+				<div id="map-tomtom"> </div>
+				<div id="map-google"><div id="gmap"> </div></div>
+				<div id="map-rtl"> </div>
+				<div id="map-ir57"> </div>
+				<div id="map-bison"> </div>
+				<div id="map-mobilinfo"> </div>
+				<div id="map-wallonie"> </div>
+				<div id="map-verkehrsinfo"> </div>
+				<div id="map-swr3"> </div>
 				<div id="map-custom" style="display:none;">
 					<div id="wrapper">
-            			<div id="header">
+            			<div id="second-header">
 			                <div id="location">
 			                    <span>Address:</span>
 			                    <input type="text" id="addressSource" value="wasserbillig"/><input type="button" value="Go!" onclick="searchMap();"/><a href="#" class="dirlink" onclick="showRoute();">Get Directions</a>
@@ -202,7 +199,7 @@
 					            </div>
 					            <canvas id="mycanvas" width="1" height="1">
 					            </canvas>
-								<div id="outer_more"></div>
+								<div id="outer_more"> </div>
 							</div>
 							<div id="right" class="left">
 								<div id="catselector">
@@ -216,7 +213,7 @@
 			            		</textarea>
 							</div>
 						</div>
-		            	<div id="footer">
+		            	<div id="second-footer">
 			                <div id="defloc">
 			                    <a href="#" onclick="resetLocation();">Reset</a>
 			                    <a href="#" onclick="saveLocation();">Save</a>
@@ -232,7 +229,7 @@
             </div>
 
         <div id="footer">
-            <textarea class="debug" id="res" cols='60' rows='20'></textarea>
+            <textarea class="debug" id="res" cols='60' rows='20'> </textarea>
 			<!--
             <div id="timeline" style="overflow-x: hidden; overflow-y: hidden; ">
             <UL class="tl-events">
