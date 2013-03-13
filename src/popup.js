@@ -10,20 +10,25 @@ var isDebug = false, values = [], prefs;
 
 //var backgroundPage = chrome.extension.getBackgroundPage();
 function initPopup(){
-    var mapsel = localStorage.getItem('tab-maps');
-    mapsel=mapsel||'map-tomtom';
+    var mapsel = localStorage.getItem('tab-maps')||'map-tomtom';
+    var camsel = localStorage.getItem('tab-cams')||'cam-A1';
+    var timesel = localStorage.getItem('tab-times')||'time-FRANCE';
     
-    //jQuery('#flashinfo').hide();
-    jQuery('#times').tabs();
+    jQuery('#times').tabs({
+        activate: function(event, ui){
+            var gid='tab-times', id = ui.newPanel[0].id;
+    		localStorage.setItem(gid,id);
+        }
+    });
     jQuery('#cams').tabs({
         activate: function(event, ui){
-            loadHtml(ui.newPanel);
+            loadContent(ui.newPanel, 'tab-cams');
         }
     });
 
 	jQuery('#maps').tabs({
         activate: function(event, ui){
-            loadMapcontent(ui.newPanel);
+            loadContent(ui.newPanel, 'tab-maps');
         }
     });
     
@@ -35,26 +40,31 @@ function initPopup(){
     updateOnce();
     jQuery('#refresh').button().click(update);
     jQuery('#convert').button().click(convert);
+    
     //load first tab
-    var i = $('#'+mapsel).prevAll('.map-content').length;
-    if (i==0){
-    	jQuery('#maps').tabs( "load", 1 );
-    	
-    	var panel1 = $('.map-content').first();
-    	loadMapcontent(panel1);
-    }
-    jQuery('#maps').tabs('option', 'active', i);
-    
-    
+    selectTab('times', timesel);
+    selectTab('maps', mapsel);
+    selectTab('cams', camsel);
+
     window.setTimeout(function(){
         update();
         window.setInterval(update, 30000);
     }, 1000);
 }
-function loadMapcontent(panel){
+function selectTab(tabId, mapsel){
+    var tabEl=$('#'+tabId), gid='tab-'+tabId;
+    var i = $('#'+mapsel).prevAll('.tab-content').length;
+    if (i==0){
+    	tabEl.tabs( "load", 1 );
+    	var panel1 = $('.tab-content').first();
+    	loadContent(panel1, gid);
+    }
+    tabEl.tabs('option', 'active', i);
+}
+function loadContent(panel, gid){
     var id = panel[0].id;
-    localStorage.setItem('tab-maps',id);
-    loadHtml(panel, id);	
+    localStorage.setItem(gid,id);
+    loadHtml(panel, id);
 }
 function updateOnce(){
     req('prefs', function(p){

@@ -25,6 +25,6 @@ xcopy /e /Y /I lib dist\lib
 echo ======================================================
 echo Then to upload source into Google Westore, zip build/dist
 echo or to test it as local crx, use Extensions page, go to "Pack extension"
-echo   choose build\dist folder and key file build\dist.pem
+echo   choose dist folder and key file dist.pem
 echo ======================================================
 pause
