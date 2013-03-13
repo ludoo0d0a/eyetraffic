@@ -12,9 +12,7 @@ echo ======================================================
 pause
 
 echo **************** finalize
-copy bg.html dist
-copy popup.html dist
-copy toast.html dist
+copy *.html dist
 copy *.js dist
 copy *.json dist
 
