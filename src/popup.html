@@ -5,22 +5,24 @@
         <link type="text/css" href="css/eye.css" rel="stylesheet">
         
         <link type="text/css" href="lib/jqueryui/jquery-ui-1.10.1.custom/css/smoothness/jquery-ui-1.10.1.custom.min.css" rel="stylesheet" />
-        <script type="application/javascript" src="lib/jqueryui/jquery-ui-1.10.1.custom/js/jquery-1.9.1.js"></script>
+        <script type="application/javascript" src="lib/jquery/jquery-1.9.1-min.js"></script>
+        <script type="application/javascript" src="lib/jquery.browser.js"></script>
+        
         <script type="text/javascript" src="lib/jqueryui/jquery-ui-1.10.1.custom/js/jquery-ui-1.10.1.custom.min.js"></script>
-        <!-- 
-        <script type="application/javascript" src="lib/jquery.template.js"></script>
-        -->*<script type="application/javascript" src="lib/mustache.js"></script>
+
+        <script type="application/javascript" src="lib/mustache.js"></script>
         <script type="application/javascript" src="lib/jquery.prettydate.js"></script>
 		
 		<script type="text/javascript" src="lib/sparklines/jquery.sparkline.js"></script>
 		<script type="text/javascript" src="lib/openlayer/OpenLayers.js"></script>
 		<link rel="stylesheet" href="lib/openlayer/style.css" type="text/css">
-		<script type="text/javascript" src="lib/fancyzoom.min.js"></script>
+
+		
+		<script type="text/javascript" src="lib/fancyzoom/jquery.fancyzoom.js"></script>
+		
 		<script type="application/javascript" src="lib/base64.js"></script>
         <script type="application/javascript" src="config.js"></script>
-		<!--
-		<script src="https://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
-		-->
+		
 		<script type="application/javascript" src="popup.js"></script>	
         
         <title>Eye Traffic</title>
@@ -68,7 +70,9 @@
     <body>
         <div id="header">
             <button name="refresh" id="refresh">Refresh</button>
+			<!--
 			<button name="convert" id="convert" class="debug">Convert</button>
+			-->
 			<div id="history" title="History"> </div>
 			<div id="links">
 				<a target="blank" href="maps.html" class="debug"><b>Map</b></a>
@@ -83,6 +87,7 @@
 	            &nbsp;<a target="blank" href="http://www.sanef.com/fr/travaux/">SANEF</a>
 				&nbsp;<a target="blank" href="http://routes.tomtom.com/map/?center=49.405663703215%2C5.9357666015328&zoom=8&map=basic/">Tomtom</a>
 				&nbsp;<a target="blank" href="http://www.inforoute57.fr">InfoRoute57</a>
+				&nbsp;<a target="blank" href="http://www.luxtraffic.lu">LuxTraffic</a>
 			</div>
         </div>
         <div id="menu">
@@ -159,16 +164,16 @@
 					<li><a href="#map-verkehrsinfo">(de) Verkehrsinfo</a></li>
 					<li><a href="#map-swr3">(de) SWR3</a></li>
                 </ul>
-				<div id="map-cita"> </div>
-				<div id="map-tomtom"> </div>
-				<div id="map-google"><div id="gmap"> </div></div>
-				<div id="map-rtl"> </div>
-				<div id="map-ir57"> </div>
-				<div id="map-bison"> </div>
-				<div id="map-mobilinfo"> </div>
-				<div id="map-wallonie"> </div>
-				<div id="map-verkehrsinfo"> </div>
-				<div id="map-swr3"> </div>
+				<div class="map-content" id="map-cita"> </div>
+				<div class="map-content" id="map-tomtom"> </div>
+				<div class="map-content" id="map-google"><div id="gmap"> </div></div>
+				<div class="map-content" id="map-rtl"> </div>
+				<div class="map-content" id="map-ir57"> </div>
+				<div class="map-content" id="map-bison"> </div>
+				<div class="map-content" id="map-mobilinfo"> </div>
+				<div class="map-content" id="map-wallonie"> </div>
+				<div class="map-content" id="map-verkehrsinfo"> </div>
+				<div class="map-content" id="map-swr3"> </div>
 				<div id="map-custom" style="display:none;">
 					<div id="wrapper">
             			<div id="second-header">

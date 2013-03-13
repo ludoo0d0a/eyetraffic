@@ -6,7 +6,7 @@
  * @web xeoos.fr
  */
 //UTF8: é
-var isDebug = true, values = [], prefs;
+var isDebug = false, values = [], prefs;
 
 //var backgroundPage = chrome.extension.getBackgroundPage();
 function initPopup(){
@@ -15,17 +15,18 @@ function initPopup(){
     
     //jQuery('#flashinfo').hide();
     jQuery('#times').tabs();
-    jQuery('.mtab').tabs({
-        select: function(event, ui){
-            mapsel=ui.panel.id;
-            var el = ui.panel.parentNode;
-            if (el && el.id==='maps'){
-            	localStorage.setItem('tab-maps',mapsel);
-            }
-            loadHtml(mapsel);
+    jQuery('#cams').tabs({
+        activate: function(event, ui){
+            loadHtml(ui.newPanel);
         }
     });
 
+	jQuery('#maps').tabs({
+        activate: function(event, ui){
+            loadMapcontent(ui.newPanel);
+        }
+    });
+    
     i18n();
     if (isDebug) {
         jQuery('.debug').removeClass('debug');
@@ -35,12 +36,25 @@ function initPopup(){
     jQuery('#refresh').button().click(update);
     jQuery('#convert').button().click(convert);
     //load first tab
-    jQuery('#maps').tabs('option', 'selected', mapsel);
-
+    var i = $('#'+mapsel).prevAll('.map-content').length;
+    if (i==0){
+    	jQuery('#maps').tabs( "load", 1 );
+    	
+    	var panel1 = $('.map-content').first();
+    	loadMapcontent(panel1);
+    }
+    jQuery('#maps').tabs('option', 'active', i);
+    
+    
     window.setTimeout(function(){
         update();
         window.setInterval(update, 30000);
     }, 1000);
+}
+function loadMapcontent(panel){
+    var id = panel[0].id;
+    localStorage.setItem('tab-maps',id);
+    loadHtml(panel, id);	
 }
 function updateOnce(){
     req('prefs', function(p){
@@ -130,7 +144,7 @@ function onUpdateTimes(fragments){
     });
 }
 
-var xtplAlert;
+var xtplAlert, mylang='fr';
 function onUpdateAlerts(channel){
     if (channel && channel.item) {
         jQuery('#alert').html('');
@@ -144,7 +158,8 @@ function onUpdateAlerts(channel){
         }
         jQuery.each(items, function(i, item){
             //title,description,pubDate
-            item.date = jQuery.prettyDate.format(item.pubDate, mylang);
+            item.date = jQuery.prettyDate.format(item.pubDate, mylang)||'';
+            item.description =item.description||''; 
             var output = Mustache.render(xtplAlert, item);
             //jQuery('#alert').prepend(xtplAlert, item);
             jQuery('#alert').prepend(output);
@@ -213,6 +228,7 @@ function createCams(static){
             el.append(div);
         }
     });
+    
     
     jQuery('a.izi').fancyZoom({
     	directory:'images/fancyzoom',
@@ -300,23 +316,19 @@ function getHtml(id){
 		//return '<div id="goowrap"><div id="goooffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="480"></iframe></div></div>';
 		return writeIframe(id,url,590,480);
     } else if (id === 'map-cita') {
-       //http://www2.pch.etat.lu/cita/cita.swf, w=840,h=694;
-	   var swf = 'http://www.cita.lu/flash/cita_integralite_zoom.swf',w=600,h=444;
-	   /*return '<object width="'+w+'" height="'+h+'">' +
-        '<param name="movie" value="'+swf+'">' +
-        '<embed src="'+swf+'" width="'+w+'" height="'+h+'">' +
-        '</object>';
-		 return '<iframe src="'+swf+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe>';
-    } else if (id === 'map-tunnel') {
+	   var url = 'http://www.cita.lu',w=600,h=444;
+	   return writeIframe(id,url,w,h);
+     } else if (id === 'map-tunnel') {
         return '<img src="http://tunnel.cita.lu/img/trajets-map.png" height="350"/>';
     } else if (id === 'map-google') {
-        initGmap();
-        return '';
+       var url = 'gmap.html',w=630,h=380; //same as CSS #gmap
+	   return writeIframe(id,url,w,h);
     }else if (id === 'map-ir57') {
 		var w = 2000, h=2000;
 		var url = 'http://www.inforoute57.fr';
 		//return '<div id="irwrap"><div id="iroffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
 		return writeIframe(id,url);
+    
     } else if (id === 'map-rtl') {
 		var html = '<div id="ctn-map-rtl" style="position: relative; left: 0px; top: 0px; z-index: 0; height:620px;">';
 html += '<div style="width: 288px; height: 307px; position: absolute; left: 4px; top: 307px; "><img style="width: 288px; height: 307px; " src="http://images.newmedia.lu/trafic_map/tiles/2x/complete2_2x_2_6.png"></div>';
@@ -326,10 +338,10 @@ html += '<div style="width: 288px; height: 307px; position: absolute; left: 4px;
 html += '</div>';
 html += '<script>refreshMapRtl();setInterval(refreshMapRtl,10000);</script>';
 return html;
-		/*
-		return '<img id="img-'+id+'"" />'+
-		'<script>refreshMapRtl();setInterval(refreshMapRtl,10000);</script>';
-		*/
+		
+		//return '<img id="img-'+id+'"" />'+
+		//'<script>refreshMapRtl();setInterval(refreshMapRtl,10000);</script>';
+		
     } else if (id === 'map-mobilinfo') {
 		var w=800, h=600;
 		var url = 'http://www.mobilinfo.be/mobilinfo/';
@@ -369,7 +381,7 @@ function renderCita(){
 	        new OpenLayers.Layer.Vector("KML", {
 	            strategies: [new OpenLayers.Strategy.Fixed()],
 	            protocol: new OpenLayers.Protocol.HTTP({
-	                url: "http://cita.lu/kml/services_axe.kml?src=EyeTraffic",
+	                url: "http://www.cita.lu/kml/services_axe.kml?src=EyeTraffic",
 	                format: new OpenLayers.Format.KML({
 	                    extractStyles: true, 
 	                    extractAttributes: true,
@@ -383,8 +395,10 @@ function renderCita(){
 	});
 
 }
-function loadHtml(id){
-    var el = $('#' + id);
+function loadHtml(el, id){
+    if (!el){
+    	el = $('#' + id);
+    }
     if (!el.attr('loaded')) {
         var html = getHtml(id);
         if (html) {
@@ -452,57 +466,6 @@ function i18n(){
     
 }
 
-function initGmap(){
-    if (google.maps){
-    	
-    	var mapTypeIds = [];
-		for(var type in google.maps.MapTypeId) {
-			mapTypeIds.push(google.maps.MapTypeId[type]);
-		}
-		mapTypeIds.push("RTL");
-		
-	    var map = new google.maps.Map(document.getElementById("gmap"), {
-			zoom: 11,
-			center: new google.maps.LatLng(49.56, 6.130),//Lux
-			mapTypeId: google.maps.MapTypeId.ROADMAP,
-			streetViewControl: false,
-			mapTypeControlOptions : {
-				mapTypeIds : mapTypeIds
-			}
-	    });
-	   
-	    var trafficLayer = new google.maps.TrafficLayer();
-	    trafficLayer.setMap(map);
-	    
-	    var maxis={
-	    	1:{x:2,y:3, ox:940, oy:579},
-	    	2:{x:5,y:7, ox:1880, oy:1158},
-	    	4:{x:11,y:15, ox:7526, oy:4645}
-	    };
-	    map.mapTypes.set("RTL", new google.maps.ImageMapType({
-			getTileUrl : function(coord, zoom) {
-				var url=null, z=zoom-10, mm=maxis[z];
-				if (mm){
-					//http://images.newmedia.lu/trafic_map/tiles/4x/complete2_4x_6_12.png
-					var x = Math.round(coord.x-mm.ox), y= Math.round(coord.y-mm.oy);
-					//1x_2_3  
-					//2x_5_7
-					//4x_11_15
-					if (x>=0 && x<=mm.x && y>=0 && y<=mm.y){
-						var r = Math.round(Math.random()*10000)+1;
-						url = "http://images.newmedia.lu/trafic_map/tiles/" + z + "x/complete2_"+z+"x_" + x + "_" + y + ".png?r="+r;
-					}
-				}
-				return url;
-			},
-			//tileSize : new google.maps.Size(256, 256),
-			tileSize : new google.maps.Size(288, 307),
-			name : "RTL Traffic",
-			minZoom: 11,
-			maxZoom: 14
-		}));
-    }
-}
 function refreshMapRtl(){
 	/*var url = 'http://images.newmedia.lu/trafic_map/feature.jpg';
 	jQuery('#img-map-rtl').attr('src',url+'?r='+rnd);

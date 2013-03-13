@@ -1120,7 +1120,7 @@ var CONFIG = {
 };
 //Alertes
 var urlAlert = 'http://www.cita.lu/rss_feeds/rtl/index.xml';
-var tplAlert = '<div class="news"><div class="desc">${description}</div><div class="date">${date}</div></div>';
+var tplAlert = '<div class="news"><div class="desc">{{description}}</div><div class="date">{{date}}</div></div>';
 //Cams
 //CITA
 var urlCam = 'http://www.cita.lu/info_trafic/cameras/images/cccam_{0}.jpg?src=EyeTraffic&~{1}';

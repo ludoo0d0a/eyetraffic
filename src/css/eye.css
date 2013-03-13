@@ -8,11 +8,11 @@ body {
     overflow-y: auto;
     /*padding: 5px;*/
 }
-/*
+
 h2 {
     margin: 0;
 }
-*/
+
 a, a:hover, a:visited {
     color: #404352;
     text-decoration: none;
