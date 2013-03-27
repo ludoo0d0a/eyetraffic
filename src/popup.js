@@ -74,6 +74,8 @@ function startStatus(toggle){
 	}
 	disableBadge(bstatus);
 	localStorage.setItem('status', bstatus);
+	$(document.body).toggleClass('disabled', disabled);
+	$('#_status').text(disabled?'Off':'On');
 }
 
 function disableBadge(disabled){
@@ -209,7 +211,8 @@ function onUpdateAlerts(channel){
             //title,description,pubDate
         	var d = getMoment(item.pubDate);
             item.date = d.fromNow();
-            item.description =item.description||''; 
+            item.description =item.description||'';
+            item.title =item.title||'';
             var output = Mustache.render(xtplAlert, item);
             //jQuery('#alert').prepend(xtplAlert, item);
             jQuery('#alert').prepend(output);

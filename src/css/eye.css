@@ -38,6 +38,18 @@ a, a:hover, a:visited {
 .clearboth {
     clear: both;
 }
+/**
+ * 	Disabled
+ */
+.disabled h2{
+	color:#DEDEDE;
+}
+.disabled #menu, .disabled #menu a{
+	color:#DEDEDE;
+}
+.disabled #menu a#_status{
+	color:black;
+}
 
 /**
  * 	Menu
@@ -45,7 +57,7 @@ a, a:hover, a:visited {
 
 #menu{
 	z-index:9999;
-	width:170px;
+	width:185px;
 	text-align:center;
 	height:13px;
 	position:fixed;

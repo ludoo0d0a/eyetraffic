@@ -1098,7 +1098,12 @@ var urlAlerts =  {
 	'incidents': 'http://cita.lu/fr/infos-trafic/generate',
 	'chantiers': 'http://cita.lu/fr/infos-trafic/generate/chantier'
 };
-var tplAlert = '<div class="news {{type}}"><div class="desc">{{description}}</div><div class="date">{{date}}</div></div>';
+titleAlerts={
+	'rtl': 'Infos RTL',
+	'incidents': 'Incidents',
+	'chantiers': 'Chantiers'
+};
+var tplAlert = '<div class="news {{type}}" title="{{title}}"><div class="desc">{{description}}</div><div class="date">{{date}}</div></div>';
 //Cams
 //CITA
 var urlCam = 'http://www.cita.lu/info_trafic/cameras/images/cccam_{0}.jpg?src=EyeTraffic&~{1}';

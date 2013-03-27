@@ -398,6 +398,7 @@ function updateAlert(id, a, cb){
         els.each(function(i,el){
         	items.push({
 	        	type:id,
+	        	title:titleAlerts[id],
 	        	description:jQuery.trim(el.childNodes[0].textContent),
 	        	pubDate:jQuery.trim($(el).find('span.pubdate').text()) //27-03-2013 09:54:19
         	});
