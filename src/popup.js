@@ -207,7 +207,7 @@ function onUpdateAlerts(channel){
         }
         jQuery.each(items, function(i, item){
             //title,description,pubDate
-        	var d = moment(item.pubDate, ['DD-MM-YYYY HH:mm:ss', 'YYYY-MM-DD HH:mm:ss Z']);
+        	var d = getMoment(item.pubDate);
             item.date = d.fromNow();
             item.description =item.description||''; 
             var output = Mustache.render(xtplAlert, item);

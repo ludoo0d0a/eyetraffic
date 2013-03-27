@@ -6,33 +6,6 @@
  * @web xeoos.fr
  */
 //UTF8: �
-//API maps
-//http://econym.org.uk/gmap/
-//http://code.google.com/apis/maps/documentation/reference.html
-//Geoip
-//http://www.geoipview.com/
-//cartes
-//www.guideroutier.lu/
-//INFO
-//http://www.acl.lu/fr/trafic_news/info_trafic_luxembourg
-//www.vdl.lu/Environnement+et+mobilit�/Circulation/Trafic_Info.html
-//temps
-//www.guideroutier.lu/mobile/index.php
-//cameras
-//www.guideroutier.lu/mobile/camera.php
-//www.driving.lu/index.php?module=auto&action=getListeCamera&idauto=1
-//API googlemaps : http://www.guideroutier.lu/xmlgen.php?catid=0&localite=&numeromaison=undefined
-//chantiers
-//www.vdl.lu/Chantiers_de_courte_dur�e-path-1,641223,1445670.html
-//www.vdl.lu/Chantiers_de_longue_dur�e-path-1,641223,1445670.html
-//http://www.cita.lu/chantiers/tableau_chantiers_autoroutes.jsp
-//http://www.cita.lu/chantiers/tableau_chantiers_autoroutes.jsp?type=1&service=all&show=longue
-//www.pch.public.lu/chantiers/chantiers/chantiers.jsp?type=1&service=all
-//www.pch.public.lu/chantiers/chantiers/chantiers.jsp?type=2&service=all
-//API googlemaps : http://www.guideroutier.lu/xmlgen.php?catid=7&localite=&numeromaison=undefined
-//radars
-//www.police.public.lu/actualites/trafic/controles_radar/index.html
-//API googlemaps : http://www.guideroutier.lu/xmlgen.php?catid=6&localite=&numeromaison=undefined
 //parking
 //www.driving.lu/index.php?module=auto&action=getGuidageParking
 //www.vdl.lu/Guidage_parking.html
@@ -1493,3 +1466,14 @@ var dcams = {
         }
     }
 };
+
+/*
+ * Utils
+ */
+function getMoment(d){
+	var m = moment(d);
+	if (!m.isValid()){
+		m = moment(d, ['DD-MM-YYYY HH:mm:ss', 'YYYY-MM-DD HH:mm:ss Z']);
+	}
+	return m;
+}

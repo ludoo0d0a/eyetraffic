@@ -401,12 +401,17 @@ function updateAlert(id, a, cb){
 	        	pubDate:jQuery.trim($(el).find('span.pubdate').text()) //27-03-2013 09:54:19
         	});
         });
+        items = items.sort(function(a,b){
+        	var ma = getMoment(a.pubDate), mb = getMoment(b.pubDate);
+        	return ma.isBefore(mb)?-1:1;
+        });
         
         if (cb) {
             cb(items);
         }
     });
 }
+
 
 //flashinfo lesfrontaliers.lu
 function updateFlashs(a, callback){
