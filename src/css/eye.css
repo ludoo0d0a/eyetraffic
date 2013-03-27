@@ -30,8 +30,8 @@ a, a:hover, a:visited {
 }
 
 #links {
-    float: right;
-    width: 235px;
+    margin-left: 150px;
+    width: 310px;
 	font-size:0.9em;
 }
 
@@ -71,7 +71,7 @@ a, a:hover, a:visited {
  * Temps
  */
 #ptimes {
-    width: 400px;
+    width: 295px;
 }
 
 #times {
@@ -85,15 +85,17 @@ a, a:hover, a:visited {
  * Alertes
  */
 #alerts {
-    left: 410px;
     position: absolute;
-    top: 0px;
-    width: 270px;
+    margin-left: 300px;
+    top: 25px;
+    width: 380px;
 }
-
+#alerts > h2{
+	text-align: right;
+}
 #alerts .content {
     overflow: auto;
-    height: 160px;
+    height: 150px;
 }
 
 #alerts .news:nth-child(odd){
@@ -132,6 +134,11 @@ a, a:hover, a:visited {
 	display:none;
 }
 
+#title_flashinfo{
+	position: absolute;
+	top: 5px;
+	left: 580px;
+}
 /*
  * Cameras
  */

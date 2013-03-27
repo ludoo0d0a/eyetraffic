@@ -75,7 +75,7 @@ function startStatus(toggle){
 	disableBadge(bstatus);
 	localStorage.setItem('status', bstatus);
 	$(document.body).toggleClass('disabled', disabled);
-	$('#_status').text(disabled?'Off':'On');
+	$('#_status').text(disabled?'On':'Off');
 }
 
 function disableBadge(disabled){

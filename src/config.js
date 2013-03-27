@@ -1098,7 +1098,8 @@ var urlAlerts =  {
 	'incidents': 'http://cita.lu/fr/infos-trafic/generate',
 	'chantiers': 'http://cita.lu/fr/infos-trafic/generate/chantier'
 };
-titleAlerts={
+var reNoFlashInfo=/Aucune\sinformation\spour\sle\smoment/;
+var titleAlerts={
 	'rtl': 'Infos RTL',
 	'incidents': 'Incidents',
 	'chantiers': 'Chantiers'

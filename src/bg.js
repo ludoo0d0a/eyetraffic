@@ -234,7 +234,7 @@ function changeStatus(a, cb){
 	}else{
 		newTictac(true);
 	}
-	
+	updateBadge(a);
 }
 function stopTictac(){
 	if (tictac) {
@@ -391,23 +391,23 @@ function updateAlert(id, a, cb){
         method: 'GET',
         url: urlAlerts[id]
     }, function(xhr){
-        var txt = xhr.responseText || '';
-        var o = $(txt);//text2xml(o)
-        var els = o.find('li');
-        var items = [];
-        els.each(function(i,el){
-        	items.push({
-	        	type:id,
-	        	title:titleAlerts[id],
-	        	description:jQuery.trim(el.childNodes[0].textContent),
-	        	pubDate:jQuery.trim($(el).find('span.pubdate').text()) //27-03-2013 09:54:19
-        	});
-        });
-        items = items.sort(function(a,b){
-        	var ma = getMoment(a.pubDate), mb = getMoment(b.pubDate);
-        	return ma.isBefore(mb)?-1:1;
-        });
-        
+        var items = [], txt = jQuery.trim(xhr.responseText) || '';
+        if (!reNoFlashInfo.test(txt)){
+	        var o = jQuery(txt);//text2xml(o)
+	        var els = o.find('li');
+	        els.each(function(i,el){
+	        	items.push({
+		        	type:id,
+		        	title:titleAlerts[id],
+		        	description:jQuery.trim(el.childNodes[0].textContent),
+		        	pubDate:jQuery.trim($(el).find('span.pubdate').text()) //27-03-2013 09:54:19
+	        	});
+	        });
+	        items = items.sort(function(a,b){
+	        	var ma = getMoment(a.pubDate), mb = getMoment(b.pubDate);
+	        	return ma.isBefore(mb)?-1:1;
+	        });
+        }
         if (cb) {
             cb(items);
         }
