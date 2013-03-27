@@ -425,26 +425,44 @@ function updateFlashs(a, callback){
         var  m, data = xhr.responseText;
         
         var page = $(data);
-        var el = page.find('#infos-flash');
+        var els = page.find('#infos-flash .view-infos-flash .views-row');
        
         //m = reFlashInfoLF.main.exec(data);
-        if (el.length>0){
+        if (els.length>0){
         //if (m && m[1]) {
         //    var n = reFlashInfoLF.title.exec(m[1]), p = reFlashInfoLF.content.exec(m[1]);
         //    var title = n[1], content = p[1];
-        	el.find('img').each(function(i,el){
-        		el.src=urlFlashRoot+el.attributes.src.value;
+        	els.find('img').each(function(i,el){
+        		var src = el.attributes.src.value;
+        		if (src.substring(1)=='/'){
+        			el.src=urlFlashRoot+src;
+        		}
         	});
-        	el.find('a').each(function(i,el){
-        		el.href=urlFlashRoot+el.attributes.href.value;
+        	els.find('a').each(function(i,el){
+        		var href = el.attributes.href.value;
+        		if (href.substring(1)=='/'){
+        			el.href=urlFlashRoot+href;
+        		}
         	});
-        	var title= el.find('.views-field-title a').text();
-        	var elContent =  el.find('.views-field-body .field-content');
-            var newFlash = {
-                title: title,
-                content: elContent.html(),
-                contentText:elContent.text()
-            };
+        	 var newFlash = {
+        	 	title:'',
+        	 	content:'',
+				contentText:''
+        	 };
+        	els.each(function(i,el){
+	        	el=$(el);
+	        	var title= el.find('.views-field-title a').text();
+	        	var elContent =  el.find('.views-field-body .field-content');
+	            if (i==0){
+	            	newFlash.title= title;
+	            }else{
+	            	newFlash.contentText += '   ###################   '+title+' >>>  ';
+	            	newFlash.content += '\r\n<br/><b>'+title+'</b>\r\n<br/>';
+	            }
+                newFlash.content += elContent.html();
+                newFlash.contentText += elContent.text();
+            });
+            
             toastFlash(newFlash);
             lastFlash=newFlash;
             //badge color now
