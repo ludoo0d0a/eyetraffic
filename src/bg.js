@@ -9,6 +9,7 @@ var defaultPrefs = {
         red: 20
     }
 };
+
 //TODO: recheck average values on a long period
 var averages = {
     1: 13,
@@ -71,6 +72,8 @@ chrome.extension.onRequest.addListener(function(a, sender, callback){
         updateprefs(a, callback);
     } else if (a.message === 'history') {
         getHistory(a, callback);
+    } else if (a.message === 'status') {
+        changeStatus(a, callback);
     }
 });
 
@@ -174,21 +177,26 @@ function getLimits(id){
 
 function updateBadge(a, cb){
     //Send time to badge
-    var time = parseInt(a.time, 10);
+    var time = 0, color = 'Green', bcolor = [0, 255, 0, 255];
     
-    var limit = getLimits(a.id);
-    
-    var color = 'Green';
-    var bcolor = [0, 255, 0, 255];
-    if (time > limit.red) {
-        color = 'Red';
-        bcolor = [255, 0, 0, 255];
-    } else if (time > limit.orange) {
-        color = 'Orange';
-        bcolor = [255, 143, 53, 255];
-    }
-    if (lastFlash){
-    	bcolor = BADGE_COLOR_FLASHINFO; 
+    if (a.disabled){
+    	time='x';
+    	color='Grey';
+    	bcolor=[120, 120, 120, 255];
+    }else{
+    	time=parseInt(a.time, 10);
+	    var limit = getLimits(a.id);
+	    if (time > limit.red) {
+	        color = 'Red';
+	        bcolor = [255, 0, 0, 255];
+	    } else if (time > limit.orange) {
+	        color = 'Orange';
+	        bcolor = [255, 143, 53, 255];
+	    }
+	    if (lastFlash){
+	    	bcolor = BADGE_COLOR_FLASHINFO; 
+	    }
+	    
     }
     chrome.browserAction.setBadgeText({
         text: '' + time
@@ -219,12 +227,22 @@ function updateBadge(a, cb){
         cb(null);
     }
 }
-
-function newTictac(forceNow){
-    //console.log('newTictac-'+forceNow);
-    if (tictac) {
+function changeStatus(a, cb){
+	if (a.disabled){
+		stopTictac();
+	}else{
+		newTictac(true);
+	}
+	
+}
+function stopTictac(){
+	if (tictac) {
         window.clearInterval(tictac);
     }
+}
+function newTictac(forceNow){
+    //console.log('newTictac-'+forceNow);
+    stopTictac();
     badgeprefs = getPref('badge');
     interval = getInterval();
     //console.log('interval='+interval+';id='+badgeprefs.id);
@@ -234,8 +252,8 @@ function newTictac(forceNow){
     }
 }
 function updateBg(){
-	updateTimes();
-	updateFlashs();
+	//updateTimes();
+	//updateFlashs();
 }
 
 function getInterval(){
@@ -333,7 +351,21 @@ function updateTimes(a, callback){
 }
 
 //alert info cita.lu
-function updateAlerts(a, callback){
+function updateAlerts(a, cb){
+	updateAlert('incidents', a, function(o1){
+		updateAlert('rtl', a, function(o2){
+			updateAlert('chantiers', a, function(o3){
+				if (cb){
+					var a = jQuery.merge(o3,o2);
+					a = jQuery.merge(a,o1);
+					cb({item:a});
+				}
+			});
+		});
+	});
+}
+/*
+function updateAlert(a, cb){
     xhr({
         method: 'GET',
         url: urlAlert,
@@ -341,8 +373,37 @@ function updateAlerts(a, callback){
     }, function(xhr){
         var o = xhr.responseJson || {};
         var channel = o.rss.channel;
-        if (callback) {
-            callback(channel);
+        //pubdate Wed, 27 Mar 2013 10:44:25 +0100
+        if (cb) {
+            cb(channel);
+        }
+    });
+}*/
+function updateAlert(id, a, cb){
+    if (!urlAlerts[id]){
+    	if (cb) {
+            cb([]);
+        }
+    	return ;
+    }
+    xhr({
+        method: 'GET',
+        url: urlAlerts[id]
+    }, function(xhr){
+        var txt = xhr.responseText || '';
+        var o = $(txt);//text2xml(o)
+        var els = o.find('li');
+        var items = [];
+        els.each(function(i,el){
+        	items.push({
+	        	type:id,
+	        	description:jQuery.trim(el.childNodes[0].textContent),
+	        	pubDate:jQuery.trim($(el).find('span.pubdate').text()) //27-03-2013 09:54:19
+        	});
+        });
+        
+        if (cb) {
+            cb(items);
         }
     });
 }

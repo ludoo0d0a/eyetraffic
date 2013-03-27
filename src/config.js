@@ -67,8 +67,8 @@ var mcfg = {
         'Content-Type': 'application/json'
     }]
 };
-//var urlTime = 'http://www2.pch.etat.lu/info_trafic/temps_parcours/temps_parcours_convert.jsp';
 var urlTime = 'http://www2.pch.etat.lu/citaRS/seam/resource/rest/cita/tempsParcours/actuel';
+//http://cita.lu/kml/temps_parcours.kml?1364377871427
 var timesCoords = {
     treves: {
         i: 1,
@@ -606,8 +606,8 @@ var timeMappings = {
 };
 var reTime = /&(\d+)([^=]+)=([\w-]+)\s+(.*)/g;
 //Service
-//var urlService = 'http://www.cita.lu/info_trafic/niveau_service/niveau_service_convert.jsp';
 var urlService = 'http://www.cita.lu/citaRS/seam/resource/rest/cita/niveauService/actuel';
+//http://cita.lu/kml/services_axe.kml?1364378218251
 var services = {
     "2001_2002": {
         "from": "Croix de Gasperich",
@@ -1120,12 +1120,17 @@ var CONFIG = {
 };
 //Alertes
 var urlAlert = 'http://www.cita.lu/rss_feeds/rtl/index.xml';
-var tplAlert = '<div class="news"><div class="desc">{{description}}</div><div class="date">{{date}}</div></div>';
+var urlAlerts =  {
+	'rtl': 'http://cita.lu/fr/infos-rtl/generate',
+	'incidents': 'http://cita.lu/fr/infos-trafic/generate',
+	'chantiers': 'http://cita.lu/fr/infos-trafic/generate/chantier'
+};
+var tplAlert = '<div class="news {{type}}"><div class="desc">{{description}}</div><div class="date">{{date}}</div></div>';
 //Cams
 //CITA
 var urlCam = 'http://www.cita.lu/info_trafic/cameras/images/cccam_{0}.jpg?src=EyeTraffic&~{1}';
 var urlCamNa = 'images/na.jpg';
-var urlFlashInfo = 'http://www.lesfrontaliers.lu/index.php';
+var urlFlashInfo = 'http://www.lesfrontaliers.lu';
 var reFlashInfoLF = {
     main: /<div\s+id="info_flash">[^<]*<div[^>]*>(.*?<\/div>)/,
     title: /<b>(.*?)<\/b>/,

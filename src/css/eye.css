@@ -94,6 +94,16 @@ a, a:hover, a:visited {
 	font-weight:bold;
 }
 
+#alerts .news.incidents{
+	border-left: 2px solid red;
+}
+#alerts .news.rtl{
+	border-left: 2px solid orange;
+}
+#alerts .news.chantiers{
+	border-left: 2px solid blue;
+}
+
 /*
  * Flashinfo
  */

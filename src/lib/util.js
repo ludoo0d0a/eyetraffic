@@ -23,3 +23,8 @@ function req(message, cb, data){
         chrome.extension.sendRequest(o, cb);
     }
 }
+
+function text2xml(text){
+	var parser=new DOMParser();
+    return parser.parseFromString(text,'text/xml');
+}

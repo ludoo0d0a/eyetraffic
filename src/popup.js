@@ -6,7 +6,7 @@
  * @web xeoos.fr
  */
 //UTF8: é
-var isDebug = false, values = [], prefs;
+var isDebug = false, values = [], prefs, tid, disabled=false;
 
 //var backgroundPage = chrome.extension.getBackgroundPage();
 function initPopup(){
@@ -36,6 +36,10 @@ function initPopup(){
     if (isDebug) {
         jQuery('.debug').removeClass('debug');
     }
+    $('#_status').click(function(){
+    	startStatus(true);
+    });
+    
     
     updateOnce();
     jQuery('#refresh').button().click(update);
@@ -46,10 +50,42 @@ function initPopup(){
     selectTab('maps', mapsel);
     selectTab('cams', camsel);
 
-    window.setTimeout(function(){
-        update();
-        window.setInterval(update, 30000);
-    }, 1000);
+    startStatus();
+}
+function startStatus(toggle){
+	var bstatus = localStorage.getItem('status')||'';
+	if (toggle){
+		bstatus=(bstatus)?'':'disabled';
+	}
+	if (bstatus){
+		//Stop
+		disabled=true;
+		bstatus='disabled';
+		clearInterval(tid);
+		tid=0;
+	}else{
+		//Start
+		disabled=false;
+		bstatus='';
+		window.setTimeout(function(){
+	        update();
+	        tid = window.setInterval(update, 30000);
+	    }, 1000);
+	}
+	disableBadge(bstatus);
+	localStorage.setItem('status', bstatus);
+}
+
+function disableBadge(disabled){
+	var badgeid = (prefs) ? prefs.badge.id : false;
+	//Stop tictac
+    //Disable badge
+    req('status', function(a){
+        
+    }, {
+        disabled:disabled,
+        id: badgeid
+    });
 }
 function selectTab(tabId, mapsel){
     var tabEl=$('#'+tabId), gid='tab-'+tabId;
@@ -82,6 +118,9 @@ function updateOnce(){
 }
 
 function update(){
+    if (disabled){
+    	return ;
+    }
     req('updatetimes', onUpdateTimes);
 	//req('updateservices', onUpdateServices);
     req('updatealerts', onUpdateAlerts);
@@ -154,7 +193,7 @@ function onUpdateTimes(fragments){
     });
 }
 
-var xtplAlert, mylang='fr';
+var xtplAlert;
 function onUpdateAlerts(channel){
     if (channel && channel.item) {
         jQuery('#alert').html('');
@@ -168,7 +207,8 @@ function onUpdateAlerts(channel){
         }
         jQuery.each(items, function(i, item){
             //title,description,pubDate
-            item.date = jQuery.prettyDate.format(item.pubDate, mylang)||'';
+        	var d = moment(item.pubDate, ['DD-MM-YYYY HH:mm:ss', 'YYYY-MM-DD HH:mm:ss Z']);
+            item.date = d.fromNow();
             item.description =item.description||''; 
             var output = Mustache.render(xtplAlert, item);
             //jQuery('#alert').prepend(xtplAlert, item);
