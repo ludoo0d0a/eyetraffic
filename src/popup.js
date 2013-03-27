@@ -92,7 +92,7 @@ function selectTab(tabId, mapsel){
     var i = $('#'+mapsel).prevAll('.tab-content').length;
     if (i==0){
     	tabEl.tabs( "load", 1 );
-    	var panel1 = $('.tab-content').first();
+    	var panel1 = $('.tab-content',tabEl).first();
     	loadContent(panel1, gid);
     }
     tabEl.tabs('option', 'active', i);

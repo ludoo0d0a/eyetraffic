@@ -1104,8 +1104,9 @@ var tplAlert = '<div class="news {{type}}"><div class="desc">{{description}}</di
 var urlCam = 'http://www.cita.lu/info_trafic/cameras/images/cccam_{0}.jpg?src=EyeTraffic&~{1}';
 var urlCamNa = 'images/na.jpg';
 var urlFlashInfo = 'http://www.lesfrontaliers.lu';
+var urlFlashRoot = 'http://www.lesfrontaliers.lu';
 var reFlashInfoLF = {
-    main: /<div\s+id="info_flash">[^<]*<div[^>]*>(.*?<\/div>)/,
+    main: /<div\s+id="infos\-flash">[^<]*<div[^>]*>(.*?<\/div>)/,
     title: /<b>(.*?)<\/b>/,
     content: /<div[^>]*>(.*?)<\/div>/
 };

@@ -7,7 +7,8 @@ var defaultPrefs = {
     limit: {
         orange: 10,
         red: 20
-    }
+    },
+    HTMLNotif:false
 };
 
 //TODO: recheck average values on a long period
@@ -252,8 +253,8 @@ function newTictac(forceNow){
     }
 }
 function updateBg(){
-	//updateTimes();
-	//updateFlashs();
+	updateTimes();
+	updateFlashs();
 }
 
 function getInterval(){
@@ -421,13 +422,27 @@ function updateFlashs(a, callback){
         dataType: 'text'
     }, function(xhr){
         var  m, data = xhr.responseText;
-        m = reFlashInfoLF.main.exec(data);
-        if (m && m[1]) {
-            var n = reFlashInfoLF.title.exec(m[1]), p = reFlashInfoLF.content.exec(m[1]);
-            var title = n[1], content = p[1];
+        
+        var page = $(data);
+        var el = page.find('#infos-flash');
+       
+        //m = reFlashInfoLF.main.exec(data);
+        if (el.length>0){
+        //if (m && m[1]) {
+        //    var n = reFlashInfoLF.title.exec(m[1]), p = reFlashInfoLF.content.exec(m[1]);
+        //    var title = n[1], content = p[1];
+        	el.find('img').each(function(i,el){
+        		el.src=urlFlashRoot+el.attributes.src.value;
+        	});
+        	el.find('a').each(function(i,el){
+        		el.href=urlFlashRoot+el.attributes.href.value;
+        	});
+        	var title= el.find('.views-field-title a').text();
+        	var elContent =  el.find('.views-field-body .field-content');
             var newFlash = {
                 title: title,
-                content: content
+                content: elContent.html(),
+                contentText:elContent.text()
             };
             toastFlash(newFlash);
             lastFlash=newFlash;
@@ -441,6 +456,7 @@ function updateFlashs(a, callback){
         }else{
         	lastFlash=false;
         }
+        
     });
 }
 function getFlash(a, callback){
@@ -449,16 +465,24 @@ function getFlash(a, callback){
    }
 }
 function toastFlash(flash){
+	if (!window.webkitNotifications) {
+		return;
+	}
+	
 	if (flash && (flash.title!=lastFlash.title || flash.content!=lastFlash.content)){
 		//toast
-		var notification = webkitNotifications.createHTMLNotification(
-			  'toast.html'
-		);
-		/*var notification = webkitNotifications.createNotification(
-		  'images/48/Box_Orange.png',  
-		  flash.title, 
-		  flash.content
-		);*/
+		var notification;
+		if (prefs.HTMLNotif && webkitNotifications.createHTMLNotification){
+			notification = webkitNotifications.createHTMLNotification(
+				  'toast.html'
+			);
+		}else{
+			notification = webkitNotifications.createNotification(
+			  'images/logo48.png',  
+			  flash.title, 
+			  flash.contentText
+			);
+		}
 		notification.show();
 	}
 }
