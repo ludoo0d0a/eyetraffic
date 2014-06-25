@@ -1,23 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html class="fullh">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link type="text/css" href="css/eye.css" rel="stylesheet">
         
-        <link type="text/css" href="lib/jqueryui/jquery-ui-1.10.1.custom/css/smoothness/jquery-ui-1.10.1.custom.min.css" rel="stylesheet" />
-        <script type="application/javascript" src="lib/jquery/jquery-1.9.1-min.js"></script>
+        <link type="text/css" href="lib/jqueryui/jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css" rel="stylesheet" />
+        <script type="application/javascript" src="lib/jquery/jquery-2.1.1.min.js"></script>
+        <script type="application/javascript" src="lib/jquery/jquery-migrate-1.2.1.min.js"></script>
         <script type="application/javascript" src="lib/jquery.browser.js"></script>
         
-        <script type="text/javascript" src="lib/jqueryui/jquery-ui-1.10.1.custom/js/jquery-ui-1.10.1.custom.min.js"></script>
+        <script type="text/javascript" src="lib/jqueryui/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
 
         <script type="application/javascript" src="lib/mustache.js"></script>
-		<script type="application/javascript" src="lib/moment.min.js"></script>
-		<script type="application/javascript" src="lib/moment-fr.js"></script>
+		<script type="application/javascript" src="lib/moment/moment-with-langs.js"></script>
 		
 		<script type="text/javascript" src="lib/sparklines/jquery.sparkline.js"></script>
-		<script type="text/javascript" src="lib/openlayer/OpenLayers.js"></script>
-		<link rel="stylesheet" href="lib/openlayer/style.css" type="text/css">
-
 		
 		<script type="text/javascript" src="lib/fancyzoom/jquery.fancyzoom.js"></script>
 		
@@ -28,7 +25,7 @@
         
         <title>Eye Traffic</title>
     </head>
-    <body>
+    <body class="fullh popup1 popup-main">
         <div id="header">
             <button name="refresh" id="refresh">Refresh</button>
 			<!--
@@ -95,12 +92,12 @@
             <h2>Caméras</h2>
             <div class="mtab" id="cams">
                 <ul>
-					<li><a href="#cam-A1">A1<span class="camdesc">Trèves</span></a></li>
-                    <li><a href="#cam-A3">A3<span class="camdesc">France</span></a></li>
-                    <li><a href="#cam-A4">A4<span class="camdesc">Esch</span></a></li>
-                    <li><a href="#cam-A6">A6<span class="camdesc">Belgique</span></a></li>
-                    <li><a href="#cam-A7">A7<span class="camdesc">Nord</span></a></li>
-                    <li><a href="#cam-A13">A13<span class="camdesc">Longwy-Sarrebruck</span></a></li>
+					<li><a href="#cam-A1" data-id="A1">A1<span class="camdesc">Trèves</span></a></li>
+                    <li><a href="#cam-A3" data-id="A3">A3<span class="camdesc">France</span></a></li>
+                    <li><a href="#cam-A4" data-id="A4">A4<span class="camdesc">Esch</span></a></li>
+                    <li><a href="#cam-A6" data-id="A6">A6<span class="camdesc">Belgique</span></a></li>
+                    <li><a href="#cam-A7" data-id="A7">A7<span class="camdesc">Nord</span></a></li>
+                    <li><a href="#cam-A13" data-id="A13">A13<span class="camdesc">Longwy-Sarrebruck</span></a></li>
                 </ul>
 				<div class="tab-content" id="cam-A1">
                 </div>

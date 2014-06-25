@@ -1,3 +1,4 @@
+(function( $ ) {
 function initGmap(){
     if (google.maps){
     	
@@ -49,6 +50,8 @@ function initGmap(){
 		}));
     }
 }
+
 $(function() {
   initGmap();
 });
+})( jQuery );

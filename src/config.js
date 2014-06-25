@@ -21,14 +21,20 @@ function getGUID(){
 }
 
 var GUID = getGUID();
-var LANGS = {
+var lang='fr', LANGS = {
     en: {
         NOTRAFFICINFO: 'No traffic info',
         to: 'to',
         map: 'Map'
-    }
+    },
+    fr: {
+        NOTRAFFICINFO: 'Pas d\'info trafic',
+        to: 'vers',
+        map: 'Carte'
+    },
+    
 };
-var LANG = LANGS.en;
+var LANG = LANGS.fr;
 //Temps de parcours
 var mcfg = {
     username: 'valente',
@@ -1478,9 +1484,10 @@ var dcams = {
  * Utils
  */
 function getMoment(d){
-	var m = moment(d);
+	var m = moment(d, ['DD-MM-YYYY HH:mm:ss', 'YYYY-MM-DD HH:mm:ss Z']);
 	if (!m.isValid()){
-		m = moment(d, ['DD-MM-YYYY HH:mm:ss', 'YYYY-MM-DD HH:mm:ss Z']);
+		//Try anyway
+		m = moment(d);
 	}
 	return m;
 }

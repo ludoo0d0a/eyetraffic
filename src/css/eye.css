@@ -1,5 +1,11 @@
-html { height: 100% }
-body { height: 100%; margin: 0px; padding: 0px }
+html.fullh,body.fullh{ 
+	height: 100%; 
+}
+html,body{ 
+	/*height: 100%; */
+	margin: 0px; 
+	padding: 0px 
+}
 
 body {
     font: 10px "Lucida Grande", verdana, sans-serif;
@@ -54,6 +60,17 @@ a, a:hover, a:visited {
 /**
  * 	Menu
  */
+#main{
+	z-index:9999;
+	width:250px;
+	height:13px;
+}
+
+.top-fixed{
+	position: fixed;
+	top: 5px;
+	right: 5px;
+}
 
 #menu{
 	z-index:9999;
@@ -84,11 +101,15 @@ a, a:hover, a:visited {
 /*
  * Alertes
  */
-#alerts {
+.popup1 #alerts {
     position: absolute;
     margin-left: 300px;
     top: 25px;
     width: 380px;
+}
+.popup2 #alerts{
+	max-height: 200px;
+	overflow-y: auto;
 }
 #alerts > h2{
 	text-align: right;
@@ -142,7 +163,7 @@ a, a:hover, a:visited {
 /*
  * Cameras
  */
-#cams{
+#cams, #maps{
 	width:680px;
 }
 
@@ -180,12 +201,17 @@ img.icam {
 }
 
 .cam{
-	float:left;
-	padding-top:6px;
 	width: 120px;
 	height: 110px;
 }
+.popup1 .cam{
+	float:left;
+	padding-top:6px;
+}
 
+.img-cam{
+	text-align: center;	
+}
 .camdesc{
 	font-size:10px;
 	display:block;
@@ -338,4 +364,8 @@ img.icam {
 }
 #map-verkehrsinfo .mwrap{
 	overflow: hidden;
+}
+
+.hide-fi .fi, .hide-al .al, .hide-mm .mm{
+	display:none;
 }

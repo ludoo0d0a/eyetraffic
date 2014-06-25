@@ -6,35 +6,35 @@
  * @web xeoos.fr
  */
 //UTF8: é
+(function( $ ) {
+	
 var isDebug = false, values = [], prefs, tid, disabled=false;
-
-//var backgroundPage = chrome.extension.getBackgroundPage();
 function initPopup(){
     var mapsel = localStorage.getItem('tab-maps')||'map-tomtom';
     var camsel = localStorage.getItem('tab-cams')||'cam-A1';
     var timesel = localStorage.getItem('tab-times')||'time-FRANCE';
     
-    jQuery('#times').tabs({
+    $('#times').tabs({
         activate: function(event, ui){
             var gid='tab-times', id = ui.newPanel[0].id;
     		localStorage.setItem(gid,id);
         }
     });
-    jQuery('#cams').tabs({
+    $('#cams').tabs({
         activate: function(event, ui){
-            loadContent(ui.newPanel, 'tab-cams');
+            loadTabContent(ui.newPanel, 'tab-cams');
         }
     });
 
-	jQuery('#maps').tabs({
+	$('#maps').tabs({
         activate: function(event, ui){
-            loadContent(ui.newPanel, 'tab-maps');
+            loadTabContent(ui.newPanel, 'tab-maps');
         }
     });
     
     i18n();
     if (isDebug) {
-        jQuery('.debug').removeClass('debug');
+        $('.debug').removeClass('debug');
     }
     $('#_status').click(function(){
     	startStatus(true);
@@ -42,8 +42,8 @@ function initPopup(){
     
     
     updateOnce();
-    jQuery('#refresh').button().click(update);
-    jQuery('#convert').button().click(convert);
+    $('#refresh').button().click(update);
+    $('#convert').button().click(convert);
     
     //load first tab
     selectTab('times', timesel);
@@ -95,11 +95,11 @@ function selectTab(tabId, mapsel){
     if (i==0){
     	tabEl.tabs( "load", 1 );
     	var panel1 = $('.tab-content',tabEl).first();
-    	loadContent(panel1, gid);
+    	loadTabContent(panel1, gid);
     }
     tabEl.tabs('option', 'active', i);
 }
-function loadContent(panel, gid){
+function loadTabContent(panel, gid){
     var id = panel[0].id;
     localStorage.setItem(gid,id);
     loadHtml(panel, id);
@@ -108,7 +108,7 @@ function updateOnce(){
     req('prefs', function(p){
         prefs = p;
         setTimeout(function(){
-        	createCams(false)
+        	createCams(false);
         });
         if (p.options){
         	//Display at open
@@ -125,7 +125,7 @@ function update(){
     }
     req('updatetimes', onUpdateTimes);
 	//req('updateservices', onUpdateServices);
-    req('updatealerts', onUpdateAlerts);
+    req('updatealerts', onUpdateAlerts, {chantiers:true});
     req('updateflashs', onUpdateFlashs);
     //req('updatetunnel', onUpdateTunnel);
     updateCams();
@@ -136,14 +136,32 @@ function changebadgeref(event){
     var id = event.data.id;
     req('updateprefs', function(p){
         //alert('Change done!');
-        jQuery('#times').find('a.selected').removeClass('selected');
-        jQuery('#lk' + id).addClass('selected');
+        $('#times').find('a.selected').removeClass('selected');
+        $('#lk' + id).addClass('selected');
         prefs = p;
         renderPlots();
     }, {
         badge: {
             id: id
         }
+    });
+}
+
+function savelastcam(e){
+    var id,road;
+    if (e){
+    	//Click picture
+    	id = $(e.target)[0].id.replace('icam', '');
+    }else{
+    	//Read current tab/submenu
+    	var tab = $('#cams').tabs('option', 'active');
+    	//current road = current tab
+    	road = $($('#cams ul>li>a')[tab]).attr('data-id');
+    }
+    req('updateprefs', function(p){
+        //
+    }, {
+        cam: {/*id:id,*/ road:road}
     });
 }
 
@@ -167,22 +185,22 @@ function onUpdateServices(fragments){
 	//TODO : color polyline (use direction.getPolyline to be smoother ?)
 	//http://www.birdtheme.org/useful/googletool.html
 	//http://code.google.com/apis/maps/documentation/utilities/polylineutility.html
-	/*jQuery.each(fragments, function(i, t){
+	/*$.each(fragments, function(i, t){
        //statusId 1 : fluide ->  
     });*/
 }
 
 function onUpdateTimes(fragments){
     var badgeid = (prefs) ? prefs.badge.id : false;
-    jQuery.each(fragments, function(zone, times){
-        var el = jQuery('#time-' + zone);
+    $.each(fragments, function(zone, times){
+        var el = $('#time-' + zone);
         if (el) {
             el.html('');
-            jQuery.each(times, function(i, t){
+            $.each(times, function(i, t){
                 //var label = (timeMappings[t.id]) ? (timeMappings[t.id].text) : t.code;
 				//label += '(' + t.id + ')';
 				var label = t.text;
-                var link = jQuery('<a href="#" id="lk' + t.id + '">' + label + '</a>').bind('click', {
+                var link = $('<a href="#" id="lk' + t.id + '">' + label + '</a>').bind('click', {
                     id: t.id
                 }, changebadgeref);
                 if (badgeid == t.id) {
@@ -198,44 +216,44 @@ function onUpdateTimes(fragments){
 var xtplAlert;
 function onUpdateAlerts(channel){
     if (channel && channel.item) {
-        jQuery('#alert').html('');
+        $('#alert').html('');
         items = channel.item;
-        if (!jQuery.isArray(items)) {
+        if (!$.isArray(items)) {
             items = [items];
         }
         if (!xtplAlert) {
             xtplAlert = tplAlert;
             //xtplAlert = $.template(tplAlert);
         }
-        jQuery.each(items, function(i, item){
+        $.each(items, function(i, item){
             //title,description,pubDate
         	var d = getMoment(item.pubDate);
             item.date = d.fromNow();
             item.description =item.description||'';
             item.title =item.title||'';
             var output = Mustache.render(xtplAlert, item);
-            //jQuery('#alert').prepend(xtplAlert, item);
-            jQuery('#alert').prepend(output);
+            //$('#alert').prepend(xtplAlert, item);
+            $('#alert').prepend(output);
         });
     } else {
-        jQuery('#alert').html(LANG.NOTRAFFICINFO);
+        $('#alert').html(LANG.NOTRAFFICINFO);
     }
 }
 
 function onUpdateFlashs(news){
     if (news) {
         var html = '<span class="title">' + news.title + '</span><br/>' + news.content;
-        jQuery('#flashinfo').html(html).show();
+        $('#flashinfo').html(html).show();
     } else {
-        jQuery('#flashinfo').html('').hide();
+        $('#flashinfo').html('').hide();
     }
 }
 
 function onUpdateTunnel(o){
     if (o) {
-        jQuery.each(o.data, function(i, a){
-			jQuery('#tu_'+i).text(a.current+'min');
-			jQuery('#tu_'+i).css('background-color', o.colors[i]);
+        $.each(o.data, function(i, a){
+			$('#tu_'+i).text(a.current+'min');
+			$('#tu_'+i).css('background-color', o.colors[i]);
 		});
     }
 }
@@ -250,8 +268,8 @@ function req(message, cb, data){
 }
 
 function updateCams(){
-    jQuery('.izi').each(function(i, a){
-        var img = jQuery(a).find('.icam');
+    $('.izi').each(function(i, a){
+        var img = $(a).find('.icam');
         if (img && img.id) {
             var url = getUrlCam(img.id.replace('icam', ''));
             img.attr('src', url);
@@ -270,39 +288,40 @@ function getUrlMap(id){
 
 function createCams(static){
     var i = 0;
-    jQuery.each(dcams, function(road, dcam){
-        var el = jQuery('#cam-' + road);
+    $.each(dcams, function(road, dcam){
+        var el = $('#cam-' + road);
         if (el) {
             createMenuCams(el, dcam);
             createImageCams(el, dcam, true, static);
             createImageCams(el, dcam, false, static);
             var url = getUrlMap(road);
-            var div = jQuery('<div class="body zmap"><img src="' + url + '"/></div>').hide();
+            var div = $('<div class="body zmap"><img src="' + url + '"/></div>').hide();
             el.append(div);
         }
     });
     
     
-    jQuery('a.izi').fancyZoom({
+    $('a.izi').fancyZoom({
     	directory:'images/fancyzoom',
     	overlay:0.8,
     	scaleImg: true,
     	closeOnClick: true
     });
+    $('a.izi').click(savelastcam);
 }
 
 function createMenuCams(el, dcam){
-    var nav = jQuery('<div class="nav"></div>');
-    console.log(dcam.start + ',' + dcam.end);
-    var ain = jQuery('<a class="ain selected">' + dcam.start + '-' + dcam.end + '</a>').attr('href', '#').click(changeMenuCams);
-    var aout = jQuery('<a class="aout">' + dcam.end + '-' + dcam.start + '</a>').attr('href', '#').click(changeMenuCams);
-    var amap = jQuery('<a class="amap">' + LANG.map + '</a>').attr('href', '#').click(changeMenuCams);
+    var nav = $('<div class="nav"></div>');
+    //console.log(dcam.start + ',' + dcam.end);
+    var ain = $('<a class="ain selected">' + dcam.start + '-' + dcam.end + '</a>').attr('href', '#').click(changeMenuCams);
+    var aout = $('<a class="aout">' + dcam.end + '-' + dcam.start + '</a>').attr('href', '#').click(changeMenuCams);
+    var amap = $('<a class="amap">' + LANG.map + '</a>').attr('href', '#').click(changeMenuCams);
     nav.append(ain).append('&nbsp;&nbsp;&nbsp;').append(aout).append('&nbsp;&nbsp;&nbsp;').append(amap);
     el.append(nav);
 }
 
 function changeMenuCams(e){
-    var el = jQuery(e.target);
+    var el = $(e.target);
     if (el.hasClass('selected')) {
         return;
     }
@@ -312,12 +331,15 @@ function changeMenuCams(e){
     el.addClass("selected");
     content.find('.body').hide();
     content.find('.z' + id).show();
+    
+    //Save road
+    savelastcam();
 }
 
 function createImageCams(el, dcam, isin, static){
     var txt = ((isin) ? 'in' : 'out'), html = '<div class="body z' + txt + '">';
-    //var div = jQuery('<div class="body z' + txt + '"></div>');
-    jQuery.each((isin) ? dcam.camsin : dcam.camsout, function(id, cam){
+    //var div = $('<div class="body z' + txt + '"></div>');
+    $.each((isin) ? dcam.camsin : dcam.camsout, function(id, cam){
         var u = (static) ? urlCamNa : getUrlCam(id), t = id + ' - ' + cam.text;
         html += '<div class="cam">' +
         '<a class="izi" href="#fz'+id+'" title="'+t+'">' +
@@ -337,7 +359,7 @@ function createImageCams(el, dcam, isin, static){
     });
     html += '</div>';
     //el.html(html);
-    var nel = jQuery(html);
+    var nel = $(html);
     el.append(nel);
     
     nel.toggle(isin);
@@ -423,6 +445,7 @@ function writeIframe(id,url,w,h,page){
 	html+='<div class="mwrap"><div class="moffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
 	return html;
 }
+/*
 function renderCita(){
 	var map = new OpenLayers.Map({
 	    div: "map-cita-ol",
@@ -446,8 +469,8 @@ function renderCita(){
 	    center: new OpenLayers.LonLat(6.13, 49.61),
 	    zoom: 11
 	});
+}*/
 
-}
 function loadHtml(el, id){
     if (!el){
     	el = $('#' + id);
@@ -471,7 +494,7 @@ function convert(){
         var r = {
             markers: []
         };
-        jQuery.each(o.markers.marker, function(i, marker){
+        $.each(o.markers.marker, function(i, marker){
             var html = Base64.decode(marker['@html']);
             var cam, titre, localite, label = '';
             
@@ -503,38 +526,39 @@ function convert(){
                 label: label
             });
         });
-        jQuery('#res').val(JSON.stringify(r));
+        $('#res').val(JSON.stringify(r));
     });
 }
 
 function i18n(){
-	function upd(id){
-		jQuery('#'+id).text(LANG[id]);
+	function _(id){
+		$('#'+id).text(LANG[id]);
 	}
-	upd('refresh');
-	upd('_info');
-	upd('_times');
-	upd('_cams');
-	upd('_maps');
+	_('refresh');
+	_('_info');
+	_('_times');
+	_('_cams');
+	_('_maps');
     
 }
 
 function refreshMapRtl(){
 	/*var url = 'http://images.newmedia.lu/trafic_map/feature.jpg';
-	jQuery('#img-map-rtl').attr('src',url+'?r='+rnd);
+	$('#img-map-rtl').attr('src',url+'?r='+rnd);
 	*/
-	jQuery('#ctn-map-rtl img').each(function(i,el){
-		var url=jQuery(el).attr('src');
+	$('#ctn-map-rtl img').each(function(i,el){
+		var url=$(el).attr('src');
 		if (url){
 			var rnd = Math.round(1+Math.random()*10000);
 			url = url.replace(/\?r=.*/,'')+'?r='+rnd;
-			jQuery(el).attr('src',url);
+			$(el).attr('src',url);
 		}
 	});
 	
 }
 
-
 $(function() {
   initPopup();
 });
+
+})( jQuery );

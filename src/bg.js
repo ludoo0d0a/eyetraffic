@@ -4,6 +4,11 @@ var defaultPrefs = {
         id: 6,
         interval: 10
     },
+    cam: {
+    	id:41, 
+    	road:'A3', 
+    	dir:'in'
+    },
     limit: {
         orange: 10,
         red: 20
@@ -36,7 +41,7 @@ var averages = {
 };
 
 var BADGE_COLOR_FLASHINFO=[250, 136, 2, 255];//#FFDA2F
-var lastFlash=false;
+var lastFlash=false, lastNews=false, lastSel={alerts:{}, map:0, timeid:0, time:0};
 var prefs = getPrefs();
 if (!prefs) {
     setPrefs(defaultPrefs);
@@ -65,6 +70,8 @@ chrome.extension.onRequest.addListener(function(a, sender, callback){
         updateAlerts(a, callback);
     } else if (a.message === 'updateflashs') {
         updateFlashs(a, callback);
+    } else if (a.message === 'updateall') {
+        updateAll(a, callback);
     } else if (a.message === 'getflash') {
         getFlash(a, callback);
     } else if (a.message === 'updatetunnel') {
@@ -75,6 +82,8 @@ chrome.extension.onRequest.addListener(function(a, sender, callback){
         getHistory(a, callback);
     } else if (a.message === 'status') {
         changeStatus(a, callback);
+    } else if (a.message === 'popupstatus') {
+        getPopupStatus(a, callback);
     }
 });
 
@@ -132,13 +141,20 @@ function getAverages(){
 }
 
 function updateprefs(a, cb){
-    if (a.badge) {
+    if (a.badge || a.cam) {
         prefs = getPrefs();
-        if (a.badge.id) {
-            prefs.badge.id = a.badge.id;
+        if (a.badge){
+	        //prefs.badge=a.badge;
+	        if (a.badge.id) {
+	            prefs.badge.id = a.badge.id;
+	        }
+	        if (a.badge.interval) {
+	            prefs.badge.interval = a.badge.interval;
+	        }
         }
-        if (a.badge.interval) {
-            prefs.badge.interval = a.badge.interval;
+        if (a.cam){
+	        //Save last cam
+	        prefs.cam=a.cam;
         }
         setPrefs(prefs);
         newTictac(true);
@@ -176,10 +192,8 @@ function getLimits(id){
     } : prefs.limit;
 }
 
-function updateBadge(a, cb){
-    //Send time to badge
-    var time = 0, color = 'Green', bcolor = [0, 255, 0, 255];
-    
+function getColors(a){
+	var time, color = 'Green', bcolor = [0, 255, 0, 255];
     if (a.disabled){
     	time='x';
     	color='Grey';
@@ -197,21 +211,33 @@ function updateBadge(a, cb){
 	    if (lastFlash){
 	    	bcolor = BADGE_COLOR_FLASHINFO; 
 	    }
-	    
     }
+    return {
+    	time:time,
+    	color:color,
+    	bcolor:bcolor
+    };
+}
+    
+function updateBadge(a, cb){
+    //Send time to badge
+    var time = 0;
+    
+    var colors = getColors(a);
+    
     chrome.browserAction.setBadgeText({
-        text: '' + time
+        text: '' + colors.time
     });
     chrome.browserAction.setBadgeBackgroundColor({
-        color: bcolor
+        color: colors.bcolor
     });
-    var icon = 'images/16/Box_' + color + '.png';
+    var icon = 'images/16/Box_' + colors.color + '.png';
     chrome.browserAction.setIcon({
         path: icon
     });
     
     var map = timeMappings[a.key] || {};
-    var title = '' + (map.text || '...') + '\n' + time + ' minutes';
+    var title = '' + (map.text || '...') + '\n' + colors.time + ' minutes';
     chrome.browserAction.setTitle({
         title: title
     });
@@ -337,31 +363,51 @@ function updateTimes(a, callback){
             }
             historyValues[id].push(time);
             if (badgeprefs && (''+badgeprefs.id) === (''+id)) {
-                updateBadge({
+                var o={
                     id: id,
                     key: key,
+                    text: key,
                     time: time,
                     code: code
-                });
+                };
+                updateBadge(o);
+                lastSel.time=o;
             }
         });
         if (callback) {
-            callback(times);
+            if (a && a.single){
+            	var color = getColors(lastSel.time);
+            	callback({time:lastSel.time, color:color});
+            }else{
+            	callback(times);
+            }
         }
     });
 }
 
 //alert info cita.lu
 function updateAlerts(a, cb){
+	
+	function _cb(o1,o2,o3){
+		if (cb){
+			var a;
+			if (o3){
+				a = jQuery.merge(o3,jQuery.merge(o2,o1));
+			}else{
+				a = jQuery.merge(o1,o2);
+			}
+			cb({item:a});
+		}
+	}
 	updateAlert('incidents', a, function(o1){
 		updateAlert('rtl', a, function(o2){
-			updateAlert('chantiers', a, function(o3){
-				if (cb){
-					var a = jQuery.merge(o3,o2);
-					a = jQuery.merge(a,o1);
-					cb({item:a});
-				}
-			});
+			if (a && a.chantiers){
+				updateAlert('chantiers', a, function(o3){
+					_cb(o1,o2,o3);
+				});
+			}else{
+				_cb(o1,o2);
+			}
 		});
 	});
 }
@@ -469,14 +515,24 @@ function updateFlashs(a, callback){
             chrome.browserAction.setBadgeBackgroundColor({
         		color: BADGE_COLOR_FLASHINFO
     		});
-            if (callback) {
-                callback(lastFlash);
-            }
         }else{
         	lastFlash=false;
         }
+        if (callback) {
+            callback(lastFlash);
+        }
         
     });
+}
+function getPopupStatus(a, callback){
+	if (callback) {
+		var prefs = getPrefs();
+		var o = $.extend({flash:lastFlash}, lastSel);
+		if (prefs.cam){
+	        o.cam = prefs.cam;
+        }
+    	callback(o);
+   }
 }
 function getFlash(a, callback){
 	if (callback) {
