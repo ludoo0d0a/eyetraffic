@@ -13,6 +13,11 @@ var defaultPrefs = {
         orange: 10,
         red: 20
     },
+    sel:{
+    	map:0, 
+    	timeid:0, 
+    	time:6
+    },
     HTMLNotif:false
 };
 
@@ -41,7 +46,8 @@ var averages = {
 };
 
 var BADGE_COLOR_FLASHINFO=[250, 136, 2, 255];//#FFDA2F
-var lastFlash=false, lastNews=false, lastSel={alerts:{}, map:0, timeid:0, time:0};
+var lastFlash=false, lastNews=false, lastSel=$.extend({alerts:{}},defaultPrefs.sel);
+
 var prefs = getPrefs();
 if (!prefs) {
     setPrefs(defaultPrefs);

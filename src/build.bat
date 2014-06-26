@@ -21,6 +21,9 @@ xcopy /e /Y /I css dist\css
 xcopy /e /Y /I data dist\data
 xcopy /e /Y /I images dist\images
 xcopy /e /Y /I lib dist\lib
+xcopy /e /Y /I fonts dist\fonts
+
+dir /D dist
 
 echo ======================================================
 echo Then to upload source into Google Westore, zip build/dist

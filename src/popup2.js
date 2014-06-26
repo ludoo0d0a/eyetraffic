@@ -138,9 +138,11 @@ function onUpdateServices(fragments){
 
 function onUpdateTimes(o){
     var badgeid = (prefs) ? prefs.badge.id : false;
-    var t = o.time;
-    //$('.time-ctn').css('backgroundColor',o.color.color);
-    $('.time-title').html(t.text+' : '+t.time);
+    var t = o.time,text = '...';
+    if (t){
+    	text = t.text+' : '+t.time;
+    }
+    $('.time-title').html(text);
 }
 
 var xtplAlert;
@@ -226,11 +228,10 @@ function updateCams(cam){
 	cam.dir=cam.dir||'in';
 	
 	//Same road do not need to render again
-//	if (lastCamRoad==cam.road) return;
+	if (lastCamRoad==cam.road) return;
 	
 	//lastCamId = cam.id;
     var i=0, r =[],s =[]; 
-    //var cams = dcams[cam.road]['cams'+cam.dir];
     
     //No dir
     var cams = $.extend(dcams[cam.road]['camsin'] ,dcams[cam.road]['camsout']);
@@ -259,7 +260,7 @@ function updateCams(cam){
 	    	//var clsactive = (id==lastCamId)?'active':'';
 	    	var clsactive = (i==0)?'active':'';
 	    	var c = mapcams[id]; //.road
-	    	var url = getUrlCam(id), text = cam.road+ ' ' + cam.text;
+	    	var url = getUrlCam(id), text = lastCamRoad+ ' ' + cam.text;
 	    	//console.log('url: '+url);
 	    	//console.log('text: '+text);
 	    	r.push('<li data-target="#carousel-cam" data-slide-to="'+i+'" class="'+clsactive+'"></li>');
@@ -273,17 +274,25 @@ function updateCams(cam){
 	    $('#carousel-cam .carousel-inner').html(s.join(''));
 	    
 	    //console.log('fill '+i+' rows');
-   
-	    
 
 	    //console.log('make carousel');
 	    //console.log('lastCamRoad= '+lastCamRoad);
 	    
-	    $('#carousel-cam').carousel({
+	    var elc = $('#carousel-cam');
+	    elc.carousel({
 		  interval: 2000
 		});
 		
-		$('#carousel-cam').carousel('cycle');
+		elc.carousel('cycle');
+		
+		$(document).bind('keyup', function(e) {
+	        if(e.which == 39 || e.which == 32){
+	            elc.carousel('next');
+	        }
+	        else if(e.which == 37){
+	            elc.carousel('prev');
+	        }
+	    });
 	}
 } 
 function prefetchcams(){

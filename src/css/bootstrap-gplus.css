@@ -136,6 +136,10 @@ hr {
 	border:0px;
 }
 
+a.time-title:hover{
+	text-decoration: underline;
+}
+
 /* http://jsfiddle.net/kVHbV/light/ */ 
 .icon-refresh-animate {
 	animation-name: rotateThis;
