@@ -1,5 +1,5 @@
 /**
- * Main popup
+ * popup2
  *
  * @author Ludovic Valente
  * @web pitaso.com
@@ -9,7 +9,7 @@
 (function( $ ) {
 var isDebug = false, mapcams = false, /*lastCamId=0 ,*/ lastCamRoad='', values = [], prefs, tid, disabled=false;
 moment.lang(lang);
-//var backgroundPage = chrome.extension.getBackgroundPage();
+
 function initPopup(){
     resizePopup();
     
@@ -38,7 +38,6 @@ function updateData(){
 	    req('updateflashs', onUpdateFlashs);
 
 	    req('popupstatus', function(o){
-	        loadMap(o.map);
 	    	updateCams(o.cam);
 	        window.setTimeout( function() {
 	        	el.removeClass(animateClass);
@@ -50,7 +49,7 @@ function updateData(){
 }
 
 function openmain(){
-	var url = chrome.extension.getURL('popup.html');
+	var url = chrome.extension.getURL('dashboard.html');
 	window.location.href = url;
 	chrome.tabs.create({url:url});
 }

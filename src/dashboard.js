@@ -302,13 +302,10 @@ function createCams(static){
     
     
     $('a.izi').fancyZoom({
-    	directory:'images/fancyzoom',
-    	overlay:0.8,
-    	scaleImg: true,
-    	closeOnClick: true,
+    	minBorder:90,
     	//+
     	afterclick:savelastcam,
-    	container:$('#cams')
+    	container:$('#main')
     });
     //$('a.izi').click(savelastcam);
 }

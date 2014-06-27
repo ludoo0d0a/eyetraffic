@@ -47,9 +47,9 @@
       var $window = $(container||window);
       var w = $window.width();
       var h = $window.height();
-      var o = $window.offset();
-      var x = o.left + $window.scrollLeft();
-      var y = o.top + $window.scrollTop();
+      var o = $window.offset()||{};
+      var x = o.left||0 + $window.scrollLeft();
+      var y = o.top||0 + $window.scrollTop();
       return { width: w, height: h, scrollX: x, scrollY: y };
     }
     
@@ -108,6 +108,8 @@
       };
 
       this.show = function(e) {      
+        e.preventDefault();
+        
         wGeometry = windowGeometry(options.container);
         eGeometry = elementGeometry(this);
 
