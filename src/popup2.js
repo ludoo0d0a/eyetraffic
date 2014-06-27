@@ -264,7 +264,7 @@ function updateCams(cam){
 	    	//console.log('text: '+text);
 	    	r.push('<li data-target="#carousel-cam" data-slide-to="'+i+'" class="'+clsactive+'"></li>');
 	    	s.push('<div class="item '+clsactive+'">'+
-					      '<img src="'+url+'" alt="Camera">'+
+					      '<img class="cam" src="'+url+'" alt="Camera">'+
 					      '<div class="carousel-caption">'+text+'</div>'+
 					   '</div>');
 			i++;

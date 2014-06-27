@@ -26,8 +26,11 @@ a, a:hover, a:visited {
 
 #main {
     z-index:9;
-    width: 700px;
     min-height:200px;
+    width: 300px;
+}
+.dashboard #main {
+    width: 700px;
 }
 
 #header {
@@ -97,7 +100,7 @@ a, a:hover, a:visited {
 /*
  * Alertes
  */
-.popup1 #alerts {
+.dashboard #alerts {
     position: absolute;
     margin-left: 300px;
     top: 25px;
@@ -195,14 +198,15 @@ img.icam {
 .hot_cam_disp_one{
 	float:left;
 }
-
-.cam{
+.dashboard .cam{
 	width: 120px;
 	height: 110px;
-}
-.popup1 .cam{
 	float:left;
 	padding-top:6px;
+}
+
+.popup2 .cam{
+	height: 200px;
 }
 
 .img-cam{
