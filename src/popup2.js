@@ -126,15 +126,6 @@ function renderPlots(){
     });
 }
 
-function onUpdateServices(fragments){
-	//TODO : color polyline (use direction.getPolyline to be smoother ?)
-	//http://www.birdtheme.org/useful/googletool.html
-	//http://code.google.com/apis/maps/documentation/utilities/polylineutility.html
-	/*$.each(fragments, function(i, t){
-       //statusId 1 : fluide ->  
-    });*/
-}
-
 function onUpdateTimes(o){
     var badgeid = (prefs) ? prefs.badge.id : false;
     var t = o.time,text = '...';
@@ -197,16 +188,6 @@ function onUpdateFlashs(flashs){
         pb.addClass('hide-fi');
     }
 }
-
-function onUpdateTunnel(o){
-    if (o) {
-        $.each(o.data, function(i, a){
-			$('#tu_'+i).text(a.current+'min');
-			$('#tu_'+i).css('background-color', o.colors[i]);
-		});
-    }
-}
-
 
 function req(message, cb, data){
     if (chrome.extension) {
@@ -312,63 +293,6 @@ function prefetchcams(){
 			});
 	});
 	}
-}
-
-function xhr(a, cb){
-    if (typeof chrome !== 'undefined' && typeof chrome.extension !== 'undefined') {
-        a.message = 'xhr';
-        chrome.extension.sendRequest(a, cb);
-    } else {
-        /*a.success = cb;
-         a.type = a.method;
-         $.ajax(a);*/
-    }
-}
-
-function convert(){
-    xhr({
-        method: 'GET',
-        url: 'data/cams.xml',
-        dataType: 'xml'
-    }, function(xhr){
-        var o = JSON.parse(xhr.responseJson);
-        var r = {
-            markers: []
-        };
-        $.each(o.markers.marker, function(i, marker){
-            var html = Base64.decode(marker['@html']);
-            var cam, titre, localite, label = '';
-            
-            var m = /cccam_(\d+)/.exec(html);
-            if (m && m[1]) {
-                cam = parseInt(m[1], 10);
-            }
-            
-            m = /titrepopup2\">([^<]+)/.exec(html);
-            if (m && m[1]) {
-                titre = m[1];
-            }
-            
-            m = /localitepopup2\">([^<]+)/.exec(html);
-            if (m && m[1]) {
-                localite = m[1];
-            }
-            
-            label = 'Camera ' + cam + '-' + titre + ',' + localite;
-            
-            //lat,lng,html
-            r.markers.push({
-                lat: parseFloat(marker['@lat'], 10),
-                lng: parseFloat(marker['@lng'], 10),
-                html: html,
-                cam: cam,
-                titre: titre,
-                localite: localite,
-                label: label
-            });
-        });
-        $('#res').val(JSON.stringify(r));
-    });
 }
 
 function i18n(){

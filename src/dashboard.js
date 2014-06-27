@@ -8,7 +8,7 @@
 //UTF8: é
 (function( $ ) {
 	
-var isDebug = false, values = [], prefs, tid, disabled=false;
+var values = [], prefs, tid, disabled=false;
 function initPopup(){
     var mapsel = localStorage.getItem('tab-maps')||'map-tomtom';
     var camsel = localStorage.getItem('tab-cams')||'cam-A1';
@@ -33,9 +33,7 @@ function initPopup(){
     });
     
     i18n();
-    if (isDebug) {
-        $('.debug').removeClass('debug');
-    }
+
     $('#_status').click(function(){
     	startStatus(true);
     });
@@ -43,7 +41,6 @@ function initPopup(){
     
     updateOnce();
     $('#refresh').button().click(update);
-    $('#convert').button().click(convert);
     
     //load first tab
     selectTab('times', timesel);
@@ -113,7 +110,7 @@ function updateOnce(){
         if (p.options){
         	//Display at open
         	setTimeout(function(){
-        		onUpdateFlashs(p.options.flash);
+        		onUpdateFlashs(p.options.flashs);
         	},100);
         }
     });
@@ -121,13 +118,11 @@ function updateOnce(){
 
 function update(){
     if (disabled){
-    	return ;
+    	return;
     }
     req('updatetimes', onUpdateTimes);
-	//req('updateservices', onUpdateServices);
     req('updatealerts', onUpdateAlerts, {chantiers:true});
     req('updateflashs', onUpdateFlashs);
-    //req('updatetunnel', onUpdateTunnel);
     updateCams();
     renderPlots();
 }
@@ -181,14 +176,6 @@ function renderPlots(){
     });
 }
 
-function onUpdateServices(fragments){
-	//TODO : color polyline (use direction.getPolyline to be smoother ?)
-	//http://www.birdtheme.org/useful/googletool.html
-	//http://code.google.com/apis/maps/documentation/utilities/polylineutility.html
-	/*$.each(fragments, function(i, t){
-       //statusId 1 : fluide ->  
-    });*/
-}
 
 function onUpdateTimes(fragments){
     var badgeid = (prefs) ? prefs.badge.id : false;
@@ -256,25 +243,6 @@ function onUpdateFlashs(flashs){
         el.html('');
     }
 }
-/*
-function onUpdateFlashs(news){
-    if (news) {
-        var html = '<span class="title">' + news.title + '</span><br/>' + news.content;
-        $('#flashinfo').html(html).show();
-    } else {
-        $('#flashinfo').html('').hide();
-    }
-}
-*/
-function onUpdateTunnel(o){
-    if (o) {
-        $.each(o.data, function(i, a){
-			$('#tu_'+i).text(a.current+'min');
-			$('#tu_'+i).css('background-color', o.colors[i]);
-		});
-    }
-}
-
 
 function req(message, cb, data){
     if (chrome.extension) {
@@ -462,52 +430,6 @@ function loadHtml(el, id){
     }
 }
 
-function convert(){
-    xhr({
-        method: 'GET',
-        url: 'data/cams.xml',
-        dataType: 'xml'
-    }, function(xhr){
-        var o = JSON.parse(xhr.responseJson);
-        var r = {
-            markers: []
-        };
-        $.each(o.markers.marker, function(i, marker){
-            var html = Base64.decode(marker['@html']);
-            var cam, titre, localite, label = '';
-            
-            var m = /cccam_(\d+)/.exec(html);
-            if (m && m[1]) {
-                cam = parseInt(m[1], 10);
-            }
-            
-            m = /titrepopup2\">([^<]+)/.exec(html);
-            if (m && m[1]) {
-                titre = m[1];
-            }
-            
-            m = /localitepopup2\">([^<]+)/.exec(html);
-            if (m && m[1]) {
-                localite = m[1];
-            }
-            
-            label = 'Camera ' + cam + '-' + titre + ',' + localite;
-            
-            //lat,lng,html
-            r.markers.push({
-                lat: parseFloat(marker['@lat'], 10),
-                lng: parseFloat(marker['@lng'], 10),
-                html: html,
-                cam: cam,
-                titre: titre,
-                localite: localite,
-                label: label
-            });
-        });
-        $('#res').val(JSON.stringify(r));
-    });
-}
-
 function i18n(){
 	function _(id){
 		$('#'+id).text(LANG[id]);
@@ -520,20 +442,6 @@ function i18n(){
     
 }
 
-function refreshMapRtl(){
-	/*var url = 'http://images.newmedia.lu/trafic_map/feature.jpg';
-	$('#img-map-rtl').attr('src',url+'?r='+rnd);
-	*/
-	$('#ctn-map-rtl img').each(function(i,el){
-		var url=$(el).attr('src');
-		if (url){
-			var rnd = Math.round(1+Math.random()*10000);
-			url = url.replace(/\?r=.*/,'')+'?r='+rnd;
-			$(el).attr('src',url);
-		}
-	});
-	
-}
 
 $(function() {
   initPopup();
