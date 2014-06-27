@@ -7,5 +7,8 @@
   },
   "browser_action_tooltip_default": {
     "message": "Eye Traffic - Lux trafic info"
+  } ,
+  "ALERT": {
+    "message": "Alerte Info trafic"
   } 
 }

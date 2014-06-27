@@ -239,7 +239,24 @@ function onUpdateAlerts(channel){
         $('#alert').html(LANG.NOTRAFFICINFO);
     }
 }
-
+function onUpdateFlashs(flashs){
+    var el = $('#flashinfo'), pb = $('#main .panel-body');
+    if (flashs) {
+        var html='',f=0;
+        $.each(flashs, function(i,flash){
+        	var title = flash.title;
+        	if (flash.url){
+        		title='<a href="'+flash.url+'" target="flash_'+(++f)+'">'+flash.title+'</a>';
+        	}
+        	html += '<span class="title">' + title + '</span><br/>' + flash.html;
+        });
+        el.html(html);
+        
+    } else {
+        el.html('');
+    }
+}
+/*
 function onUpdateFlashs(news){
     if (news) {
         var html = '<span class="title">' + news.title + '</span><br/>' + news.content;
@@ -248,7 +265,7 @@ function onUpdateFlashs(news){
         $('#flashinfo').html('').hide();
     }
 }
-
+*/
 function onUpdateTunnel(o){
     if (o) {
         $.each(o.data, function(i, a){

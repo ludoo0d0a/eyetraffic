@@ -46,7 +46,7 @@ var averages = {
 };
 
 var BADGE_COLOR_FLASHINFO=[250, 136, 2, 255];//#FFDA2F
-var lastFlash=false, lastNews=false, lastSel=$.extend({alerts:{}},defaultPrefs.sel);
+var lastFlashs=false, lastNews=false, lastSel=$.extend({alerts:{}},defaultPrefs.sel);
 
 var prefs = getPrefs();
 if (!prefs) {
@@ -66,7 +66,7 @@ chrome.extension.onRequest.addListener(function(a, sender, callback){
         updateBadge(a, callback);
     } else if (a.message === 'prefs') {
         monitorAverages();
-        prefs.options = {flash:lastFlash};
+        prefs.options = {flash:lastFlashs};
         callback(prefs);
     } else if (a.message === 'updatetimes') {
         updateTimes(a, callback);
@@ -214,7 +214,7 @@ function getColors(a){
 	        color = 'Orange';
 	        bcolor = [255, 143, 53, 255];
 	    }
-	    if (lastFlash){
+	    if (lastFlashs){
 	    	bcolor = BADGE_COLOR_FLASHINFO; 
 	    }
     }
@@ -466,6 +466,23 @@ function updateAlert(id, a, cb){
     });
 }
 
+function fixurl(url){
+	if (url && url.substring(0,1)=='/'){
+		url=urlFlashRoot+url;
+	}
+	return url;
+}
+
+function getPopupStatus(a, callback){
+	if (callback) {
+		var prefs = getPrefs();
+		var o = $.extend({flashs:lastFlashs}, lastSel);
+		if (prefs.cam){
+	        o.cam = prefs.cam;
+        }
+    	callback(o);
+   }
+}
 
 //flashinfo lesfrontaliers.lu
 function updateFlashs(a, callback){
@@ -474,97 +491,97 @@ function updateFlashs(a, callback){
         url: urlFlashInfo,
         dataType: 'text'
     }, function(xhr){
-        var  m, data = xhr.responseText;
-        
-        var page = $(data);
-        var els = page.find('#infos-flash .view-infos-flash .views-row');
+        var m, data = xhr.responseText,page = $(data);
+        var els = page.find('#views_slideshow_cycle_main_break_news-block .views-row');
        
-        //m = reFlashInfoLF.main.exec(data);
         if (els.length>0){
-        //if (m && m[1]) {
-        //    var n = reFlashInfoLF.title.exec(m[1]), p = reFlashInfoLF.content.exec(m[1]);
-        //    var title = n[1], content = p[1];
-        	els.find('img').each(function(i,el){
-        		var src = el.attributes.src.value;
-        		if (src.substring(1)=='/'){
-        			el.src=urlFlashRoot+src;
-        		}
-        	});
-        	els.find('a').each(function(i,el){
-        		var href = el.attributes.href.value;
-        		if (href.substring(1)=='/'){
-        			el.href=urlFlashRoot+href;
-        		}
-        	});
-        	 var newFlash = {
+        	 var flashs=[], newFlash = {
         	 	title:'',
-        	 	content:'',
-				contentText:''
+        	 	html:'',
+				text:'',
         	 };
         	els.each(function(i,el){
 	        	el=$(el);
-	        	var title= el.find('.views-field-title a').text();
-	        	var elContent =  el.find('.views-field-body .field-content');
-	            if (i==0){
-	            	newFlash.title= title;
-	            }else{
-	            	newFlash.contentText += '   ###################   '+title+' >>>  ';
-	            	newFlash.content += '\r\n<br/><b>'+title+'</b>\r\n<br/>';
-	            }
-                newFlash.content += elContent.html();
-                newFlash.contentText += elContent.text();
+	        	var elContent = el.find('.views-field-body .field-content');
+	        	var a = el.find('.views-field-title a');
+	        	var flash={
+	        		title: a.text(),
+	        		url: fixurl(a.attr('href')),
+	        		text: elContent.text(),
+	        		html: elContent.html()
+	        	};
+                flashs.push(flash);
             });
-            
-            toastFlash(newFlash);
-            lastFlash=newFlash;
+            toastFlash(flashs);
+            lastFlashs=flashs;
             //badge color now
             chrome.browserAction.setBadgeBackgroundColor({
         		color: BADGE_COLOR_FLASHINFO
     		});
         }else{
-        	lastFlash=false;
+        	lastFlashs=false;
         }
         if (callback) {
-            callback(lastFlash);
+            callback(flashs);
         }
         
     });
 }
-function getPopupStatus(a, callback){
-	if (callback) {
-		var prefs = getPrefs();
-		var o = $.extend({flash:lastFlash}, lastSel);
-		if (prefs.cam){
-	        o.cam = prefs.cam;
-        }
-    	callback(o);
-   }
-}
+
 function getFlash(a, callback){
 	if (callback) {
-       callback(lastFlash);
+       callback(lastFlashs);
    }
 }
-function toastFlash(flash){
-	if (!window.webkitNotifications) {
-		return;
+function getFlashMessage(flashs){
+	var txt=[];
+	if (flashs) {
+       $.each(flashs, function(i,flash){
+       		txt.push(ellipsis(flash.text,100));
+       });
+   }
+   return txt.join('');
+}
+function ellipsis(txt, len){
+	if (txt && txt.length>len){
+		txt=txt.substring(0,len)+'&#8230';
 	}
-	
-	if (flash && (flash.title!=lastFlash.title || flash.content!=lastFlash.content)){
+	return txt;
+}
+       		
+function areSameObject(a,b){
+	return (JSON.stringify(a) === JSON.stringify(b));
+}
+
+function toastFlash(flashs){
+	if (chrome.notifications && flashs && !areSameObject(flashs, lastFlashs)){
 		//toast
-		var notification;
-		if (prefs.HTMLNotif && webkitNotifications.createHTMLNotification){
-			notification = webkitNotifications.createHTMLNotification(
-				  'toast.html'
-			);
-		}else{
-			notification = webkitNotifications.createNotification(
-			  'images/logo48.png',  
-			  flash.title, 
-			  flash.contentText
-			);
-		}
-		notification.show();
+		var notificationId='flash_eyetraffic',message='', title='Alerte Info trafic'/*chrome.i18n.getMessage("alert")*/;
+
+		var myflashs=[];
+		$.each(flashs,function(i,flash){
+			myflashs.push({title:flash.title, message:flash.text});
+		});
+		
+		var options = {
+		  type: "list",
+		  title: title,
+		  message: title,
+		  iconUrl: "images/logo128.png",
+		  items: myflashs
+		};
+
+		chrome.notifications.create(notificationId, options, function(o){
+			console.log(o);
+			//console.error(chrome.runtime.lastError);
+		});
+		chrome.notifications.onClicked.addListener(function(o){
+			if (notificationId==o){
+				//Open dashboard
+				var url = chrome.extension.getURL('dashboard.html');
+				chrome.tabs.create({url:url}, function(o){});
+			}
+		});
 	}
 }
 

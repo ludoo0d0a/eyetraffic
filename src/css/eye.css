@@ -141,24 +141,34 @@ a, a:hover, a:visited {
 /*
  * Flashinfo
  */
-#flashinfo{
+.dashboard #flashinfo{
 	background-color:#FFDA2F;
 	color:#FF0000;
 	border:1px solid #FF0000;
 	margin:3px;
 }
+
+.popup2 #flashinfo{
+	max-height:120px;
+	overflow-y:auto;
+}
+
 #flashinfo .title{
 	font-weight:bold;
 }
 #flashinfo img{
 	display:none;
 }
-
+#flashinfo .alert {
+	margin-bottom: 4px;
+	padding:4px;
+}
 #title_flashinfo{
 	position: absolute;
 	top: 5px;
 	left: 580px;
 }
+
 /*
  * Cameras
  */

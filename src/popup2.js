@@ -50,7 +50,7 @@ function updateData(){
 
 function openmain(){
 	var url = chrome.extension.getURL('dashboard.html');
-	window.location.href = url;
+	//window.location.href = url;
 	chrome.tabs.create({url:url});
 }
 
@@ -178,12 +178,18 @@ function formatAlert(item, tpl){
     //el.prepend(output);
     return output;
 }
-function onUpdateFlashs(news){
+function onUpdateFlashs(flashs){
     var el = $('#flashinfo'), pb = $('#main .panel-body');
-    console.log('flashinfo ');
-    console.log(news);
-    if (news) {
-        var html = '<span class="title">' + news.title + '</span><br/>' + news.content;
+    if (flashs) {
+        var html='',f=0;
+        $.each(flashs, function(i,flash){
+        	var title = flash.title;
+        	if (flash.url){
+        		title='<a href="'+flash.url+'" target="flash_'+(++f)+'">'+flash.title+'</a>';
+        	}
+        	
+        	html += '<div class="alert alert-warning" role="alert"><strong>'+title+'</strong> '+flash.html+'</div>';
+        });
         el.html(html);
         pb.removeClass('hide-fi');
     } else {

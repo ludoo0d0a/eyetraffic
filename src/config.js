@@ -25,12 +25,14 @@ var lang='fr', LANGS = {
     en: {
         NOTRAFFICINFO: 'No traffic info',
         to: 'to',
-        map: 'Map'
+        map: 'Map',
+        ALERT:'Info traffic alert'
     },
     fr: {
         NOTRAFFICINFO: 'Pas d\'info trafic',
         to: 'vers',
-        map: 'Carte'
+        map: 'Carte',
+        ALERT:'Alerte Info trafic'
     },
     
 };
