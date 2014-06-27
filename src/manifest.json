@@ -13,7 +13,7 @@
   "background": {
     "page":"bg.html"
   },
-  "options_page": "popup.html",
+  "options_page": "dashboard.html",
   "sandbox": {
     "pages": [ "gmap.html" ]
   },

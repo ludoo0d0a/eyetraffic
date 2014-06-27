@@ -305,9 +305,12 @@ function createCams(static){
     	directory:'images/fancyzoom',
     	overlay:0.8,
     	scaleImg: true,
-    	closeOnClick: true
+    	closeOnClick: true,
+    	//+
+    	afterclick:savelastcam,
+    	container:$('#cams')
     });
-    $('a.izi').click(savelastcam);
+    //$('a.izi').click(savelastcam);
 }
 
 function createMenuCams(el, dcam){
@@ -342,23 +345,13 @@ function createImageCams(el, dcam, isin, static){
     $.each((isin) ? dcam.camsin : dcam.camsout, function(id, cam){
         var u = (static) ? urlCamNa : getUrlCam(id), t = id + ' - ' + cam.text;
         html += '<div class="cam">' +
-        '<a class="izi" href="#fz'+id+'" title="'+t+'">' +
+        '<a class="izi" href="'+u+'" title="'+t+'">' +
         '<img class="icam" alt="'+cam.text+'" id="icam'+id+'" src="'+u+'"/>' +
         '</a>' +
-        
-        '<div class="fzc" id="fz'+id+'" style="display:none;">' +
-        '<img src="'+u+'"/>' +
-        '<div class="overlay-text">'+cam.text+'</div>'+
-        '</div>' +
-        
-        '<span>' +
-        cam.text +
-        '</span></div>';
-        //alert(id+':'+cam.text);
-        //div.append('<div class="cam">' + id +' - ' + cam.text +'</div>');
+        '<span>' +cam.text +'</span>'+
+        '</div>';
     });
     html += '</div>';
-    //el.html(html);
     var nel = $(html);
     el.append(nel);
     
@@ -378,9 +371,8 @@ function xhr(a, cb){
 
 function getHtml(id){
     if (id === 'map-bison') {
-        var url = 'http://www.bison-fute.equipement.gouv.fr/astec_acai/internet/ie1_myrabel.html?langue=fr&evt=1';
-        //return '<iframe src="'+url+'" frameborder="0" scrolling="no" width="590" height="480"></iframe>';
-        return writeIframe(id,url,590,480);
+        var url = 'http://www.bison-fute.gouv.fr/a31-luxembourg-metz-nancy,10271.html';
+        return writeIframe(id,url,800,700,'',60,220);
     } else if (id === 'map-tomtom') {
         var w = 590 + 360;
 		var url = 'http://routes.tomtom.com/map/?center=49.490%2C5.980&zoom=8&map=basic';
@@ -401,30 +393,17 @@ function getHtml(id){
     }else if (id === 'map-ir57') {
 		var w = 2000, h=2000;
 		var url = 'http://www.inforoute57.fr';
-		//return '<div id="irwrap"><div id="iroffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
 		return writeIframe(id,url);
-    
     } else if (id === 'map-rtl') {
-		var html = '<div id="ctn-map-rtl" style="position: relative; left: 0px; top: 0px; z-index: 0; height:620px;">';
-html += '<div style="width: 288px; height: 307px; position: absolute; left: 4px; top: 307px; "><img style="width: 288px; height: 307px; " src="http://images.newmedia.lu/trafic_map/tiles/2x/complete2_2x_2_6.png"></div>';
-html += '<div style="width: 288px; height: 307px; position: absolute; left: 292px; top: 307px; "><img style="width: 288px; height: 307px; " src="http://images.newmedia.lu/trafic_map/tiles/2x/complete2_2x_3_6.png"></div>';
-html += '<div style="width: 288px; height: 307px; position: absolute; left: 292px; top: 0px; "><img style="width: 288px; height: 307px; " src="http://images.newmedia.lu/trafic_map/tiles/2x/complete2_2x_3_5.png"></div>';
-html += '<div style="width: 288px; height: 307px; position: absolute; left: 4px; top: 0px; "><img style="width: 288px; height: 307px; " src="http://images.newmedia.lu/trafic_map/tiles/2x/complete2_2x_2_5.png"></div>';
-html += '</div>';
-html += '<script>refreshMapRtl();setInterval(refreshMapRtl,10000);</script>';
-return html;
-		
-		//return '<img id="img-'+id+'"" />'+
-		//'<script>refreshMapRtl();setInterval(refreshMapRtl,10000);</script>';
-		
+		var url = 'http://www.rtl.lu/trafic/';
+		return writeIframe(id,url,960,1050,'',340,600);
     } else if (id === 'map-mobilinfo') {
 		var w=800, h=600;
 		var url = 'http://www.mobilinfo.be/mobilinfo/';
 		return writeIframe(id,url,w,h,'http://trafic.lesoir.be');
     } else if (id === 'map-wallonie') {
-		var w=800, h=670;
 		var url = 'http://trafiroutes.wallonie.be/trafiroutes/maptempsreel/';
-		return writeIframe(id,url,w,h);
+		return writeIframe(id,url,2000,2000,'',240,20);
     } else if (id === 'map-verkehrsinfo') {
 		var w=800, h=670;
 		var url = 'http://www.verkehrsinfo.de';
@@ -437,39 +416,24 @@ return html;
         return '';
     }
 }
-function writeIframe(id,url,w,h,page){
+function writeIframe(id,url,w,h,page,left,top){
 	w=w||800;
 	h=h||600;
 	page=page||url;
-	var html='<div class="overview"><a target="blank" href="'+page+'">Source</a></div>';
-	html+='<div class="mwrap"><div class="moffset"><iframe src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
+	var html='<div class="overview"><a target="_blank_'+id+'" href="'+page+'">Source</a></div>';
+	var css = '';
+	if (left){
+		css += 'margin-left: -'+left+'px;';
+	}
+	if (top){
+		css += 'margin-top: -'+top+'px;';
+	}
+	if (css){
+		css = ' style="'+css+'"';
+	}
+	html+='<div class="mwrap"><div class="moffset"><iframe'+css+' id="if-'+id+'" src="'+url+'" frameborder="0" scrolling="no" width="'+w+'" height="'+h+'"></iframe></div></div>';
 	return html;
 }
-/*
-function renderCita(){
-	var map = new OpenLayers.Map({
-	    div: "map-cita-ol",
-	    layers: [
-	        new OpenLayers.Layer.WMS(
-	            "WMS", "http://vmap0.tiles.osgeo.org/wms/vmap0",
-	            {layers: "basic"}
-	        ),
-	        new OpenLayers.Layer.Vector("KML", {
-	            strategies: [new OpenLayers.Strategy.Fixed()],
-	            protocol: new OpenLayers.Protocol.HTTP({
-	                url: "http://www.cita.lu/kml/services_axe.kml?src=EyeTraffic",
-	                format: new OpenLayers.Format.KML({
-	                    extractStyles: true, 
-	                    extractAttributes: true,
-	                    maxDepth: 2
-	                })
-	            })
-	        })
-	    ],
-	    center: new OpenLayers.LonLat(6.13, 49.61),
-	    zoom: 11
-	});
-}*/
 
 function loadHtml(el, id){
     if (!el){
